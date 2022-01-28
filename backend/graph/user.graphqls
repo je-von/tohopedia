@@ -1,0 +1,36 @@
+scalar Date
+
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  password: String!
+  phone: String!
+  gender: String!
+  dob: Date!
+  profilePic: String!
+  role: String!
+  status: Boolean!
+}
+
+type Query {
+  user(id: ID, email: String, password: String): User!
+  users: [User!]!
+}
+
+type Mutation {
+  createUser(input: NewUser!): User!
+  updateUser(id: ID!, input: NewUser!): User!
+  toggleStatus(id: ID!): User! # block / unblock
+}
+
+input NewUser {
+  name: String!
+  email: String!
+  password: String!
+  phone: String!
+  gender: String!
+  dob: Date!
+  profilePic: String!
+  role: String!
+}
