@@ -1,8 +1,8 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
-import styles from '../styles/Home.module.css'
-import Layout from '../components/layout/Layout'
+import styles from '../../../styles/Home.module.css'
+import Layout from '../../../components/layout/Layout'
 import Link from 'next/link'
 import { gql, useQuery } from '@apollo/client'
 import { useState } from 'react'
@@ -60,12 +60,12 @@ const Login: NextPage = () => {
   }
   return (
     <Layout>
-      <main className={styles.container}>
+      <div className="main-container">
         <div className="form-container">
           <div className="form-content">
             <div className="container-header">
               <h3>Login</h3>
-              <Link href="/register">Sign Up</Link>
+              <Link href="/user/register">Sign Up</Link>
             </div>
             <div className="form-input">
               <label htmlFor="email">Email</label>
@@ -90,7 +90,7 @@ const Login: NextPage = () => {
             <p className="error">{errorMsg}</p>
           </div>
         </div>
-      </main>
+      </div>
     </Layout>
   )
 }
