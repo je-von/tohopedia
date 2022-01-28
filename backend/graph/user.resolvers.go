@@ -13,11 +13,17 @@ import (
 )
 
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (*model.User, error) {
+	password, err := model.HashPassword(input.Password)
+
+	if err != nil {
+		return nil, err
+	}
+
 	model := &model.User{
 		ID:         uuid.NewString(),
 		Name:       input.Name,
 		Email:      input.Email,
-		Password:   input.Password,
+		Password:   password,
 		Phone:      input.Phone,
 		Gender:     input.Gender,
 		Dob:        input.Dob,
@@ -25,7 +31,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
 		Role:       input.Role,
 	}
 
-	err := r.DB.Create(model).Error
+	err = r.DB.Create(model).Error
 	return model, err
 }
 
@@ -38,7 +44,19 @@ func (r *mutationResolver) ToggleStatus(ctx context.Context, id string) (*model.
 }
 
 func (r *queryResolver) User(ctx context.Context, id *string, email *string, password *string) (*model.User, error) {
-	panic(fmt.Errorf("not implemented"))
+	user := new(model.User)
+
+	if id != nil {
+		return user, r.DB.First(user, "id = ?", id).Error
+	}
+
+	err := r.DB.First(user, "email = ?", email).Error
+
+	if model.CheckPasswordHash(*password, user.Password) {
+		return user, err
+	}
+
+	return nil, err
 }
 
 func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
