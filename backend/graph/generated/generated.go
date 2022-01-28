@@ -37,6 +37,7 @@ type Config struct {
 type ResolverRoot interface {
 	Mutation() MutationResolver
 	Query() QueryResolver
+	User() UserResolver
 }
 
 type DirectiveRoot struct {
@@ -44,9 +45,9 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Mutation struct {
-		CreateUser   func(childComplexity int, input model.NewUser) int
-		ToggleStatus func(childComplexity int, id string) int
-		UpdateUser   func(childComplexity int, id string, input model.NewUser) int
+		CreateUser    func(childComplexity int, input model.NewUser) int
+		ToggleSuspend func(childComplexity int, id string) int
+		UpdateUser    func(childComplexity int, id string, input model.NewUser) int
 	}
 
 	Query struct {
@@ -55,27 +56,30 @@ type ComplexityRoot struct {
 	}
 
 	User struct {
-		Dob        func(childComplexity int) int
-		Email      func(childComplexity int) int
-		Gender     func(childComplexity int) int
-		ID         func(childComplexity int) int
-		Name       func(childComplexity int) int
-		Password   func(childComplexity int) int
-		Phone      func(childComplexity int) int
-		ProfilePic func(childComplexity int) int
-		Role       func(childComplexity int) int
-		Status     func(childComplexity int) int
+		Dob         func(childComplexity int) int
+		Email       func(childComplexity int) int
+		Gender      func(childComplexity int) int
+		ID          func(childComplexity int) int
+		IsSuspended func(childComplexity int) int
+		Name        func(childComplexity int) int
+		Password    func(childComplexity int) int
+		Phone       func(childComplexity int) int
+		ProfilePic  func(childComplexity int) int
+		Role        func(childComplexity int) int
 	}
 }
 
 type MutationResolver interface {
 	CreateUser(ctx context.Context, input model.NewUser) (*model.User, error)
 	UpdateUser(ctx context.Context, id string, input model.NewUser) (*model.User, error)
-	ToggleStatus(ctx context.Context, id string) (*model.User, error)
+	ToggleSuspend(ctx context.Context, id string) (*model.User, error)
 }
 type QueryResolver interface {
 	User(ctx context.Context, id *string, email *string, password *string) (*model.User, error)
 	Users(ctx context.Context) ([]*model.User, error)
+}
+type UserResolver interface {
+	IsSuspended(ctx context.Context, obj *model.User) (bool, error)
 }
 
 type executableSchema struct {
@@ -105,17 +109,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateUser(childComplexity, args["input"].(model.NewUser)), true
 
-	case "Mutation.toggleStatus":
-		if e.complexity.Mutation.ToggleStatus == nil {
+	case "Mutation.toggleSuspend":
+		if e.complexity.Mutation.ToggleSuspend == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_toggleStatus_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_toggleSuspend_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.ToggleStatus(childComplexity, args["id"].(string)), true
+		return e.complexity.Mutation.ToggleSuspend(childComplexity, args["id"].(string)), true
 
 	case "Mutation.updateUser":
 		if e.complexity.Mutation.UpdateUser == nil {
@@ -176,6 +180,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.User.ID(childComplexity), true
 
+	case "User.isSuspended":
+		if e.complexity.User.IsSuspended == nil {
+			break
+		}
+
+		return e.complexity.User.IsSuspended(childComplexity), true
+
 	case "User.name":
 		if e.complexity.User.Name == nil {
 			break
@@ -210,13 +221,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.User.Role(childComplexity), true
-
-	case "User.status":
-		if e.complexity.User.Status == nil {
-			break
-		}
-
-		return e.complexity.User.Status(childComplexity), true
 
 	}
 	return 0, false
@@ -294,7 +298,7 @@ type User {
   dob: Date!
   profilePic: String!
   role: String!
-  status: Boolean!
+  isSuspended: Boolean!
 }
 
 type Query {
@@ -305,7 +309,7 @@ type Query {
 type Mutation {
   createUser(input: NewUser!): User!
   updateUser(id: ID!, input: NewUser!): User!
-  toggleStatus(id: ID!): User! # block / unblock
+  toggleSuspend(id: ID!): User! # block / unblock
 }
 
 input NewUser {
@@ -341,7 +345,7 @@ func (ec *executionContext) field_Mutation_createUser_args(ctx context.Context, 
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_toggleStatus_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_toggleSuspend_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -550,7 +554,7 @@ func (ec *executionContext) _Mutation_updateUser(ctx context.Context, field grap
 	return ec.marshalNUser2ᚖgithubᚗcomᚋjeᚑvonᚋTPAᚑWebᚑJVᚋbackendᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_toggleStatus(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_toggleSuspend(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -567,7 +571,7 @@ func (ec *executionContext) _Mutation_toggleStatus(ctx context.Context, field gr
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_toggleStatus_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_toggleSuspend_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -575,7 +579,7 @@ func (ec *executionContext) _Mutation_toggleStatus(ctx context.Context, field gr
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().ToggleStatus(rctx, args["id"].(string))
+		return ec.resolvers.Mutation().ToggleSuspend(rctx, args["id"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1055,7 +1059,7 @@ func (ec *executionContext) _User_role(ctx context.Context, field graphql.Collec
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _User_status(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+func (ec *executionContext) _User_isSuspended(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1066,14 +1070,14 @@ func (ec *executionContext) _User_status(ctx context.Context, field graphql.Coll
 		Object:     "User",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Status, nil
+		return ec.resolvers.User().IsSuspended(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2324,8 +2328,8 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "toggleStatus":
-			out.Values[i] = ec._Mutation_toggleStatus(ctx, field)
+		case "toggleSuspend":
+			out.Values[i] = ec._Mutation_toggleSuspend(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -2412,53 +2416,62 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 		case "id":
 			out.Values[i] = ec._User_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "name":
 			out.Values[i] = ec._User_name(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "email":
 			out.Values[i] = ec._User_email(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "password":
 			out.Values[i] = ec._User_password(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "phone":
 			out.Values[i] = ec._User_phone(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "gender":
 			out.Values[i] = ec._User_gender(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "dob":
 			out.Values[i] = ec._User_dob(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "profilePic":
 			out.Values[i] = ec._User_profilePic(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "role":
 			out.Values[i] = ec._User_role(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
-		case "status":
-			out.Values[i] = ec._User_status(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
+		case "isSuspended":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._User_isSuspended(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

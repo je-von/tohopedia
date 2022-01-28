@@ -9,11 +9,96 @@ $primary-color: rgb(62, 171, 0);
     sans-serif;
 }
 
-.header {
-  display: flex;
-  justify-content: center;
-  div {
-    padding: 0 5px;
+.header-container {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  padding: 5px 20px;
+  .shipping-button {
+    text-align: right;
+    font-size: 14px;
+    color: grey;
+    i {
+      margin: 0 10px;
+    }
+  }
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    div {
+      display: flex;
+      align-items: center;
+      .search-container {
+        width: 50vw;
+        border-radius: 8px;
+        border: 1px solid rgba(0, 0, 0, 0.3);
+        padding: 4px 8px;
+
+        input {
+          width: 100%;
+          border: none;
+        }
+        input:focus {
+          outline: none;
+        }
+        button {
+          height: 100%;
+          background-color: white;
+          border: none;
+          padding: 0 3px;
+          cursor: pointer;
+        }
+      }
+    }
+    .logo-container {
+      width: 12vw;
+      cursor: pointer;
+    }
+    .icon-button {
+      color: grey;
+      margin-left: 20px;
+      cursor: pointer;
+      // flex-direction: row;
+      .dropdown {
+        // align-self: flex-end;
+        display: none;
+        position: absolute;
+        min-width: 200px;
+        background-color: white;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        padding: 20px;
+        z-index: 1;
+        top: 60px;
+        border-radius: 0 0 8px 8px;
+      }
+    }
+    .icon-button:hover .dropdown {
+      display: block;
+    }
+
+    .text-button {
+      border-radius: 8px;
+      border: 2px solid $primary-color;
+      padding: 3px 0;
+      width: 80px;
+      margin-left: 20px;
+      font-size: 14px;
+      a {
+        width: 100%;
+        text-align: center;
+        font-weight: bold;
+      }
+    }
+    .left-content {
+      a {
+        margin-left: 20px;
+        color: grey;
+      }
+    }
+    .right-content {
+      border-left: 1px solid rgba(0, 0, 0, 0.3);
+    }
   }
 }
 

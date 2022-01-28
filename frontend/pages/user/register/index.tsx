@@ -30,7 +30,7 @@ const Register: NextPage = () => {
         console.log(res.OTP)
         // console.log(res.success)
         if (res.success) {
-          let otp = prompt('Input OTP code that was sent to your email:')
+          let otp = prompt('Input OTP code (6 digits) that was sent to your email:')
           console.log(otp)
           if (otp == res.OTP) {
             setFields(

@@ -10,7 +10,7 @@ type User {
   dob: Date!
   profilePic: String!
   role: String!
-  status: Boolean!
+  isSuspended: Boolean!
 }
 
 type Query {
@@ -21,7 +21,7 @@ type Query {
 type Mutation {
   createUser(input: NewUser!): User!
   updateUser(id: ID!, input: NewUser!): User!
-  toggleStatus(id: ID!): User! # block / unblock
+  toggleSuspend(id: ID!): User! # block / unblock
 }
 
 input NewUser {
