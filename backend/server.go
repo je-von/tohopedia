@@ -44,6 +44,9 @@ func main() {
 
 	db.AutoMigrate(&model.User{})
 	db.AutoMigrate(&model.Shop{})
+	db.AutoMigrate(&model.Category{})
+	db.AutoMigrate(&model.Product{})
+	db.AutoMigrate(&model.ProductImage{})
 
 	srv := handler.NewDefaultServer(
 		generated.NewExecutableSchema(

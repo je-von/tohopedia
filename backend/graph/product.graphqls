@@ -1,0 +1,32 @@
+# scalar Map
+
+type Product {
+  id: ID!
+  name: String!
+  images: [ProductImage!]! @goField(forceResolver: true)
+  description: String!
+  price: Int!
+  discount: Float!
+  #   metadata: Map!
+  metadata: String!
+  category: Category! @goField(forceResolver: true)
+  shop: Shop! @goField(forceResolver: true)
+}
+
+type ProductImage {
+  id: ID!
+  image: String!
+  product: Product! @goField(forceResolver: true)
+}
+
+type Category {
+  id: ID!
+  name: String!
+}
+
+extend type Query {
+  category(id: ID!): Category!
+  categories: [Category!]!
+  product(id: ID!): Product!
+  products: [Product!]!
+}

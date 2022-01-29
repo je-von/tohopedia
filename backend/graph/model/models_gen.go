@@ -6,6 +6,11 @@ import (
 	"time"
 )
 
+type Category struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
 type NewShop struct {
 	Name              string    `json:"name"`
 	NameSlug          string    `json:"nameSlug"`
