@@ -6,9 +6,35 @@ package graph
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/je-von/TPA-Web-JV/backend/graph/generated"
 	"github.com/je-von/TPA-Web-JV/backend/graph/model"
 )
+
+func (r *mutationResolver) CreateProduct(ctx context.Context, input model.NewProduct, shopID string) (*model.Product, error) {
+	model := &model.Product{
+		ID:          uuid.NewString(),
+		Name:        input.Name,
+		Description: input.Description,
+		Price:       input.Price,
+		Discount:    input.Discount,
+		Metadata:    input.Metadata,
+		CategoryID:  input.CategoryID,
+		ShopID:      shopID,
+	}
+
+	return model, r.DB.Create(model).Error
+}
+
+func (r *mutationResolver) CreateProductImage(ctx context.Context, image string, productID string) (*model.ProductImage, error) {
+	model := &model.ProductImage{
+		ID:        uuid.NewString(),
+		Image:     image,
+		ProductID: productID,
+	}
+
+	return model, r.DB.Create(model).Error
+}
 
 func (r *productResolver) Images(ctx context.Context, obj *model.Product) ([]*model.ProductImage, error) {
 	var models []*model.ProductImage

@@ -11,6 +11,15 @@ type Category struct {
 	Name string `json:"name"`
 }
 
+type NewProduct struct {
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	Price       int     `json:"price"`
+	Discount    float64 `json:"discount"`
+	Metadata    string  `json:"metadata"`
+	CategoryID  string  `json:"categoryID"`
+}
+
 type NewShop struct {
 	Name              string    `json:"name"`
 	NameSlug          string    `json:"nameSlug"`

@@ -30,3 +30,17 @@ extend type Query {
   product(id: ID!): Product!
   products: [Product!]!
 }
+
+extend type Mutation {
+  createProduct(input: NewProduct!, shopID: ID!): Product!
+  createProductImage(image: String!, productID: ID!): ProductImage!
+}
+
+input NewProduct {
+  name: String!
+  description: String!
+  price: Int!
+  discount: Float!
+  metadata: String!
+  categoryID: ID!
+}
