@@ -2,19 +2,20 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../../../styles/Home.module.css'
-import Layout from '../../../components/layout/Layout'
+import Layout from '../../components/layout/Layout'
 import Link from 'next/link'
-import { gql, useQuery } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import { useState } from 'react'
 import { redirect } from 'next/dist/server/api-utils'
 import { url } from 'inspector'
 import { useRouter } from 'next/router'
+import UserSession from '../../util/user-session'
 
 const Login: NextPage = () => {
   const router = useRouter()
   const [credential, setCredential] = useState([''])
   const [errorMsg, setErrorMsg] = useState('')
-  const loginUser = () => {
+  const loginUser = async () => {
     let email = (document.getElementById('email') as HTMLInputElement).value
     let password = (document.getElementById('password') as HTMLInputElement).value
     // console.log(email, password)
@@ -22,42 +23,46 @@ const Login: NextPage = () => {
     if (!email || !password) {
       setErrorMsg('All fields must be filled!')
     } else {
-      setCredential([email, password])
+      try {
+        await auth({ variables: { email: email, password: password } })
+      } catch (e) {
+        setErrorMsg('Error')
+      }
     }
   }
 
-  const query = gql`
-    query auth($email: String!, $password: String!) {
-      user(email: $email, password: $password) {
+  const mutation = gql`
+    mutation login($email: String!, $password: String!) {
+      login(email: $email, password: $password) {
         id
         name
-        gender
         email
+        #password
+        dob
+        phone
+        gender
+        role
+        profilePic
+        isSuspended
       }
     }
   `
-  const { loading, error, data } = useQuery(query, {
-    variables: {
-      email: credential[0],
-      password: credential[1],
-    },
-  })
+  const [auth, { data, loading, error }] = useMutation(mutation)
 
-  if (loading || credential.length <= 1) {
-    //loading
-    // console.log('loading')
-  } else {
-    if (!data || !data.user) {
-      // alert('Invalid email or password!')
-      if (errorMsg != 'Invalid Email or Password!') setErrorMsg('Invalid Email or Password!')
-    } else {
-      const user = data.user
-      console.log(user)
-
-      // alert('Welcome, ' + user.name + ' !')
-      router.push('/')
-    }
+  if (error) {
+    console.log(error)
+    if (errorMsg != 'Invalid Email or Password!') setErrorMsg('Invalid Email or Password!')
   }
+
+  if (data && data.login) {
+    // console.log(data)
+    const user = data.login
+    console.log(user)
+    UserSession.setCurrentUser(user)
+    // alert('Welcome, ' + user.name + ' !')
+    router.push('/')
+  }
+
   return (
     <Layout>
       <div className="main-container">

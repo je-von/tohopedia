@@ -2,21 +2,29 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../../../styles/Home.module.css'
-import Layout from '../../../components/layout/Layout'
+import Layout from '../../components/layout/Layout'
 import Link from 'next/link'
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { useState } from 'react'
 import { redirect } from 'next/dist/server/api-utils'
 import { url } from 'inspector'
 import { useRouter } from 'next/router'
-
+import { convertToBase64 } from '../../util/convert-base64'
 let email = ''
+let profilePic = ''
 const Register: NextPage = () => {
   const router = useRouter()
 
   const [fields, setFields] = useState(<></>)
   const [errorMsg, setErrorMsg] = useState('')
   const [hasVerified, setVerify] = useState(false)
+
+  const handleImage = async (e: any) => {
+    const image = e.target.files[0]
+    profilePic = (await convertToBase64(image)) as string
+
+    console.log(profilePic)
+  }
   const handleSubmit = async () => {
     if (!hasVerified) {
       email = (document.getElementById('email') as HTMLInputElement).value
@@ -58,6 +66,10 @@ const Register: NextPage = () => {
                     <option value="Female">Female</option>
                   </select>
                 </div>
+                <div className="form-input">
+                  <label htmlFor="picture">Profile Picture</label>
+                  <input type="file" id="picture" name="picture" onChange={handleImage} />
+                </div>
               </>
             )
             setVerify(true)
@@ -74,7 +86,7 @@ const Register: NextPage = () => {
       let dob = (document.getElementById('dob') as HTMLInputElement).value
 
       createUser({
-        variables: { name: name, email: email, password: password, phone: phone, gender: gender, dob: dob, profilePic: '-', role: 'User' },
+        variables: { name: name, email: email, password: password, phone: phone, gender: gender, dob: dob, profilePic: profilePic, role: 'User' },
       })
     }
   }
@@ -115,7 +127,7 @@ const Register: NextPage = () => {
     console.log(error)
   }
 
-  if (data && !data.user) {
+  if (data) {
     const user = data.user
     console.log(user)
 
