@@ -79,11 +79,21 @@ func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 	return models, r.DB.Find(&models).Error
 }
 
+func (r *userResolver) Shop(ctx context.Context, obj *model.User) (*model.Shop, error) {
+	shop := new(model.Shop)
+
+	return shop, r.DB.First(shop, "user_id = ?", obj.ID).Error
+}
+
 // Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 
 // Query returns generated.QueryResolver implementation.
 func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
+// User returns generated.UserResolver implementation.
+func (r *Resolver) User() generated.UserResolver { return &userResolver{r} }
+
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+type userResolver struct{ *Resolver }

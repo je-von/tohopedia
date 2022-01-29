@@ -43,6 +43,7 @@ func main() {
 	}
 
 	db.AutoMigrate(&model.User{})
+	db.AutoMigrate(&model.Shop{})
 
 	srv := handler.NewDefaultServer(
 		generated.NewExecutableSchema(

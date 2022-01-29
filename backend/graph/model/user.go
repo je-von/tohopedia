@@ -13,6 +13,7 @@ type User struct {
 	ProfilePic  string `json:"profilePic"`
 	Role        string `json:"role"`
 	IsSuspended bool   `json:"isSuspended"`
+	Shop        *Shop  `json:"shop"`
 }
 
 func HashPassword(password string) (string, error) {

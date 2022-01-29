@@ -1,0 +1,39 @@
+directive @goField(forceResolver: Boolean, name: String) on INPUT_FIELD_DEFINITION | FIELD_DEFINITION
+
+scalar Time
+
+type Shop {
+  id: ID!
+  name: String!
+  nameSlug: String!
+  address: String!
+  slogan: String!
+  description: String!
+  profilePic: String!
+  openTime: Time!
+  closeTime: Time!
+  operationalStatus: String! # open / closed
+  user: User! @goField(forceResolver: true)
+}
+
+extend type Query {
+  shop(id: ID, userID: ID): Shop!
+  shops: [Shop!]!
+}
+
+extend type Mutation {
+  createShop(input: NewShop!, userID: ID!): Shop!
+  updateShop(id: ID!, input: NewShop!): Shop!
+}
+
+input NewShop {
+  name: String!
+  nameSlug: String!
+  address: String!
+  slogan: String!
+  description: String!
+  profilePic: String!
+  openTime: Time!
+  closeTime: Time!
+  operationalStatus: String!
+}
