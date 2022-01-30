@@ -8,10 +8,13 @@ import Card from '../components/Card'
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { useState } from 'react'
 import { convertToBase64 } from '../util/convert-base64'
+import { removeCookies } from 'cookies-next'
+import { useRouter } from 'next/router'
 
 let str = ''
 let flag = false
 const Home: NextPage = () => {
+  const router = useRouter()
   const faker = require('faker')
   // console.log(faker.commerce.productName())
   // console.log(faker.datatype.number({ min: 1000, max: 10000000 }))
@@ -129,11 +132,8 @@ const Home: NextPage = () => {
   }
 
   if (!data || !data.products) {
-    return (
-      <Layout>
-        <main>Error!</main>
-      </Layout>
-    )
+    removeCookies('token')
+    router.reload()
   }
 
   return (

@@ -9,7 +9,29 @@ $normal-font-size: 12px;
   font-family: 'Poppins', -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
     sans-serif;
 }
+.text-button {
+  border-radius: 8px;
+  border: 2px solid $primary-color;
+  padding: 3px;
+  width: 5vw;
+  min-width: fit-content;
+  // margin-left: 20px;
+  // a {
+  // width: 100%;
+  text-align: center;
+  font-weight: bold;
+  background-color: #ffffff;
+  color: $primary-color;
 
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  cursor: pointer;
+  // }
+}
+.text-button:hover {
+  background-color: #f1f1f1;
+}
 .header-container {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
@@ -92,28 +114,6 @@ $normal-font-size: 12px;
       opacity: 1;
     }
 
-    .text-button {
-      border-radius: 8px;
-      border: 2px solid $primary-color;
-      padding: 3px;
-      width: 5vw;
-      // margin-left: 20px;
-      // a {
-      // width: 100%;
-      text-align: center;
-      font-weight: bold;
-      background-color: #ffffff;
-      color: $primary-color;
-
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      cursor: pointer;
-      // }
-    }
-    .text-button:hover {
-      background-color: #f1f1f1;
-    }
     .left-content {
       a {
         margin-left: 20px;
@@ -277,6 +277,37 @@ a {
           margin-right: 5px;
         }
       }
+    }
+  }
+}
+
+.footer-container {
+  border-top: 1px solid #c7c6c6;
+  height: 400px;
+  display: flex;
+  justify-content: space-around;
+  margin-top: 80px;
+  padding: 40px 0;
+
+  .right-content {
+    width: 30vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    p {
+      color: grey;
+      font-size: $normal-font-size;
+      margin: 15px 0;
+    }
+    .translate-button {
+      width: 12vw;
+      display: flex;
+      justify-content: space-around;
+    }
+    .footer-img {
+      position: relative;
+      width: 100%;
+      height: 200px;
     }
   }
 }
