@@ -101,6 +101,25 @@ $normal-font-size: 0.9vw;
     }
     .right-content {
       border-left: 1px solid rgba(0, 0, 0, 0.3);
+      width: 15vw;
+      display: flex;
+      justify-content: space-around;
+      .profile-button {
+        display: flex;
+        justify-content: center;
+        // margin-left: vw;
+        height: 100%;
+        font-size: 11px;
+        .profile-pic {
+          margin-right: 5px;
+          position: relative;
+          width: 4vh;
+          height: 4vh;
+          img {
+            border-radius: 50%;
+          }
+        }
+      }
     }
   }
 }

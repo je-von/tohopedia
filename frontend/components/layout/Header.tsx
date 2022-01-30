@@ -2,6 +2,7 @@ import { ReactNode } from 'react'
 
 import Link from 'next/link'
 import Image from 'next/image'
+import { gql, useQuery } from '@apollo/client'
 
 const Links = [
   {
@@ -21,6 +22,32 @@ const NavLink = ({ children, path, className }: { children: ReactNode; path: str
 )
 
 export default function Header() {
+  const query = gql`
+    query tes {
+      getCurrentUser {
+        id
+        name
+        email
+        profilePic
+        shop {
+          name
+          profilePic
+        }
+      }
+    }
+  `
+
+  const { loading, data, error } = useQuery(query)
+
+  if (loading) {
+    return <>Loading...</>
+  }
+
+  let user = null
+  if (data && data.getCurrentUser) {
+    user = data.getCurrentUser
+  }
+
   return (
     <>
       <nav className="header-container">
@@ -53,30 +80,59 @@ export default function Header() {
                 </div>
               </div>
             </NavLink>
-            <NavLink path="/" className="icon-button">
-              <div>
-                <i className="fas fa-bell"></i>
-                <div className="dropdown">
-                  <p>Empty!</p>
-                </div>
-              </div>
-            </NavLink>
-            <NavLink path="/" className="icon-button">
-              <div>
-                <i className="fas fa-envelope"></i>
-                <div className="dropdown">
-                  <p>Empty!</p>
-                </div>
-              </div>
-            </NavLink>
+            {user ? (
+              <>
+                <NavLink path="/" className="icon-button">
+                  <div>
+                    <i className="fas fa-bell"></i>
+                    <div className="dropdown">
+                      <p>Empty!</p>
+                    </div>
+                  </div>
+                </NavLink>
+                <NavLink path="/" className="icon-button">
+                  <div>
+                    <i className="fas fa-envelope"></i>
+                    <div className="dropdown">
+                      <p>Empty!</p>
+                    </div>
+                  </div>
+                </NavLink>
+              </>
+            ) : (
+              <></>
+            )}
           </div>
           <div className="right-content">
-            <NavLink path="/user/login" className="text-button">
-              Login
-            </NavLink>
-            <NavLink path="/user/register" className="text-button">
-              Register
-            </NavLink>
+            {user ? (
+              <>
+                <NavLink path="" className="profile-button">
+                  <>
+                    <div className="profile-pic">
+                      <Image src={user.shop.profilePic} alt="" layout="fill" objectFit="cover"></Image>
+                    </div>
+                    <p>{user.shop.name}</p>
+                  </>
+                </NavLink>
+                <NavLink path="" className="profile-button">
+                  <>
+                    <div className="profile-pic">
+                      <Image src={user.profilePic} alt="" layout="fill" objectFit="cover"></Image>
+                    </div>
+                    <p>{user.name}</p>
+                  </>
+                </NavLink>
+              </>
+            ) : (
+              <>
+                <NavLink path="/user/login" className="text-button">
+                  Login
+                </NavLink>
+                <NavLink path="/user/register" className="text-button">
+                  Register
+                </NavLink>
+              </>
+            )}
           </div>
         </div>
         <div>
