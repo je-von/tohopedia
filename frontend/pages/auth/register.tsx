@@ -14,10 +14,7 @@ let email = ''
 let profilePic = ''
 const Register: NextPage = () => {
   const router = useRouter()
-
-  const [fields, setFields] = useState(<></>)
   const [errorMsg, setErrorMsg] = useState('')
-  const [hasVerified, setVerify] = useState(false)
 
   const handleImage = async (e: any) => {
     const image = e.target.files[0]
@@ -25,24 +22,44 @@ const Register: NextPage = () => {
 
     console.log(profilePic)
   }
-  const handleSubmit = async () => {
-    if (!hasVerified) {
-      email = (document.getElementById('email') as HTMLInputElement).value
-      if (!email) {
-        setErrorMsg('All field must be filled!')
-      } else {
-        const { Auth } = require('two-step-auth')
-        const res = await Auth(email, 'tohopedia by JV [REGISTER]')
-        // console.log(res)
-        // console.log(res.mail)
-        console.log(res.OTP)
-        // console.log(res.success)
-        if (res.success) {
-          let otp = prompt('Input OTP code (6 digits) that was sent to your email:')
-          console.log(otp)
-          if (otp == res.OTP) {
-            setFields(
+  const handleSignUp = () => {
+    let name = (document.getElementById('name') as HTMLInputElement).value
+    let password = (document.getElementById('password') as HTMLInputElement).value
+    let phone = (document.getElementById('phone') as HTMLInputElement).value
+    let gender = (document.getElementById('gender') as HTMLInputElement).value
+    let dob = (document.getElementById('dob') as HTMLInputElement).value
+
+    createUser({
+      variables: { name: name, email: email, password: password, phone: phone, gender: gender, dob: dob, profilePic: profilePic, role: 'User' },
+    })
+  }
+  const handleFirstSubmit = async () => {
+    // if (!hasVerified) {
+    email = (document.getElementById('email') as HTMLInputElement).value
+    if (!email) {
+      setErrorMsg('All field must be filled!')
+    } else {
+      const { Auth } = require('two-step-auth')
+      const res = await Auth(email, 'tohopedia by JV [REGISTER]')
+      // console.log(res)
+      // console.log(res.mail)
+      console.log(res.OTP)
+      // console.log(res.success)
+      const handleOTP = (e: any) => {
+        let input = e.target.value
+        if (input.length >= 6) {
+          if (input == res.OTP) {
+            console.log('bener')
+            setForm(
               <>
+                <div className="container-header">
+                  <h3>Sign Up Now</h3>
+                  <Link href="/user/login">Log in</Link>
+                </div>
+                <div className="form-input">
+                  <label htmlFor="email">Email</label>
+                  <input type="text" id="email" name="email" value={email} disabled />
+                </div>
                 <div className="form-input">
                   <label htmlFor="name">Full Name</label>
                   <input type="text" id="name" name="name" placeholder="Bambang Pamungkas" required />
@@ -70,26 +87,61 @@ const Register: NextPage = () => {
                   <label htmlFor="picture">Profile Picture</label>
                   <input type="file" id="picture" name="picture" onChange={handleImage} />
                 </div>
+                <button type="submit" onClick={handleSignUp}>
+                  Sign Up
+                </button>
+                <p className="error">{errorMsg}</p>
               </>
             )
-            setVerify(true)
           } else {
-            alert('Wrong OTP!')
+            alert('OTP is invalid!')
           }
         }
       }
-    } else {
-      let name = (document.getElementById('name') as HTMLInputElement).value
-      let password = (document.getElementById('password') as HTMLInputElement).value
-      let phone = (document.getElementById('phone') as HTMLInputElement).value
-      let gender = (document.getElementById('gender') as HTMLInputElement).value
-      let dob = (document.getElementById('dob') as HTMLInputElement).value
 
-      createUser({
-        variables: { name: name, email: email, password: password, phone: phone, gender: gender, dob: dob, profilePic: profilePic, role: 'User' },
-      })
+      if (res.success) {
+        setForm(
+          <>
+            <div className="container-header">
+              <h3>Enter OTP </h3>
+            </div>
+            <p>
+              A 6-digit verification code has been sent to <i>{email}</i>
+            </p>
+            <div className="form-input">
+              <input type="number" id="otp" name="otp" onChange={handleOTP} />
+            </div>
+          </>
+        )
+      }
+      // let otp = prompt('Input OTP code (6 digits) that was sent to your email:')
+      // console.log(otp)
+      // } else {
+      //   alert('Wrong OTP!')
+      // }
+      // }
     }
+    // } else {
+
+    // }
   }
+
+  const [form, setForm] = useState(
+    <>
+      <div className="container-header">
+        <h3>Sign Up Now</h3>
+        <Link href="/user/login">Log in</Link>
+      </div>
+      <div className="form-input">
+        <label htmlFor="email">Email</label>
+        <input type="text" id="email" name="email" placeholder="example@mail.com" />
+      </div>
+      <button type="submit" onClick={handleFirstSubmit}>
+        Sign Up
+      </button>
+      <p className="error">{errorMsg}</p>
+    </>
+  )
 
   const mutation = gql`
     mutation CreateUser(
@@ -132,7 +184,7 @@ const Register: NextPage = () => {
     console.log(user)
 
     // alert('Welcome, ' + user.name + ' !')
-    router.push('/user/login')
+    router.push('/auth/login')
   }
   // }
 
@@ -140,22 +192,7 @@ const Register: NextPage = () => {
     <Layout>
       <div className="main-container">
         <div className="form-container">
-          <div className="form-content">
-            <div className="container-header">
-              <h3>Sign Up Now</h3>
-              <Link href="/user/login">Log in</Link>
-            </div>
-            <div className="form-input">
-              <label htmlFor="email">Email</label>
-              <input type="text" id="email" name="email" placeholder="example@mail.com" disabled={hasVerified} />
-            </div>
-
-            {fields}
-            <button type="submit" onClick={handleSubmit}>
-              Sign Up
-            </button>
-            <p className="error">{errorMsg}</p>
-          </div>
+          <div className="form-content">{form}</div>
         </div>
       </div>
     </Layout>

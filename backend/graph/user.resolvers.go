@@ -115,7 +115,7 @@ func (r *queryResolver) Protected(ctx context.Context) (string, error) {
 func (r *userResolver) Shop(ctx context.Context, obj *model.User) (*model.Shop, error) {
 	shop := new(model.Shop)
 
-	return shop, r.DB.First(shop, "user_id = ?", obj.ID).Error
+	return shop, r.DB.FirstOrInit(shop, "user_id = ?", obj.ID).Error
 }
 
 // AuthOps returns generated.AuthOpsResolver implementation.
@@ -134,20 +134,3 @@ type authOpsResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 type userResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//    it when you're done.
-//  - You have helper methods in this file. Move them out to keep these resolver files clean.
-func (r *queryResolver) UserGetByID(ctx context.Context, id string) (*model.User, error) {
-	user := new(model.User)
-
-	return user, r.DB.First(user, "id = ?", id).Error
-}
-func (r *queryResolver) UserGetByEmail(ctx context.Context, email string) (*model.User, error) {
-	user := new(model.User)
-
-	return user, r.DB.First(user, "email = ?", email).Error
-}

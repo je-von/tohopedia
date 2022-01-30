@@ -48,7 +48,14 @@ const Login: NextPage = () => {
   if (data) {
     console.log(data.auth.login.token)
     // localStorage.setItem('token', data.auth.login.token)
-    setCookies('token', data.auth.login.token, { maxAge: 60 * 60 * 2 }) // 2 hours
+
+    const remember_me = (document.getElementById('remember_me') as HTMLInputElement).checked
+    let time = 60 * 60 * 2 // 2 hours
+    if (remember_me) {
+      time = 60 * 60 * 24 * 365 * 5 // 5 years
+    }
+
+    setCookies('token', data.auth.login.token, { maxAge: time })
     router.reload()
   }
 

@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
 
 $primary-color: rgb(62, 171, 0);
-$normal-font-size: 0.9vw;
+$normal-font-size: 12px;
 
 * {
   padding: 0;
@@ -14,9 +14,9 @@ $normal-font-size: 0.9vw;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
   padding: 5px 20px;
+  font-size: $normal-font-size;
   .shipping-button {
     text-align: right;
-    font-size: $normal-font-size;
     color: grey;
     i {
       margin: 0 10px;
@@ -37,7 +37,6 @@ $normal-font-size: 0.9vw;
         padding: 4px 8px;
 
         input {
-          font-size: $normal-font-size;
           width: 100%;
           border: none;
         }
@@ -61,42 +60,64 @@ $normal-font-size: 0.9vw;
       color: grey;
       margin-left: 20px;
       cursor: pointer;
-      // flex-direction: row;
-      .dropdown {
-        // align-self: flex-end;
-        display: none;
-        position: absolute;
-        min-width: 200px;
-        background-color: white;
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-        padding: 20px;
-        z-index: 1;
-        top: 60px;
-        border-radius: 0 0 8px 8px;
+      i {
+        font-size: 14px;
       }
+      // flex-direction: row;
     }
-    .icon-button:hover .dropdown {
-      display: block;
+    .dropdown {
+      // align-self: flex-end;
+      visibility: none;
+      opacity: 0;
+      // display: none;
+      position: absolute;
+      min-width: 150px;
+      max-width: 200px;
+      background-color: white;
+      box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
+      padding: 20px 15px;
+      z-index: 1;
+      top: 60px;
+      border-radius: 0 0 8px 8px;
+      transition: opacity 400ms, visibility 400ms;
+
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+    }
+    .icon-button:hover .dropdown,
+    .profile-button:hover .dropdown {
+      // display: block;
+      visibility: visible;
+      opacity: 1;
     }
 
     .text-button {
       border-radius: 8px;
       border: 2px solid $primary-color;
-      padding: 3px 0;
+      padding: 3px;
       width: 5vw;
-      margin-left: 20px;
-      font-size: $normal-font-size;
-      a {
-        width: 100%;
-        text-align: center;
-        font-weight: bold;
-      }
+      // margin-left: 20px;
+      // a {
+      // width: 100%;
+      text-align: center;
+      font-weight: bold;
+      background-color: #ffffff;
+      color: $primary-color;
+
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      cursor: pointer;
+      // }
+    }
+    .text-button:hover {
+      background-color: #f1f1f1;
     }
     .left-content {
       a {
         margin-left: 20px;
         color: grey;
-        font-size: $normal-font-size;
       }
     }
     .right-content {
@@ -107,9 +128,9 @@ $normal-font-size: 0.9vw;
       .profile-button {
         display: flex;
         justify-content: center;
-        // margin-left: vw;
+        margin-left: 10px;
         height: 100%;
-        font-size: 11px;
+        // cursor: pointer;
         .profile-pic {
           margin-right: 5px;
           position: relative;

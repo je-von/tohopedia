@@ -3,17 +3,8 @@ import { ReactNode } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { gql, useQuery } from '@apollo/client'
-
-const Links = [
-  {
-    name: 'Home',
-    path: '/',
-  },
-  {
-    name: 'Login',
-    path: '/user/login',
-  },
-]
+import { getCookie, removeCookies } from 'cookies-next'
+import { useRouter } from 'next/router'
 
 const NavLink = ({ children, path, className }: { children: ReactNode; path: string; className: string }) => (
   <div className={className}>
@@ -22,6 +13,7 @@ const NavLink = ({ children, path, className }: { children: ReactNode; path: str
 )
 
 export default function Header() {
+  const router = useRouter()
   const query = gql`
     query tes {
       getCurrentUser {
@@ -30,6 +22,7 @@ export default function Header() {
         email
         profilePic
         shop {
+          id
           name
           profilePic
         }
@@ -46,6 +39,7 @@ export default function Header() {
   let user = null
   if (data && data.getCurrentUser) {
     user = data.getCurrentUser
+    console.log(user.shop)
   }
 
   return (
@@ -106,29 +100,70 @@ export default function Header() {
           <div className="right-content">
             {user ? (
               <>
-                <NavLink path="" className="profile-button">
+                {user.shop.id ? (
                   <>
-                    <div className="profile-pic">
-                      <Image src={user.shop.profilePic} alt="" layout="fill" objectFit="cover"></Image>
-                    </div>
-                    <p>{user.shop.name}</p>
+                    <NavLink path="" className="profile-button">
+                      <>
+                        <div className="profile-pic">
+                          <Image
+                            src={user.shop.profilePic ? user.shop.profilePic : '/asset/seller_no_logo.png'}
+                            alt=""
+                            layout="fill"
+                            objectFit="cover"
+                          ></Image>
+                        </div>
+                        <p>{user.shop.name}</p>
+                        <div className="dropdown">
+                          <p>Empty!</p>
+                        </div>
+                      </>
+                    </NavLink>
                   </>
-                </NavLink>
+                ) : (
+                  <>
+                    <NavLink path="" className="profile-button">
+                      <>
+                        <div className="profile-pic">
+                          <Image src="/asset/shopnophoto.png" alt="" layout="fill" objectFit="cover"></Image>
+                        </div>
+                        <p>Toko</p>
+                        <div className="dropdown">
+                          <p>You don&apos;t have any shop yet</p>
+                          <NavLink path="#" className="text-button">
+                            Open Shop
+                          </NavLink>
+                        </div>
+                      </>
+                    </NavLink>
+                  </>
+                )}
                 <NavLink path="" className="profile-button">
                   <>
                     <div className="profile-pic">
-                      <Image src={user.profilePic} alt="" layout="fill" objectFit="cover"></Image>
+                      <Image src={user.profilePic ? user.profilePic : '/asset/default_toped.jpg'} alt="" layout="fill" objectFit="cover"></Image>
                     </div>
                     <p>{user.name}</p>
+                    <div className="dropdown">
+                      <button
+                        className="text-button"
+                        onClick={() => {
+                          removeCookies('token')
+                          router.reload()
+                        }}
+                      >
+                        <i className="fal fa-sign-out"></i>
+                        <p>Logout</p>
+                      </button>
+                    </div>
                   </>
                 </NavLink>
               </>
             ) : (
               <>
-                <NavLink path="/user/login" className="text-button">
+                <NavLink path="/auth/login" className="text-button">
                   Login
                 </NavLink>
-                <NavLink path="/user/register" className="text-button">
+                <NavLink path="/auth/register" className="text-button">
                   Register
                 </NavLink>
               </>
