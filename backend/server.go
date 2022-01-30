@@ -8,12 +8,16 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/rs/cors"
+
 	"github.com/go-chi/chi/v5"
+	// "github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
+	"github.com/je-von/TPA-Web-JV/backend/directives"
 	"github.com/je-von/TPA-Web-JV/backend/graph"
 	"github.com/je-von/TPA-Web-JV/backend/graph/generated"
 	"github.com/je-von/TPA-Web-JV/backend/graph/model"
-	"github.com/rs/cors"
+	"github.com/je-von/TPA-Web-JV/backend/middlewares"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -29,11 +33,14 @@ func main() {
 	router := chi.NewRouter()
 
 	router.Use(cors.New(cors.Options{
+		AllowedHeaders:   []string{"*"},
 		AllowedOrigins:   []string{"http://localhost:3000", "http://localhost:8080"},
 		AllowOriginFunc:  func(origin string) bool { return true },
 		AllowCredentials: true,
 		Debug:            true,
-	}).Handler)
+	}).Handler, middlewares.AuthMiddleware)
+
+	// router.Use(middlewares.AuthMiddleware)
 
 	dsn := "root:@tcp(127.0.0.1:3306)/tohopedia-jv?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
@@ -48,14 +55,14 @@ func main() {
 	db.AutoMigrate(&model.Product{})
 	db.AutoMigrate(&model.ProductImage{})
 
+	c := generated.Config{
+		Resolvers: &graph.Resolver{
+			DB: db,
+		},
+	}
+	c.Directives.Auth = directives.Auth
 	srv := handler.NewDefaultServer(
-		generated.NewExecutableSchema(
-			generated.Config{
-				Resolvers: &graph.Resolver{
-					DB: db,
-				},
-			},
-		),
+		generated.NewExecutableSchema(c),
 	)
 	srv.AddTransport(&transport.Websocket{
 		Upgrader: websocket.Upgrader{

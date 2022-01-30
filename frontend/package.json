@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.5.8",
+    "cookies-next": "^2.0.3",
     "graphql": "^16.3.0",
     "image-to-base64": "^2.2.0",
     "iron-session": "^6.0.5",

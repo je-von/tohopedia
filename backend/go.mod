@@ -4,9 +4,11 @@ go 1.17
 
 require (
 	github.com/99designs/gqlgen v0.14.0
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-chi/chi/v5 v5.0.7
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/websocket v1.4.2
+	github.com/joho/godotenv v1.4.0
 	github.com/rs/cors v1.8.2
 	github.com/vektah/gqlparser/v2 v2.2.0
 	golang.org/x/crypto v0.0.0-20220126234351-aa10faf2a1f8

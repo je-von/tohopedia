@@ -6,6 +6,11 @@ import (
 	"time"
 )
 
+type AuthOps struct {
+	Login    interface{} `json:"login"`
+	Register interface{} `json:"register"`
+}
+
 type Category struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`

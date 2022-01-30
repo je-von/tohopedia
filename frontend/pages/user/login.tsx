@@ -10,7 +10,7 @@ import { redirect } from 'next/dist/server/api-utils'
 import { url } from 'inspector'
 import { useRouter } from 'next/router'
 import UserSession from '../../util/user-session'
-
+import { setCookies } from 'cookies-next'
 const Login: NextPage = () => {
   const router = useRouter()
   const [credential, setCredential] = useState([''])
@@ -33,17 +33,8 @@ const Login: NextPage = () => {
 
   const mutation = gql`
     mutation login($email: String!, $password: String!) {
-      login(email: $email, password: $password) {
-        id
-        name
-        email
-        #password
-        dob
-        phone
-        gender
-        role
-        profilePic
-        isSuspended
+      auth {
+        login(email: $email, password: $password)
       }
     }
   `
@@ -54,13 +45,11 @@ const Login: NextPage = () => {
     if (errorMsg != 'Invalid Email or Password!') setErrorMsg('Invalid Email or Password!')
   }
 
-  if (data && data.login) {
-    // console.log(data)
-    const user = data.login
-    console.log(user)
-    UserSession.setCurrentUser(user)
-    // alert('Welcome, ' + user.name + ' !')
-    router.push('/')
+  if (data) {
+    console.log(data.auth.login.token)
+    // localStorage.setItem('token', data.auth.login.token)
+    setCookies('token', data.auth.login.token, { maxAge: 60 * 60 * 2 }) // 2 hours
+    router.reload()
   }
 
   return (

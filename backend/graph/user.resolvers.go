@@ -10,7 +10,17 @@ import (
 	"github.com/google/uuid"
 	"github.com/je-von/TPA-Web-JV/backend/graph/generated"
 	"github.com/je-von/TPA-Web-JV/backend/graph/model"
+	"github.com/je-von/TPA-Web-JV/backend/service"
+	"github.com/vektah/gqlparser/v2/gqlerror"
 )
+
+func (r *authOpsResolver) Login(ctx context.Context, obj *model.AuthOps, email string, password string) (interface{}, error) {
+	return service.UserLogin(ctx, email, password)
+}
+
+func (r *authOpsResolver) Register(ctx context.Context, obj *model.AuthOps, input model.NewUser) (interface{}, error) {
+	return service.UserRegister(ctx, input)
+}
 
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (*model.User, error) {
 	password, err := model.HashPassword(input.Password)
@@ -58,20 +68,26 @@ func (r *mutationResolver) Login(ctx context.Context, email string, password str
 	return nil, nil
 }
 
-func (r *queryResolver) User(ctx context.Context, id *string, email *string, password *string) (*model.User, error) {
-	user := new(model.User)
+func (r *mutationResolver) Auth(ctx context.Context) (*model.AuthOps, error) {
+	return &model.AuthOps{}, nil
+}
 
-	if id != nil {
-		return user, r.DB.First(user, "id = ?", id).Error
-	}
+func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error) {
+	// user := new(model.User)
 
-	err := r.DB.First(user, "email = ?", email).Error
+	// if id != nil {
+	// return user, r.DB.First(user, "id = ?", id).Error
+	// }
 
-	if model.CheckPasswordHash(*password, user.Password) {
-		return user, err
-	}
+	// 	err := r.DB.First(user, "email = ?", email).Error
 
-	return nil, err
+	// 	if model.CheckPasswordHash(*password, user.Password) {
+	// 		return user, err
+	// 	}
+
+	// 	return nil, err
+
+	return service.UserGetByID(ctx, id)
 }
 
 func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
@@ -79,11 +95,31 @@ func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 	return models, r.DB.Find(&models).Error
 }
 
+func (r *queryResolver) GetCurrentUser(ctx context.Context) (*model.User, error) {
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	id := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	return service.UserGetByID(ctx, id)
+}
+
+func (r *queryResolver) Protected(ctx context.Context) (string, error) {
+	// fmt.Println(ctx.Value("auth").(*service.JwtCustomClaim).ID)
+	return "Success", nil
+}
+
 func (r *userResolver) Shop(ctx context.Context, obj *model.User) (*model.Shop, error) {
 	shop := new(model.Shop)
 
 	return shop, r.DB.First(shop, "user_id = ?", obj.ID).Error
 }
+
+// AuthOps returns generated.AuthOpsResolver implementation.
+func (r *Resolver) AuthOps() generated.AuthOpsResolver { return &authOpsResolver{r} }
 
 // Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
@@ -94,6 +130,24 @@ func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 // User returns generated.UserResolver implementation.
 func (r *Resolver) User() generated.UserResolver { return &userResolver{r} }
 
+type authOpsResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 type userResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//    it when you're done.
+//  - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *queryResolver) UserGetByID(ctx context.Context, id string) (*model.User, error) {
+	user := new(model.User)
+
+	return user, r.DB.First(user, "id = ?", id).Error
+}
+func (r *queryResolver) UserGetByEmail(ctx context.Context, email string) (*model.User, error) {
+	user := new(model.User)
+
+	return user, r.DB.First(user, "email = ?", email).Error
+}

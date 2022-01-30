@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"fmt"
 	"strconv"
 	"sync"
 	"sync/atomic"
@@ -36,6 +37,7 @@ type Config struct {
 }
 
 type ResolverRoot interface {
+	AuthOps() AuthOpsResolver
 	Mutation() MutationResolver
 	Product() ProductResolver
 	ProductImage() ProductImageResolver
@@ -45,15 +47,22 @@ type ResolverRoot interface {
 }
 
 type DirectiveRoot struct {
+	Auth func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
 }
 
 type ComplexityRoot struct {
+	AuthOps struct {
+		Login    func(childComplexity int, email string, password string) int
+		Register func(childComplexity int, input model.NewUser) int
+	}
+
 	Category struct {
 		ID   func(childComplexity int) int
 		Name func(childComplexity int) int
 	}
 
 	Mutation struct {
+		Auth               func(childComplexity int) int
 		CreateProduct      func(childComplexity int, input model.NewProduct, shopID string) int
 		CreateProductImage func(childComplexity int, image string, productID string) int
 		CreateShop         func(childComplexity int, input model.NewShop, userID string) int
@@ -83,14 +92,16 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Categories func(childComplexity int) int
-		Category   func(childComplexity int, id string) int
-		Product    func(childComplexity int, id string) int
-		Products   func(childComplexity int) int
-		Shop       func(childComplexity int, id *string, userID *string) int
-		Shops      func(childComplexity int) int
-		User       func(childComplexity int, id *string, email *string, password *string) int
-		Users      func(childComplexity int) int
+		Categories     func(childComplexity int) int
+		Category       func(childComplexity int, id string) int
+		GetCurrentUser func(childComplexity int) int
+		Product        func(childComplexity int, id string) int
+		Products       func(childComplexity int) int
+		Protected      func(childComplexity int) int
+		Shop           func(childComplexity int, id *string, userID *string) int
+		Shops          func(childComplexity int) int
+		User           func(childComplexity int, id string) int
+		Users          func(childComplexity int) int
 	}
 
 	Shop struct {
@@ -122,11 +133,16 @@ type ComplexityRoot struct {
 	}
 }
 
+type AuthOpsResolver interface {
+	Login(ctx context.Context, obj *model.AuthOps, email string, password string) (interface{}, error)
+	Register(ctx context.Context, obj *model.AuthOps, input model.NewUser) (interface{}, error)
+}
 type MutationResolver interface {
 	CreateUser(ctx context.Context, input model.NewUser) (*model.User, error)
 	UpdateUser(ctx context.Context, id string, input model.NewUser) (*model.User, error)
 	ToggleSuspend(ctx context.Context, id string) (*model.User, error)
 	Login(ctx context.Context, email string, password string) (*model.User, error)
+	Auth(ctx context.Context) (*model.AuthOps, error)
 	CreateProduct(ctx context.Context, input model.NewProduct, shopID string) (*model.Product, error)
 	CreateProductImage(ctx context.Context, image string, productID string) (*model.ProductImage, error)
 	CreateShop(ctx context.Context, input model.NewShop, userID string) (*model.Shop, error)
@@ -142,8 +158,10 @@ type ProductImageResolver interface {
 	Product(ctx context.Context, obj *model.ProductImage) (*model.Product, error)
 }
 type QueryResolver interface {
-	User(ctx context.Context, id *string, email *string, password *string) (*model.User, error)
+	User(ctx context.Context, id string) (*model.User, error)
 	Users(ctx context.Context) ([]*model.User, error)
+	GetCurrentUser(ctx context.Context) (*model.User, error)
+	Protected(ctx context.Context) (string, error)
 	Category(ctx context.Context, id string) (*model.Category, error)
 	Categories(ctx context.Context) ([]*model.Category, error)
 	Product(ctx context.Context, id string) (*model.Product, error)
@@ -173,6 +191,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	_ = ec
 	switch typeName + "." + field {
 
+	case "AuthOps.login":
+		if e.complexity.AuthOps.Login == nil {
+			break
+		}
+
+		args, err := ec.field_AuthOps_login_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.AuthOps.Login(childComplexity, args["email"].(string), args["password"].(string)), true
+
+	case "AuthOps.register":
+		if e.complexity.AuthOps.Register == nil {
+			break
+		}
+
+		args, err := ec.field_AuthOps_register_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.AuthOps.Register(childComplexity, args["input"].(model.NewUser)), true
+
 	case "Category.id":
 		if e.complexity.Category.ID == nil {
 			break
@@ -186,6 +228,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Category.Name(childComplexity), true
+
+	case "Mutation.auth":
+		if e.complexity.Mutation.Auth == nil {
+			break
+		}
+
+		return e.complexity.Mutation.Auth(childComplexity), true
 
 	case "Mutation.createProduct":
 		if e.complexity.Mutation.CreateProduct == nil {
@@ -386,6 +435,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Category(childComplexity, args["id"].(string)), true
 
+	case "Query.getCurrentUser":
+		if e.complexity.Query.GetCurrentUser == nil {
+			break
+		}
+
+		return e.complexity.Query.GetCurrentUser(childComplexity), true
+
 	case "Query.product":
 		if e.complexity.Query.Product == nil {
 			break
@@ -404,6 +460,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Products(childComplexity), true
+
+	case "Query.protected":
+		if e.complexity.Query.Protected == nil {
+			break
+		}
+
+		return e.complexity.Query.Protected(childComplexity), true
 
 	case "Query.shop":
 		if e.complexity.Query.Shop == nil {
@@ -434,7 +497,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.User(childComplexity, args["id"].(*string), args["email"].(*string), args["password"].(*string)), true
+		return e.complexity.Query.User(childComplexity, args["id"].(string)), true
 
 	case "Query.users":
 		if e.complexity.Query.Users == nil {
@@ -749,9 +812,10 @@ input NewShop {
 }
 `, BuiltIn: false},
 	{Name: "graph/user.graphqls", Input: `# directive @goField(forceResolver: Boolean, name: String) on INPUT_FIELD_DEFINITION | FIELD_DEFINITION
+directive @auth on FIELD_DEFINITION
 
 scalar Date
-
+scalar Any
 type User {
   id: ID!
   name: String!
@@ -766,12 +830,20 @@ type User {
   shop: Shop! @goField(forceResolver: true)
 }
 
-type Query {
-  user(id: ID, email: String, password: String): User!
-  users: [User!]!
+type AuthOps {
+  login(email: String!, password: String!): Any! @goField(forceResolver: true)
+  register(input: NewUser!): Any! @goField(forceResolver: true)
+}
 
-  # shop(id: ID, userID: ID): Shop!
-  # shops: [Shop!]!
+type Query {
+  user(id: ID!): User! @goField(forceResolver: true)
+  # user(id: ID, email: String, password: String): User!
+  users: [User!]!
+  # userGetByID(id: ID!): User!
+  # userGetByEmail(email: String!): User!
+
+  getCurrentUser: User! @goField(forceResolver: true) @auth
+  protected: String! @goField(forceResolver: true) @auth
 }
 
 type Mutation {
@@ -780,8 +852,7 @@ type Mutation {
   toggleSuspend(id: ID!): User! # block / unblock
   login(email: String!, password: String!): User!
 
-  # createShop(input: NewShop!, userID: ID!): Shop!
-  # updateShop(id: ID!, input: NewShop!): Shop!
+  auth: AuthOps! @goField(forceResolver: true)
 }
 
 input NewUser {
@@ -801,6 +872,45 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
+
+func (ec *executionContext) field_AuthOps_login_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["email"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("email"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["email"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["password"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("password"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["password"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_AuthOps_register_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.NewUser
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNNewUser2githubᚗcomᚋjeᚑvonᚋTPAᚑWebᚑJVᚋbackendᚋgraphᚋmodelᚐNewUser(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
 
 func (ec *executionContext) field_Mutation_createProductImage_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
@@ -1048,33 +1158,15 @@ func (ec *executionContext) field_Query_shop_args(ctx context.Context, rawArgs m
 func (ec *executionContext) field_Query_user_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *string
+	var arg0 string
 	if tmp, ok := rawArgs["id"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalOID2ᚖstring(ctx, tmp)
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
 	args["id"] = arg0
-	var arg1 *string
-	if tmp, ok := rawArgs["email"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("email"))
-		arg1, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["email"] = arg1
-	var arg2 *string
-	if tmp, ok := rawArgs["password"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("password"))
-		arg2, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["password"] = arg2
 	return args, nil
 }
 
@@ -1115,6 +1207,90 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 // endregion ************************** directives.gotpl **************************
 
 // region    **************************** field.gotpl *****************************
+
+func (ec *executionContext) _AuthOps_login(ctx context.Context, field graphql.CollectedField, obj *model.AuthOps) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "AuthOps",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_AuthOps_login_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.AuthOps().Login(rctx, obj, args["email"].(string), args["password"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(interface{})
+	fc.Result = res
+	return ec.marshalNAny2interface(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _AuthOps_register(ctx context.Context, field graphql.CollectedField, obj *model.AuthOps) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "AuthOps",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_AuthOps_register_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.AuthOps().Register(rctx, obj, args["input"].(model.NewUser))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(interface{})
+	fc.Result = res
+	return ec.marshalNAny2interface(ctx, field.Selections, res)
+}
 
 func (ec *executionContext) _Category_id(ctx context.Context, field graphql.CollectedField, obj *model.Category) (ret graphql.Marshaler) {
 	defer func() {
@@ -1352,6 +1528,41 @@ func (ec *executionContext) _Mutation_login(ctx context.Context, field graphql.C
 	res := resTmp.(*model.User)
 	fc.Result = res
 	return ec.marshalNUser2ᚖgithubᚗcomᚋjeᚑvonᚋTPAᚑWebᚑJVᚋbackendᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_auth(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().Auth(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.AuthOps)
+	fc.Result = res
+	return ec.marshalNAuthOps2ᚖgithubᚗcomᚋjeᚑvonᚋTPAᚑWebᚑJVᚋbackendᚋgraphᚋmodelᚐAuthOps(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_createProduct(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -1967,7 +2178,7 @@ func (ec *executionContext) _Query_user(ctx context.Context, field graphql.Colle
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().User(rctx, args["id"].(*string), args["email"].(*string), args["password"].(*string))
+		return ec.resolvers.Query().User(rctx, args["id"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2017,6 +2228,116 @@ func (ec *executionContext) _Query_users(ctx context.Context, field graphql.Coll
 	res := resTmp.([]*model.User)
 	fc.Result = res
 	return ec.marshalNUser2ᚕᚖgithubᚗcomᚋjeᚑvonᚋTPAᚑWebᚑJVᚋbackendᚋgraphᚋmodelᚐUserᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_getCurrentUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Query().GetCurrentUser(rctx)
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.Auth == nil {
+				return nil, errors.New("directive auth is not implemented")
+			}
+			return ec.directives.Auth(ctx, nil, directive0)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.User); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/je-von/TPA-Web-JV/backend/graph/model.User`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.User)
+	fc.Result = res
+	return ec.marshalNUser2ᚖgithubᚗcomᚋjeᚑvonᚋTPAᚑWebᚑJVᚋbackendᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_protected(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Query().Protected(rctx)
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.Auth == nil {
+				return nil, errors.New("directive auth is not implemented")
+			}
+			return ec.directives.Auth(ctx, nil, directive0)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(string); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be string`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_category(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -4450,6 +4771,56 @@ func (ec *executionContext) unmarshalInputNewUser(ctx context.Context, obj inter
 
 // region    **************************** object.gotpl ****************************
 
+var authOpsImplementors = []string{"AuthOps"}
+
+func (ec *executionContext) _AuthOps(ctx context.Context, sel ast.SelectionSet, obj *model.AuthOps) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, authOpsImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("AuthOps")
+		case "login":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._AuthOps_login(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "register":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._AuthOps_register(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var categoryImplementors = []string{"Category"}
 
 func (ec *executionContext) _Category(ctx context.Context, sel ast.SelectionSet, obj *model.Category) graphql.Marshaler {
@@ -4514,6 +4885,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "login":
 			out.Values[i] = ec._Mutation_login(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "auth":
+			out.Values[i] = ec._Mutation_auth(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -4726,6 +5102,34 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_users(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "getCurrentUser":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_getCurrentUser(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "protected":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_protected(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -5251,6 +5655,41 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 // endregion **************************** object.gotpl ****************************
 
 // region    ***************************** type.gotpl *****************************
+
+func (ec *executionContext) unmarshalNAny2interface(ctx context.Context, v interface{}) (interface{}, error) {
+	res, err := graphql.UnmarshalAny(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNAny2interface(ctx context.Context, sel ast.SelectionSet, v interface{}) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := graphql.MarshalAny(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) marshalNAuthOps2githubᚗcomᚋjeᚑvonᚋTPAᚑWebᚑJVᚋbackendᚋgraphᚋmodelᚐAuthOps(ctx context.Context, sel ast.SelectionSet, v model.AuthOps) graphql.Marshaler {
+	return ec._AuthOps(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNAuthOps2ᚖgithubᚗcomᚋjeᚑvonᚋTPAᚑWebᚑJVᚋbackendᚋgraphᚋmodelᚐAuthOps(ctx context.Context, sel ast.SelectionSet, v *model.AuthOps) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._AuthOps(ctx, sel, v)
+}
 
 func (ec *executionContext) unmarshalNBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
 	res, err := graphql.UnmarshalBoolean(v)

@@ -16,8 +16,8 @@ const Home: NextPage = () => {
   // console.log(faker.commerce.productName())
   // console.log(faker.datatype.number({ min: 1000, max: 10000000 }))
   // console.log(faker.datatype.float({ min: 0, max: 0.7, precision: 0.15 }))
-  let u = UserSession.getCurrentUser()
-
+  // const u = UserSession.getCurrentUser()
+  // console.log(u)
   // const [products, setProducts] = useState([])
 
   // const handleSubmit = () => {
@@ -96,6 +96,11 @@ const Home: NextPage = () => {
   //   console.log(str)
   // }
   // console.log(d.createProduct.id)
+
+  // const { loading: l, error: e, data: d } = useQuery(UserSession.getQuery())
+  // if (d) {
+  //   console.log(d)
+  // }
 
   const query = gql`
     query products {

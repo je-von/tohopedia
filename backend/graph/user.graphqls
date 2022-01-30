@@ -1,7 +1,8 @@
 # directive @goField(forceResolver: Boolean, name: String) on INPUT_FIELD_DEFINITION | FIELD_DEFINITION
+directive @auth on FIELD_DEFINITION
 
 scalar Date
-
+scalar Any
 type User {
   id: ID!
   name: String!
@@ -16,12 +17,20 @@ type User {
   shop: Shop! @goField(forceResolver: true)
 }
 
-type Query {
-  user(id: ID, email: String, password: String): User!
-  users: [User!]!
+type AuthOps {
+  login(email: String!, password: String!): Any! @goField(forceResolver: true)
+  register(input: NewUser!): Any! @goField(forceResolver: true)
+}
 
-  # shop(id: ID, userID: ID): Shop!
-  # shops: [Shop!]!
+type Query {
+  user(id: ID!): User! @goField(forceResolver: true)
+  # user(id: ID, email: String, password: String): User!
+  users: [User!]!
+  # userGetByID(id: ID!): User!
+  # userGetByEmail(email: String!): User!
+
+  getCurrentUser: User! @goField(forceResolver: true) @auth
+  protected: String! @goField(forceResolver: true) @auth
 }
 
 type Mutation {
@@ -30,8 +39,7 @@ type Mutation {
   toggleSuspend(id: ID!): User! # block / unblock
   login(email: String!, password: String!): User!
 
-  # createShop(input: NewShop!, userID: ID!): Shop!
-  # updateShop(id: ID!, input: NewShop!): Shop!
+  auth: AuthOps! @goField(forceResolver: true)
 }
 
 input NewUser {
