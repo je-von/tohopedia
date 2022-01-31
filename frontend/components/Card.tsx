@@ -2,6 +2,7 @@ import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
 import React, { ReactNode } from 'react'
+import { links } from '../util/route-links'
 
 interface Product {
   productID: string
@@ -12,9 +13,8 @@ interface Product {
 }
 
 const Card = ({ productID, image, name, price, shop }: Product) => {
-  const url = '/product?id=' + productID
   return (
-    <Link href={url} passHref>
+    <Link href={links.productDetail(productID)} passHref>
       <div className="card">
         <div className="card-image">
           <Image src={image} alt="image" layout="fill" objectFit="cover"></Image>

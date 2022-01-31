@@ -81,6 +81,11 @@ func (r *shopResolver) User(ctx context.Context, obj *model.Shop) (*model.User, 
 	return user, r.DB.First(user, "id = ?", obj.UserID).Error
 }
 
+func (r *shopResolver) Products(ctx context.Context, obj *model.Shop) ([]*model.Product, error) {
+	var models []*model.Product
+	return models, r.DB.Where("shop_id = ?", obj.ID).Find(&models).Error
+}
+
 // Shop returns generated.ShopResolver implementation.
 func (r *Resolver) Shop() generated.ShopResolver { return &shopResolver{r} }
 

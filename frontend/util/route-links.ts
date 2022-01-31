@@ -6,4 +6,7 @@ export const links = {
   shopDetail: (slug: string) => {
     return '/shop/' + slug
   },
+  productDetail: (productID: string) => {
+    return '/product/' + productID
+  },
 }

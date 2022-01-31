@@ -10,6 +10,7 @@ type Product struct {
 	Price       int             `json:"price"`
 	Discount    float64         `json:"discount"`
 	Metadata    string          `json:"metadata"`
+	Stock       int             `json:"stock"`
 	CreatedAt   time.Time       `json:"createdAt"`
 	CategoryID  string          `json:"categoryID" gorm:"size:191"`
 	Category    *Category       `json:"category"`

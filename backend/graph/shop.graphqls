@@ -15,6 +15,7 @@ type Shop {
   operationalStatus: String! # open / closed
   reputationPoints: Int!
   user: User! @goField(forceResolver: true)
+  products: [Product!]! @goField(forceResolver: true)
 }
 
 extend type Query {

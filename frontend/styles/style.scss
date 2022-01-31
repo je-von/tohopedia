@@ -9,6 +9,21 @@ $normal-font-size: 12px;
   font-family: 'Poppins', -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
     sans-serif;
 }
+input,
+select {
+  border-radius: 8px;
+  padding: 8px;
+  margin-top: 5px;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+}
+.multi-input {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  .multi-input-item {
+    width: 48%;
+  }
+}
 .text-button {
   border-radius: 8px;
   border: 2px solid $primary-color;
@@ -61,6 +76,7 @@ $normal-font-size: 12px;
         input {
           width: 100%;
           border: none;
+          padding: 0;
         }
         input:focus {
           outline: none;
@@ -161,8 +177,9 @@ a {
   // height: 100vh;
   width: 100vw;
   display: flex;
+  flex-direction: column;
   justify-content: center;
-  // align-items: center;
+  align-items: center;
 }
 
 .form-container {
@@ -199,20 +216,6 @@ a {
       flex-direction: column;
       margin-top: 25px;
     }
-    .multi-input {
-      display: flex;
-      justify-content: space-between;
-      .multi-input-item {
-        width: 48%;
-      }
-    }
-    input,
-    select {
-      border-radius: 8px;
-      padding: 8px;
-      margin-top: 5px;
-      border: 1px solid rgba(0, 0, 0, 0.3);
-    }
 
     button {
       margin-top: 50px;
@@ -239,6 +242,7 @@ a {
   justify-content: space-around;
   width: 70vw;
   .card {
+    cursor: pointer;
     flex: 1 1 150px;
     border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -291,14 +295,14 @@ a {
 
 .shop-container {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 40px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
   height: fit-content;
-  width: 40vw;
-  padding: 30px 0;
+  width: 67vw;
+  padding: 30px;
   margin: 5vh 0;
   .shop-image {
     width: 5vw;
@@ -324,6 +328,110 @@ a {
       color: grey;
       font-size: 14px;
       margin: 5px 0;
+    }
+  }
+}
+
+.product-container {
+  margin: 5vh 0;
+  width: 80vw;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  .product-detail {
+    // width: 40vw;
+    padding: 0 20px;
+    .product-price {
+      margin: 6px 0;
+    }
+    .product-description {
+      margin: 10px 0;
+      text-align: justify;
+      white-space: pre-wrap;
+      b {
+        color: $primary-color;
+      }
+    }
+  }
+  .product-action {
+    height: fit-content;
+    border: 1px solid #c7c6c6;
+    border-radius: 8px;
+    padding: 10px;
+    min-width: max-content;
+    .product-button {
+      button {
+        width: 100%;
+        margin: 10px 0;
+      }
+    }
+    .subtotal {
+      margin: 10px 0;
+      b {
+        width: fit-content;
+        margin-left: 10px;
+      }
+    }
+    .notes {
+      input {
+        width: 100%;
+      }
+    }
+    .action-footer {
+      display: flex;
+      color: grey;
+      margin-top: 20px;
+      .footer-links {
+        cursor: pointer;
+        margin: 0 5px;
+        display: flex;
+        align-items: center;
+        i {
+          margin-right: 5px;
+        }
+      }
+    }
+  }
+  .product-image {
+    position: relative;
+    width: 20vw;
+
+    .carousel-container {
+      margin: 20px;
+      width: 20vw;
+    }
+
+    .selected-image {
+      width: 90%;
+      height: 15vw;
+      margin-bottom: 8px;
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-size: contain;
+    }
+
+    .carousel {
+      position: relative;
+    }
+
+    .carousel-images {
+      display: flex;
+      max-width: 90%;
+      overflow-x: hidden;
+    }
+
+    .carousel-image-selected {
+      border: 3px solid #ffa700 !important;
+    }
+
+    .carousel-image {
+      margin-right: 10px;
+      height: 5vw;
+      min-width: 5vw;
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-size: cover;
+      border-radius: 8px;
     }
   }
 }

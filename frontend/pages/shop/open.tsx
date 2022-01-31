@@ -78,7 +78,7 @@ const OpenShop: NextPage = () => {
     UserSession.setCurrentUser(user)
   }
 
-  if (user.shop.id) {
+  if (!user || user.shop.id) {
     router.push('/')
     return <></>
   }

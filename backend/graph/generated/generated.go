@@ -84,6 +84,7 @@ type ComplexityRoot struct {
 		Name        func(childComplexity int) int
 		Price       func(childComplexity int) int
 		Shop        func(childComplexity int) int
+		Stock       func(childComplexity int) int
 	}
 
 	ProductImage struct {
@@ -115,6 +116,7 @@ type ComplexityRoot struct {
 		NameSlug          func(childComplexity int) int
 		OpenTime          func(childComplexity int) int
 		OperationalStatus func(childComplexity int) int
+		Products          func(childComplexity int) int
 		ProfilePic        func(childComplexity int) int
 		ReputationPoints  func(childComplexity int) int
 		Slogan            func(childComplexity int) int
@@ -175,6 +177,7 @@ type QueryResolver interface {
 }
 type ShopResolver interface {
 	User(ctx context.Context, obj *model.Shop) (*model.User, error)
+	Products(ctx context.Context, obj *model.Shop) ([]*model.Product, error)
 }
 type UserResolver interface {
 	Shop(ctx context.Context, obj *model.User) (*model.Shop, error)
@@ -406,6 +409,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Product.Shop(childComplexity), true
 
+	case "Product.stock":
+		if e.complexity.Product.Stock == nil {
+			break
+		}
+
+		return e.complexity.Product.Stock(childComplexity), true
+
 	case "ProductImage.id":
 		if e.complexity.ProductImage.ID == nil {
 			break
@@ -585,6 +595,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Shop.OperationalStatus(childComplexity), true
 
+	case "Shop.products":
+		if e.complexity.Shop.Products == nil {
+			break
+		}
+
+		return e.complexity.Shop.Products(childComplexity), true
+
 	case "Shop.profilePic":
 		if e.complexity.Shop.ProfilePic == nil {
 			break
@@ -763,6 +780,7 @@ type Product {
   description: String!
   price: Int!
   discount: Float!
+  stock: Int!
   #   metadata: Map!
   metadata: String!
   createdAt: Time!
@@ -799,6 +817,7 @@ input NewProduct {
   price: Int!
   discount: Float!
   metadata: String!
+  stock: Int!
   categoryID: ID!
 }
 `, BuiltIn: false},
@@ -819,6 +838,7 @@ type Shop {
   operationalStatus: String! # open / closed
   reputationPoints: Int!
   user: User! @goField(forceResolver: true)
+  products: [Product!]! @goField(forceResolver: true)
 }
 
 extend type Query {
@@ -2001,6 +2021,41 @@ func (ec *executionContext) _Product_discount(ctx context.Context, field graphql
 	res := resTmp.(float64)
 	fc.Result = res
 	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Product_stock(ctx context.Context, field graphql.CollectedField, obj *model.Product) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Product",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Stock, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Product_metadata(ctx context.Context, field graphql.CollectedField, obj *model.Product) (ret graphql.Marshaler) {
@@ -3197,6 +3252,41 @@ func (ec *executionContext) _Shop_user(ctx context.Context, field graphql.Collec
 	res := resTmp.(*model.User)
 	fc.Result = res
 	return ec.marshalNUser2ᚖgithubᚗcomᚋjeᚑvonᚋTPAᚑWebᚑJVᚋbackendᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Shop_products(ctx context.Context, field graphql.CollectedField, obj *model.Shop) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Shop",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Shop().Products(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Product)
+	fc.Result = res
+	return ec.marshalNProduct2ᚕᚖgithubᚗcomᚋjeᚑvonᚋTPAᚑWebᚑJVᚋbackendᚋgraphᚋmodelᚐProductᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _User_id(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
@@ -4755,6 +4845,14 @@ func (ec *executionContext) unmarshalInputNewProduct(ctx context.Context, obj in
 			if err != nil {
 				return it, err
 			}
+		case "stock":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("stock"))
+			it.Stock, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		case "categoryID":
 			var err error
 
@@ -5146,6 +5244,11 @@ func (ec *executionContext) _Product(ctx context.Context, sel ast.SelectionSet, 
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
+		case "stock":
+			out.Values[i] = ec._Product_stock(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
 		case "metadata":
 			out.Values[i] = ec._Product_metadata(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -5500,6 +5603,20 @@ func (ec *executionContext) _Shop(ctx context.Context, sel ast.SelectionSet, obj
 					}
 				}()
 				res = ec._Shop_user(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "products":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Shop_products(ctx, field, obj)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}

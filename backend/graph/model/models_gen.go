@@ -22,6 +22,7 @@ type NewProduct struct {
 	Price       int     `json:"price"`
 	Discount    float64 `json:"discount"`
 	Metadata    string  `json:"metadata"`
+	Stock       int     `json:"stock"`
 	CategoryID  string  `json:"categoryID"`
 }
 

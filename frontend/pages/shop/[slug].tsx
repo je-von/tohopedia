@@ -12,6 +12,7 @@ import { useRouter } from 'next/router'
 import { convertToBase64 } from '../../util/convert-base64'
 import UserSession from '../../util/user-session'
 import { convertPointsToBadge } from '../../util/shop-badge'
+import Card from '../../components/Card'
 
 const ShopDetail: NextPage = () => {
   const router = useRouter()
@@ -26,6 +27,14 @@ const ShopDetail: NextPage = () => {
         reputationPoints
         slogan
         description
+        products {
+          id
+          price
+          name
+          images {
+            image
+          }
+        }
       }
     }
   `
@@ -40,7 +49,7 @@ const ShopDetail: NextPage = () => {
     return <>{error.message}</>
   }
 
-  let shop = null
+  let shop: any = null
   if (data && data.shopBySlug) {
     shop = data.shopBySlug
   }
@@ -64,6 +73,18 @@ const ShopDetail: NextPage = () => {
             </p>
             <p className="shop-desc">{shop.description}</p>
           </div>
+        </div>
+        <div className="card-container">
+          {shop.products.map((p: any) => (
+            <Card
+              key={p.id}
+              image={p.images.length > 0 ? p.images[0].image : '/asset/no-image.png'}
+              productID={p.id}
+              price={p.price}
+              name={p.name}
+              shop={shop.name}
+            ></Card>
+          ))}
         </div>
       </div>
     </Layout>

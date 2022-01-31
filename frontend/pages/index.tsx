@@ -58,6 +58,7 @@ const Home: NextPage = () => {
   //         metadata: '-',
   //         categoryID: categoryID,
   //         shopID: shopID,
+  //         stock: faker.datatype.number({ min: 1, max: 150 }),
   //       },
   //     })
 
@@ -82,9 +83,18 @@ const Home: NextPage = () => {
   //     $metadata: String!
   //     $categoryID: ID!
   //     $shopID: ID!
+  //     $stock: Int!
   //   ) {
   //     createProduct(
-  //       input: { name: $name, description: $description, price: $price, discount: $discount, metadata: $metadata, categoryID: $categoryID }
+  //       input: {
+  //         name: $name
+  //         description: $description
+  //         price: $price
+  //         discount: $discount
+  //         metadata: $metadata
+  //         categoryID: $categoryID
+  //         stock: $stock
+  //       }
   //       shopID: $shopID
   //     ) {
   //       id
