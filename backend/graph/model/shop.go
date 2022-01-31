@@ -13,6 +13,7 @@ type Shop struct {
 	OpenTime          time.Time `json:"openTime"`
 	CloseTime         time.Time `json:"closeTime"`
 	OperationalStatus string    `json:"operationalStatus"`
+	ReputationPoints  int       `json:"reputationPoints"`
 	UserID            string    `json:"userID" gorm:"size:191"`
 	User              *User     `json:"user"`
 }

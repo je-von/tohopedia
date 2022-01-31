@@ -13,6 +13,7 @@ type Shop {
   openTime: Time!
   closeTime: Time!
   operationalStatus: String! # open / closed
+  reputationPoints: Int!
   user: User! @goField(forceResolver: true)
 }
 
@@ -22,7 +23,7 @@ extend type Query {
 }
 
 extend type Mutation {
-  createShop(input: NewShop!, userID: ID!): Shop!
+  createShop(input: NewShop!): Shop! @auth
   updateShop(id: ID!, input: NewShop!): Shop!
 }
 
@@ -35,5 +36,6 @@ input NewShop {
   profilePic: String!
   openTime: Time!
   closeTime: Time!
+  # reputationPoints: Int!
   operationalStatus: String!
 }

@@ -65,7 +65,7 @@ type ComplexityRoot struct {
 		Auth               func(childComplexity int) int
 		CreateProduct      func(childComplexity int, input model.NewProduct, shopID string) int
 		CreateProductImage func(childComplexity int, image string, productID string) int
-		CreateShop         func(childComplexity int, input model.NewShop, userID string) int
+		CreateShop         func(childComplexity int, input model.NewShop) int
 		CreateUser         func(childComplexity int, input model.NewUser) int
 		Login              func(childComplexity int, email string, password string) int
 		ToggleSuspend      func(childComplexity int, id string) int
@@ -75,6 +75,7 @@ type ComplexityRoot struct {
 
 	Product struct {
 		Category    func(childComplexity int) int
+		CreatedAt   func(childComplexity int) int
 		Description func(childComplexity int) int
 		Discount    func(childComplexity int) int
 		ID          func(childComplexity int) int
@@ -114,6 +115,7 @@ type ComplexityRoot struct {
 		OpenTime          func(childComplexity int) int
 		OperationalStatus func(childComplexity int) int
 		ProfilePic        func(childComplexity int) int
+		ReputationPoints  func(childComplexity int) int
 		Slogan            func(childComplexity int) int
 		User              func(childComplexity int) int
 	}
@@ -145,7 +147,7 @@ type MutationResolver interface {
 	Auth(ctx context.Context) (*model.AuthOps, error)
 	CreateProduct(ctx context.Context, input model.NewProduct, shopID string) (*model.Product, error)
 	CreateProductImage(ctx context.Context, image string, productID string) (*model.ProductImage, error)
-	CreateShop(ctx context.Context, input model.NewShop, userID string) (*model.Shop, error)
+	CreateShop(ctx context.Context, input model.NewShop) (*model.Shop, error)
 	UpdateShop(ctx context.Context, id string, input model.NewShop) (*model.Shop, error)
 }
 type ProductResolver interface {
@@ -270,7 +272,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateShop(childComplexity, args["input"].(model.NewShop), args["userID"].(string)), true
+		return e.complexity.Mutation.CreateShop(childComplexity, args["input"].(model.NewShop)), true
 
 	case "Mutation.createUser":
 		if e.complexity.Mutation.CreateUser == nil {
@@ -338,6 +340,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Product.Category(childComplexity), true
+
+	case "Product.createdAt":
+		if e.complexity.Product.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Product.CreatedAt(childComplexity), true
 
 	case "Product.description":
 		if e.complexity.Product.Description == nil {
@@ -569,6 +578,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Shop.ProfilePic(childComplexity), true
 
+	case "Shop.reputationPoints":
+		if e.complexity.Shop.ReputationPoints == nil {
+			break
+		}
+
+		return e.complexity.Shop.ReputationPoints(childComplexity), true
+
 	case "Shop.slogan":
 		if e.complexity.Shop.Slogan == nil {
 			break
@@ -725,7 +741,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 
 var sources = []*ast.Source{
 	{Name: "graph/product.graphqls", Input: `# scalar Map
-
+# scalar Time
 type Product {
   id: ID!
   name: String!
@@ -735,6 +751,7 @@ type Product {
   discount: Float!
   #   metadata: Map!
   metadata: String!
+  createdAt: Time!
   category: Category! @goField(forceResolver: true)
   shop: Shop! @goField(forceResolver: true)
 }
@@ -786,6 +803,7 @@ type Shop {
   openTime: Time!
   closeTime: Time!
   operationalStatus: String! # open / closed
+  reputationPoints: Int!
   user: User! @goField(forceResolver: true)
 }
 
@@ -795,7 +813,7 @@ extend type Query {
 }
 
 extend type Mutation {
-  createShop(input: NewShop!, userID: ID!): Shop!
+  createShop(input: NewShop!): Shop! @auth
   updateShop(id: ID!, input: NewShop!): Shop!
 }
 
@@ -808,6 +826,7 @@ input NewShop {
   profilePic: String!
   openTime: Time!
   closeTime: Time!
+  # reputationPoints: Int!
   operationalStatus: String!
 }
 `, BuiltIn: false},
@@ -972,15 +991,6 @@ func (ec *executionContext) field_Mutation_createShop_args(ctx context.Context, 
 		}
 	}
 	args["input"] = arg0
-	var arg1 string
-	if tmp, ok := rawArgs["userID"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userID"))
-		arg1, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["userID"] = arg1
 	return args, nil
 }
 
@@ -1673,8 +1683,28 @@ func (ec *executionContext) _Mutation_createShop(ctx context.Context, field grap
 	}
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateShop(rctx, args["input"].(model.NewShop), args["userID"].(string))
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().CreateShop(rctx, args["input"].(model.NewShop))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.Auth == nil {
+				return nil, errors.New("directive auth is not implemented")
+			}
+			return ec.directives.Auth(ctx, nil, directive0)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.Shop); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/je-von/TPA-Web-JV/backend/graph/model.Shop`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1976,6 +2006,41 @@ func (ec *executionContext) _Product_metadata(ctx context.Context, field graphql
 	res := resTmp.(string)
 	fc.Result = res
 	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Product_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.Product) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Product",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Product_category(ctx context.Context, field graphql.CollectedField, obj *model.Product) (ret graphql.Marshaler) {
@@ -2990,6 +3055,41 @@ func (ec *executionContext) _Shop_operationalStatus(ctx context.Context, field g
 	res := resTmp.(string)
 	fc.Result = res
 	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Shop_reputationPoints(ctx context.Context, field graphql.CollectedField, obj *model.Shop) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Shop",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ReputationPoints, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Shop_user(ctx context.Context, field graphql.CollectedField, obj *model.Shop) (ret graphql.Marshaler) {
@@ -4979,6 +5079,11 @@ func (ec *executionContext) _Product(ctx context.Context, sel ast.SelectionSet, 
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
+		case "createdAt":
+			out.Values[i] = ec._Product_createdAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
 		case "category":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -5292,6 +5397,11 @@ func (ec *executionContext) _Shop(ctx context.Context, sel ast.SelectionSet, obj
 			}
 		case "operationalStatus":
 			out.Values[i] = ec._Shop_operationalStatus(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "reputationPoints":
+			out.Values[i] = ec._Shop_reputationPoints(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}

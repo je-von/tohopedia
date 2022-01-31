@@ -5,6 +5,7 @@ package graph
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/je-von/TPA-Web-JV/backend/graph/generated"
@@ -21,6 +22,7 @@ func (r *mutationResolver) CreateProduct(ctx context.Context, input model.NewPro
 		Metadata:    input.Metadata,
 		CategoryID:  input.CategoryID,
 		ShopID:      shopID,
+		CreatedAt:   time.Now(),
 	}
 
 	return model, r.DB.Create(model).Error

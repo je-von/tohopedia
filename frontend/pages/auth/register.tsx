@@ -29,9 +29,13 @@ const Register: NextPage = () => {
     let gender = (document.getElementById('gender') as HTMLInputElement).value
     let dob = (document.getElementById('dob') as HTMLInputElement).value
 
-    createUser({
-      variables: { name: name, email: email, password: password, phone: phone, gender: gender, dob: dob, profilePic: profilePic, role: 'User' },
-    })
+    if (!name || !password || !phone || !gender || !dob) {
+      setErrorMsg('All field must be filled!')
+    } else {
+      createUser({
+        variables: { name: name, email: email, password: password, phone: phone, gender: gender, dob: dob, profilePic: profilePic, role: 'User' },
+      })
+    }
   }
   const handleFirstSubmit = async () => {
     // if (!hasVerified) {
@@ -62,7 +66,7 @@ const Register: NextPage = () => {
                 </div>
                 <div className="form-input">
                   <label htmlFor="name">Full Name</label>
-                  <input type="text" id="name" name="name" placeholder="Bambang Pamungkas" required />
+                  <input type="text" id="name" name="name" placeholder="Full Name" required />
                 </div>
                 <div className="form-input">
                   <label htmlFor="password">Password</label>

@@ -157,7 +157,8 @@ a {
 }
 
 .main-container {
-  height: 100vh;
+  min-height: fit-content;
+  // height: 100vh;
   width: 100vw;
   display: flex;
   justify-content: center;
@@ -197,6 +198,13 @@ a {
       display: flex;
       flex-direction: column;
       margin-top: 25px;
+    }
+    .multi-input {
+      display: flex;
+      justify-content: space-between;
+      .multi-input-item {
+        width: 48%;
+      }
     }
     input,
     select {

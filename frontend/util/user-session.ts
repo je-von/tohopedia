@@ -4,30 +4,18 @@ import client from './apollo-client'
 var UserSession = (function () {
   let u: any
 
-  var getCurrentUser = async function () {
-    let data = null
-    await client
-      .query({
-        query: gql`
-          query tes {
-            getCurrentUser {
-              id
-              name
-              email
-            }
-          }
-        `,
-      })
-      .then((d) => {
-        // console.log(d)
-        data = d.data.getCurrentUser
-        // console.log(data)
-      })
-    return data
+  var getCurrentUser = function () {
+    return u
+  }
+
+  var setCurrentUser = function (user: any) {
+    u = user
+    console.log(u)
   }
 
   return {
     getCurrentUser: getCurrentUser,
+    setCurrentUser: setCurrentUser,
   }
 })()
 

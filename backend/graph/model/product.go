@@ -1,5 +1,7 @@
 package model
 
+import "time"
+
 type Product struct {
 	ID          string          `json:"id"`
 	Name        string          `json:"name"`
@@ -8,6 +10,7 @@ type Product struct {
 	Price       int             `json:"price"`
 	Discount    float64         `json:"discount"`
 	Metadata    string          `json:"metadata"`
+	CreatedAt   time.Time       `json:"createdAt"`
 	CategoryID  string          `json:"categoryID" gorm:"size:191"`
 	Category    *Category       `json:"category"`
 	ShopID      string          `json:"shopID" gorm:"size:191"`

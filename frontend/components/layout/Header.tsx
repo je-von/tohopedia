@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { gql, useQuery } from '@apollo/client'
 import { getCookie, removeCookies } from 'cookies-next'
 import { useRouter } from 'next/router'
+import UserSession from '../../util/user-session'
 
 const NavLink = ({ children, path, className }: { children: ReactNode; path: string; className: string }) => (
   <div className={className}>
@@ -39,6 +40,7 @@ export default function Header() {
   let user = null
   if (data && data.getCurrentUser) {
     user = data.getCurrentUser
+    UserSession.setCurrentUser(user)
     console.log(user.shop)
   }
 
@@ -129,7 +131,7 @@ export default function Header() {
                         <p>Toko</p>
                         <div className="dropdown">
                           <p>You don&apos;t have any shop yet</p>
-                          <NavLink path="#" className="text-button">
+                          <NavLink path="/shop/open" className="text-button">
                             Open Shop
                           </NavLink>
                         </div>

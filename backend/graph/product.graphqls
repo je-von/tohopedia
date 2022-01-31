@@ -1,5 +1,5 @@
 # scalar Map
-
+# scalar Time
 type Product {
   id: ID!
   name: String!
@@ -9,6 +9,7 @@ type Product {
   discount: Float!
   #   metadata: Map!
   metadata: String!
+  createdAt: Time!
   category: Category! @goField(forceResolver: true)
   shop: Shop! @goField(forceResolver: true)
 }
