@@ -14,6 +14,7 @@ import UserSession from '../../util/user-session'
 import { convertPointsToBadge } from '../../util/shop-badge'
 import Card from '../../components/Card'
 import Carousel from '../../components/Carousel'
+import { links } from '../../util/route-links'
 
 const ShopDetail: NextPage = () => {
   const router = useRouter()
@@ -32,6 +33,12 @@ const ShopDetail: NextPage = () => {
         images {
           id
           image
+        }
+        shop {
+          name
+          nameSlug
+          reputationPoints
+          profilePic
         }
       }
     }
@@ -77,6 +84,26 @@ const ShopDetail: NextPage = () => {
             <div className="product-description">
               <b>Detail</b>
               <p>{product.description}</p>
+              <Link href={links.shopDetail(product.shop.nameSlug)} passHref>
+                <div className="shop-container">
+                  <div className="shop-image">
+                    <Image src={product.shop.profilePic} alt="" layout="fill" objectFit="cover"></Image>
+                  </div>
+                  <div className="shop-detail">
+                    <div className="shop-name">
+                      <h2>{product.shop.name}</h2>
+                      <div className="shop-badge">
+                        <Image
+                          src={`/asset/badge/${convertPointsToBadge(product.shop.reputationPoints)}.png`}
+                          alt=""
+                          layout="fill"
+                          objectFit="contain"
+                        ></Image>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Link>
             </div>
           </div>
           <div className="product-action">

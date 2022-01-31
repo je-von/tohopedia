@@ -339,17 +339,23 @@ a {
   flex-direction: row;
   justify-content: space-between;
   .product-detail {
-    // width: 40vw;
+    width: 40vw;
     padding: 0 20px;
     .product-price {
       margin: 6px 0;
     }
     .product-description {
-      margin: 10px 0;
+      border-top: 1px solid #c7c6c6;
+      margin: 15px 0;
+      padding: 10px 0;
       text-align: justify;
       white-space: pre-wrap;
       b {
         color: $primary-color;
+      }
+      .shop-container {
+        cursor: pointer;
+        width: 100%;
       }
     }
   }
