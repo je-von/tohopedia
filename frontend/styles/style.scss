@@ -289,6 +289,45 @@ a {
   }
 }
 
+.shop-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.3);
+  height: fit-content;
+  width: 40vw;
+  padding: 30px 0;
+  margin: 5vh 0;
+  .shop-image {
+    width: 5vw;
+    height: 5vw;
+    position: relative;
+    img {
+      border-radius: 50%;
+    }
+  }
+  .shop-detail {
+    margin-left: 10px;
+
+    .shop-name {
+      display: flex;
+      .shop-badge {
+        position: relative;
+        width: 2vw;
+        height: 2vw;
+      }
+    }
+
+    .shop-desc {
+      color: grey;
+      font-size: 14px;
+      margin: 5px 0;
+    }
+  }
+}
+
 .footer-container {
   border-top: 1px solid #c7c6c6;
   height: 400px;

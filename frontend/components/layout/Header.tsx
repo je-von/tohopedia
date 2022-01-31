@@ -6,6 +6,7 @@ import { gql, useQuery } from '@apollo/client'
 import { getCookie, removeCookies } from 'cookies-next'
 import { useRouter } from 'next/router'
 import UserSession from '../../util/user-session'
+import { links } from '../../util/route-links'
 
 const NavLink = ({ children, path, className }: { children: ReactNode; path: string; className: string }) => (
   <div className={className}>
@@ -25,6 +26,7 @@ export default function Header() {
         shop {
           id
           name
+          nameSlug
           profilePic
         }
       }
@@ -49,12 +51,12 @@ export default function Header() {
       <nav className="header-container">
         <div className="header-content">
           <div className="left-content">
-            <Link href="/" passHref>
+            <Link href={links.home} passHref>
               <div className="logo-container">
                 <Image src="/asset/logo.png" alt="tohopedia by JV" width={3867} height={1122}></Image>
               </div>
             </Link>
-            <Link href="/">Category</Link>
+            <Link href="#">Category</Link>
           </div>
           {/* {Links.map(({ name, path }) => (
           <NavLink key={path} path={path}>
@@ -68,7 +70,7 @@ export default function Header() {
                 <i className="fa fa-search"></i>
               </button>
             </div>
-            <NavLink path="/cart" className="icon-button">
+            <NavLink path="#" className="icon-button">
               <div>
                 <i className="fas fa-shopping-cart"></i>
                 <div className="dropdown">
@@ -78,7 +80,7 @@ export default function Header() {
             </NavLink>
             {user ? (
               <>
-                <NavLink path="/" className="icon-button">
+                <NavLink path="#" className="icon-button">
                   <div>
                     <i className="fas fa-bell"></i>
                     <div className="dropdown">
@@ -86,7 +88,7 @@ export default function Header() {
                     </div>
                   </div>
                 </NavLink>
-                <NavLink path="/" className="icon-button">
+                <NavLink path="#" className="icon-button">
                   <div>
                     <i className="fas fa-envelope"></i>
                     <div className="dropdown">
@@ -116,7 +118,9 @@ export default function Header() {
                         </div>
                         <p>{user.shop.name}</p>
                         <div className="dropdown">
-                          <p>Empty!</p>
+                          <NavLink path={links.shopDetail(user.shop.nameSlug)} className="text-button">
+                            View Shop Details
+                          </NavLink>
                         </div>
                       </>
                     </NavLink>
@@ -131,7 +135,7 @@ export default function Header() {
                         <p>Toko</p>
                         <div className="dropdown">
                           <p>You don&apos;t have any shop yet</p>
-                          <NavLink path="/shop/open" className="text-button">
+                          <NavLink path={links.openShop} className="text-button">
                             Open Shop
                           </NavLink>
                         </div>
@@ -162,10 +166,10 @@ export default function Header() {
               </>
             ) : (
               <>
-                <NavLink path="/auth/login" className="text-button">
+                <NavLink path={links.login} className="text-button">
                   Login
                 </NavLink>
-                <NavLink path="/auth/register" className="text-button">
+                <NavLink path={links.register} className="text-button">
                   Register
                 </NavLink>
               </>

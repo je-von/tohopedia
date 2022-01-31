@@ -10,6 +10,8 @@ import { redirect } from 'next/dist/server/api-utils'
 import { url } from 'inspector'
 import { useRouter } from 'next/router'
 import { convertToBase64 } from '../../util/convert-base64'
+import { links } from '../../util/route-links'
+
 let email = ''
 let profilePic = ''
 const Register: NextPage = () => {
@@ -188,7 +190,7 @@ const Register: NextPage = () => {
     console.log(user)
 
     // alert('Welcome, ' + user.name + ' !')
-    router.push('/auth/login')
+    router.push(links.login)
   }
   // }
 

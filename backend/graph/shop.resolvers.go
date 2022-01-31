@@ -70,6 +70,11 @@ func (r *queryResolver) Shops(ctx context.Context) ([]*model.Shop, error) {
 	return models, r.DB.Find(&models).Error
 }
 
+func (r *queryResolver) ShopBySlug(ctx context.Context, nameSlug string) (*model.Shop, error) {
+	shop := new(model.Shop)
+	return shop, r.DB.First(shop, "name_slug = ?", nameSlug).Error
+}
+
 func (r *shopResolver) User(ctx context.Context, obj *model.Shop) (*model.User, error) {
 	user := new(model.User)
 
