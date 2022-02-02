@@ -13,6 +13,8 @@ import { convertToBase64 } from '../../util/convert-base64'
 import UserSession from '../../util/user-session'
 import { links } from '../../util/route-links'
 
+let images: any[] = []
+let flag = false
 const OpenShop: NextPage = () => {
   //   console.log(UserSession.getCurrentUser())
   let user: any = null
@@ -80,6 +82,13 @@ const OpenShop: NextPage = () => {
   `
   const [createProduct, { data: d2, loading: l2, error: e2 }] = useMutation(mutation)
 
+  const imageMutation = gql`
+    mutation insertProductImages($productID: ID!, $images: [String!]!) {
+      createProductImages(productID: $productID, images: $images)
+    }
+  `
+  const [insertImages, { data: d3, loading: l3, error: e3 }] = useMutation(imageMutation)
+
   if (loading || l) {
     return <>Loading...</>
   }
@@ -94,7 +103,7 @@ const OpenShop: NextPage = () => {
     return <></>
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // let str = '{"tes":"123", "asd":"jkl"}'
 
     // let x = 'key'
@@ -133,11 +142,19 @@ const OpenShop: NextPage = () => {
     //   }
     // }
 
+    let imagesInput = (document.getElementById('product-images') as HTMLInputElement).files
+    if (imagesInput) {
+      for (let idx = 0; idx < imagesInput?.length; idx++) {
+        let image = (await convertToBase64(imagesInput[idx])) as string
+        images.push(image)
+      }
+    }
+    // console.log(images)
+
     if (!name || !description || !category || !price || !discount || !stock) {
       setErrorMsg('All field must be filled!')
     } else {
       //   console.log(name, description, category, price, discount, metadataStr)
-
       createProduct({
         variables: {
           name: name,
@@ -153,7 +170,11 @@ const OpenShop: NextPage = () => {
     }
   }
 
-  if (d2) {
+  if (!flag && d2 && images) {
+    insertImages({ variables: { productID: d2.createProduct.id, images: images } })
+    flag = true
+  }
+  if (d3) {
     router.push(links.shopDetail(user.shop.nameSlug))
   }
 
@@ -166,6 +187,13 @@ const OpenShop: NextPage = () => {
         </div>
       )
     )
+  }
+
+  const handleImage = async (e: any) => {
+    const image = e.target.files[0]
+    // profilePic =
+
+    // console.log(profilePic)
   }
 
   return (
@@ -216,6 +244,10 @@ const OpenShop: NextPage = () => {
                 </div>
               </div>
               {metadataList}
+            </div>
+            <div className="form-input">
+              <label>Product Images</label>
+              <input type="file" id="product-images" name="product-images" multiple />
             </div>
             {/* <div className="form-input">
               <label htmlFor="picture">Shop Profile Picture</label>

@@ -36,6 +36,7 @@ extend type Query {
 extend type Mutation {
   createProduct(input: NewProduct!, shopID: ID!): Product!
   createProductImage(image: String!, productID: ID!): ProductImage!
+  createProductImages(images: [String!]!, productID: ID!): Boolean!
 }
 
 input NewProduct {

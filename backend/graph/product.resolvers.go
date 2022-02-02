@@ -40,6 +40,22 @@ func (r *mutationResolver) CreateProductImage(ctx context.Context, image string,
 	return model, r.DB.Create(model).Error
 }
 
+func (r *mutationResolver) CreateProductImages(ctx context.Context, images []string, productID string) (bool, error) {
+	for _, img := range images {
+		model := &model.ProductImage{
+			ID:        uuid.NewString(),
+			Image:     img,
+			ProductID: productID,
+		}
+		err := r.DB.Create(model).Error
+
+		if err != nil {
+			return false, err
+		}
+	}
+	return true, nil
+}
+
 func (r *productResolver) Images(ctx context.Context, obj *model.Product) ([]*model.ProductImage, error) {
 	var models []*model.ProductImage
 	return models, r.DB.Where("product_id = ?", obj.ID).Find(&models).Error
@@ -98,13 +114,3 @@ func (r *Resolver) ProductImage() generated.ProductImageResolver { return &produ
 
 type productResolver struct{ *Resolver }
 type productImageResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//    it when you're done.
-//  - You have helper methods in this file. Move them out to keep these resolver files clean.
-func (r *productResolver) Stock(ctx context.Context, obj *model.Product) (int, error) {
-	panic(fmt.Errorf("not implemented"))
-}

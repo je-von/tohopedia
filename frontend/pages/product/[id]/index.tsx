@@ -2,21 +2,21 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../../../styles/Home.module.css'
-import Layout from '../../components/layout/Layout'
+import Layout from '../../../components/layout/Layout'
 import Link from 'next/link'
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { useState } from 'react'
 import { redirect } from 'next/dist/server/api-utils'
 import { url } from 'inspector'
 import { useRouter } from 'next/router'
-import { convertToBase64 } from '../../util/convert-base64'
-import UserSession from '../../util/user-session'
-import { convertPointsToBadge } from '../../util/shop-badge'
-import Card from '../../components/Card'
-import Carousel from '../../components/Carousel'
-import { links } from '../../util/route-links'
+import { convertToBase64 } from '../../../util/convert-base64'
+import UserSession from '../../../util/user-session'
+import { convertPointsToBadge } from '../../../util/shop-badge'
+import Card from '../../../components/Card'
+import Carousel from '../../../components/Carousel'
+import { links } from '../../../util/route-links'
 
-const ShopDetail: NextPage = () => {
+const ProductDetail: NextPage = () => {
   const router = useRouter()
   const { id } = router.query
   const [subtotal, setSubtotal] = useState(0)
@@ -177,4 +177,4 @@ const ShopDetail: NextPage = () => {
   )
 }
 
-export default ShopDetail
+export default ProductDetail

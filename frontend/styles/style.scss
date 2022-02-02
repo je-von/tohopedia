@@ -414,9 +414,10 @@ a {
     }
   }
   .product-image {
+    display: flex;
     position: relative;
     width: 20vw;
-
+    height: 40vh;
     .carousel-container {
       margin: 20px;
       width: 20vw;
