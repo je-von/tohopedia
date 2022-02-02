@@ -165,7 +165,6 @@ const Home: NextPage = () => {
           {/* <div className="card">
             <Image src="/asset/no-image.png" alt="product image" width={100} height={100}></Image>
           </div> */}
-
           {data.products.map((p: any) => (
             <Card
               key={p.id}

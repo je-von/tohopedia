@@ -457,6 +457,13 @@ a {
   }
 }
 
+.page-links {
+  display: flex;
+  a {
+    margin-left: 10px;
+  }
+}
+
 .footer-container {
   border-top: 1px solid #c7c6c6;
   height: 400px;

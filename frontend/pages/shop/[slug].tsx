@@ -13,10 +13,26 @@ import { convertToBase64 } from '../../util/convert-base64'
 import UserSession from '../../util/user-session'
 import { convertPointsToBadge } from '../../util/shop-badge'
 import Card from '../../components/Card'
+import { links } from '../../util/route-links'
 
 const ShopDetail: NextPage = () => {
   const router = useRouter()
-  const { slug } = router.query
+  const { slug, page } = router.query
+
+  const [pageLinks, setPageLinks] = useState([])
+  // const [totalPage, setTotalPage] = useState(0)
+  const [shopID, setShopID] = useState('')
+  const limit = 10
+  // console.log(page)
+  const [offset, setOffset] = useState(-1)
+  // console.log(offset)
+
+  // console.log('page:' + parseInt(page as string))
+  if (offset == -1 && !isNaN(parseInt(page as string))) {
+    let pageNumber = parseInt(page as string) > 0 ? parseInt(page as string) - 1 : 0
+    setOffset(pageNumber * limit)
+    console.log(offset)
+  }
 
   const query = gql`
     query getShopBySlug($nameSlug: String!) {
@@ -41,7 +57,22 @@ const ShopDetail: NextPage = () => {
 
   const { loading, data, error } = useQuery(query, { variables: { nameSlug: slug } })
 
-  if (loading) {
+  const paginateQuery = gql`
+    query paginateProducts($shopID: ID!, $limit: Int!, $offset: Int!) {
+      products(shopID: $shopID, limit: $limit, offset: $offset) {
+        id
+        price
+        name
+        images {
+          image
+        }
+      }
+    }
+  `
+
+  const { loading: l, data: d, error: e } = useQuery(paginateQuery, { variables: { shopID: shopID, limit: limit, offset: offset } })
+
+  if (loading || l) {
     return <>Loading...</>
   }
 
@@ -52,6 +83,25 @@ const ShopDetail: NextPage = () => {
   let shop: any = null
   if (data && data.shopBySlug) {
     shop = data.shopBySlug
+    if (!shopID) {
+      setShopID(shop.id)
+      let totalPage = Math.ceil(shop.products.length / limit)
+      let temp: any = []
+      for (let i = 1; i <= totalPage; i++) {
+        temp.push(
+          <a href={links.shopDetail(slug as string) + '?page=' + i} key={i}>
+            <div>{i}</div>
+          </a>
+        )
+        console.log('masuk')
+      }
+      setPageLinks(temp)
+      console.log(totalPage, temp)
+    }
+  }
+
+  if (d) {
+    console.log(d)
   }
 
   return (
@@ -75,7 +125,7 @@ const ShopDetail: NextPage = () => {
           </div>
         </div>
         <div className="card-container">
-          {shop.products.map((p: any) => (
+          {d.products.map((p: any) => (
             <Card
               key={p.id}
               image={p.images.length > 0 ? p.images[0].image : '/asset/no-image.png'}
@@ -86,6 +136,7 @@ const ShopDetail: NextPage = () => {
             ></Card>
           ))}
         </div>
+        <div className="page-links">Page {pageLinks}</div>
       </div>
     </Layout>
   )
