@@ -64,12 +64,14 @@ export default function Header() {
           </NavLink>
         ))} */}
           <div>
-            <div className="search-container">
-              <input type="text" placeholder="Search.." id="search" name="search" />
-              <button type="submit">
-                <i className="fa fa-search"></i>
-              </button>
-            </div>
+            <form action="/search">
+              <div className="search-container">
+                <input type="text" placeholder="Search.." id="keyword" name="keyword" />
+                <button type="submit">
+                  <i className="fa fa-search"></i>
+                </button>
+              </div>
+            </form>
             <NavLink path="#" className="icon-button">
               <div>
                 <i className="fas fa-shopping-cart"></i>

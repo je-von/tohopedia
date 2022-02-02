@@ -48,3 +48,10 @@ type NewUser struct {
 	ProfilePic string `json:"profilePic"`
 	Role       string `json:"role"`
 }
+
+type SearchProduct struct {
+	Keyword  *string `json:"keyword"`
+	MinPrice *int    `json:"minPrice"`
+	MaxPrice *int    `json:"maxPrice"`
+	OrderBy  *string `json:"orderBy"`
+}

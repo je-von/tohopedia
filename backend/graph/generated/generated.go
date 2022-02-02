@@ -99,7 +99,7 @@ type ComplexityRoot struct {
 		Category       func(childComplexity int, id string) int
 		GetCurrentUser func(childComplexity int) int
 		Product        func(childComplexity int, id string) int
-		Products       func(childComplexity int, shopID *string, limit *int, offset *int) int
+		Products       func(childComplexity int, shopID *string, limit *int, offset *int, input *model.SearchProduct) int
 		Protected      func(childComplexity int) int
 		Shop           func(childComplexity int, id *string, userID *string) int
 		ShopBySlug     func(childComplexity int, nameSlug string) int
@@ -172,7 +172,7 @@ type QueryResolver interface {
 	Category(ctx context.Context, id string) (*model.Category, error)
 	Categories(ctx context.Context) ([]*model.Category, error)
 	Product(ctx context.Context, id string) (*model.Product, error)
-	Products(ctx context.Context, shopID *string, limit *int, offset *int) ([]*model.Product, error)
+	Products(ctx context.Context, shopID *string, limit *int, offset *int, input *model.SearchProduct) ([]*model.Product, error)
 	Shop(ctx context.Context, id *string, userID *string) (*model.Shop, error)
 	Shops(ctx context.Context) ([]*model.Shop, error)
 	ShopBySlug(ctx context.Context, nameSlug string) (*model.Shop, error)
@@ -499,7 +499,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Products(childComplexity, args["shopID"].(*string), args["limit"].(*int), args["offset"].(*int)), true
+		return e.complexity.Query.Products(childComplexity, args["shopID"].(*string), args["limit"].(*int), args["offset"].(*int), args["input"].(*model.SearchProduct)), true
 
 	case "Query.protected":
 		if e.complexity.Query.Protected == nil {
@@ -822,7 +822,7 @@ extend type Query {
   category(id: ID!): Category!
   categories: [Category!]!
   product(id: ID!): Product!
-  products(shopID: ID, limit: Int, offset: Int): [Product!]!
+  products(shopID: ID, limit: Int, offset: Int, input: SearchProduct): [Product!]!
 }
 
 extend type Mutation {
@@ -839,6 +839,13 @@ input NewProduct {
   metadata: String!
   stock: Int!
   categoryID: ID!
+}
+
+input SearchProduct {
+  keyword: String
+  minPrice: Int
+  maxPrice: Int
+  orderBy: String
 }
 `, BuiltIn: false},
 	{Name: "graph/shop.graphqls", Input: `directive @goField(forceResolver: Boolean, name: String) on INPUT_FIELD_DEFINITION | FIELD_DEFINITION
@@ -1250,6 +1257,15 @@ func (ec *executionContext) field_Query_products_args(ctx context.Context, rawAr
 		}
 	}
 	args["offset"] = arg2
+	var arg3 *model.SearchProduct
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg3, err = ec.unmarshalOSearchProduct2ᚖgithubᚗcomᚋjeᚑvonᚋTPAᚑWebᚑJVᚋbackendᚋgraphᚋmodelᚐSearchProduct(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg3
 	return args, nil
 }
 
@@ -2753,7 +2769,7 @@ func (ec *executionContext) _Query_products(ctx context.Context, field graphql.C
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Products(rctx, args["shopID"].(*string), args["limit"].(*int), args["offset"].(*int))
+		return ec.resolvers.Query().Products(rctx, args["shopID"].(*string), args["limit"].(*int), args["offset"].(*int), args["input"].(*model.SearchProduct))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5159,6 +5175,53 @@ func (ec *executionContext) unmarshalInputNewUser(ctx context.Context, obj inter
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputSearchProduct(ctx context.Context, obj interface{}) (model.SearchProduct, error) {
+	var it model.SearchProduct
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "keyword":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("keyword"))
+			it.Keyword, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "minPrice":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("minPrice"))
+			it.MinPrice, err = ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "maxPrice":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("maxPrice"))
+			it.MaxPrice, err = ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "orderBy":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+			it.OrderBy, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
@@ -6890,6 +6953,14 @@ func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.Sele
 		return graphql.Null
 	}
 	return graphql.MarshalInt(*v)
+}
+
+func (ec *executionContext) unmarshalOSearchProduct2ᚖgithubᚗcomᚋjeᚑvonᚋTPAᚑWebᚑJVᚋbackendᚋgraphᚋmodelᚐSearchProduct(ctx context.Context, v interface{}) (*model.SearchProduct, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputSearchProduct(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalOString2string(ctx context.Context, v interface{}) (string, error) {

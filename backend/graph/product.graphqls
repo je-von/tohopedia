@@ -30,7 +30,7 @@ extend type Query {
   category(id: ID!): Category!
   categories: [Category!]!
   product(id: ID!): Product!
-  products(shopID: ID, limit: Int, offset: Int): [Product!]!
+  products(shopID: ID, limit: Int, offset: Int, input: SearchProduct): [Product!]!
 }
 
 extend type Mutation {
@@ -47,4 +47,11 @@ input NewProduct {
   metadata: String!
   stock: Int!
   categoryID: ID!
+}
+
+input SearchProduct {
+  keyword: String
+  minPrice: Int
+  maxPrice: Int
+  orderBy: String
 }

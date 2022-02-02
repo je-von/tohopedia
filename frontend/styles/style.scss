@@ -167,7 +167,7 @@ textarea {
 main {
   display: flex;
   justify-content: center;
-  align-items: center;
+  // align-items: center;
   // height: 100vh;
 }
 
@@ -454,6 +454,18 @@ a {
       background-repeat: no-repeat;
       background-size: cover;
       border-radius: 8px;
+    }
+  }
+}
+
+.filter-container {
+  width: 15vw;
+  margin: 20px;
+
+  .price-filter {
+    margin: 10px 0;
+    input {
+      width: 100%;
     }
   }
 }

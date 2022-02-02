@@ -96,14 +96,29 @@ func (r *queryResolver) Product(ctx context.Context, id string) (*model.Product,
 	return product, r.DB.First(product, "id = ?", id).Error
 }
 
-func (r *queryResolver) Products(ctx context.Context, shopID *string, limit *int, offset *int) ([]*model.Product, error) {
+func (r *queryResolver) Products(ctx context.Context, shopID *string, limit *int, offset *int, input *model.SearchProduct) ([]*model.Product, error) {
 	var models []*model.Product
 	if shopID != nil && limit != nil && offset != nil {
 		fmt.Printf("limit: %d\n", *limit)
 		return models, r.DB.Where("shop_id = ?", shopID).Limit(*limit).Offset(*offset).Find(&models).Error
 	}
 
-	return models, r.DB.Find(&models).Error
+	temp := r.DB
+	if input != nil {
+		if input.MinPrice != nil {
+			temp = temp.Where("price >= ?", *input.MinPrice)
+		}
+		if input.MaxPrice != nil {
+			temp = temp.Where("price <= ?", *input.MaxPrice)
+		}
+		if input.Keyword != nil {
+			temp = temp.Where("(name LIKE ? OR description LIKE ?)", "%"+*input.Keyword+"%", "%"+*input.Keyword+"%")
+			// temp = temp.Where("name LIKE ?", "%"+*input.Keyword+"%")
+
+		}
+	}
+
+	return models, temp.Find(&models).Error
 }
 
 // Product returns generated.ProductResolver implementation.
