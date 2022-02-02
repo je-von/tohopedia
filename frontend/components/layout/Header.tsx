@@ -121,6 +121,9 @@ export default function Header() {
                           <NavLink path={links.shopDetail(user.shop.nameSlug)} className="text-button">
                             View Shop Details
                           </NavLink>
+                          <NavLink path={links.sellProduct} className="text-button">
+                            Sell Product
+                          </NavLink>
                         </div>
                       </>
                     </NavLink>

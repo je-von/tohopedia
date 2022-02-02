@@ -55,7 +55,7 @@ const Home: NextPage = () => {
   //         description: faker.lorem.lines(10),
   //         price: faker.datatype.number({ min: 1000, max: 10000000 }),
   //         discount: faker.datatype.float({ min: 0, max: 0.7, precision: 0.15 }),
-  //         metadata: '-',
+  //         metadata: '',
   //         categoryID: categoryID,
   //         shopID: shopID,
   //         stock: faker.datatype.number({ min: 1, max: 150 }),

@@ -10,7 +10,8 @@ $normal-font-size: 12px;
     sans-serif;
 }
 input,
-select {
+select,
+textarea {
   border-radius: 8px;
   padding: 8px;
   margin-top: 5px;
@@ -42,6 +43,7 @@ select {
   justify-content: space-around;
   align-items: center;
   cursor: pointer;
+  margin: 5px 0;
   // }
 }
 .text-button:hover {
@@ -122,6 +124,7 @@ select {
       display: flex;
       flex-direction: column;
       text-align: center;
+      // margin: 5px 0;
     }
     .icon-button:hover .dropdown,
     .profile-button:hover .dropdown {
@@ -215,6 +218,18 @@ a {
       display: flex;
       flex-direction: column;
       margin-top: 25px;
+      textarea {
+        resize: vertical;
+      }
+      .multi-title {
+        display: flex;
+        align-items: center;
+        .text-button {
+          margin-left: 10px;
+          width: 25px;
+          padding: 0;
+        }
+      }
     }
 
     button {

@@ -3,6 +3,8 @@ export const links = {
   login: '/auth/login',
   register: '/auth/register',
   openShop: '/shop/open',
+  sellProduct: '/product/sell',
+
   shopDetail: (slug: string) => {
     return '/shop/' + slug
   },

@@ -20,6 +20,7 @@ const ShopDetail: NextPage = () => {
   const router = useRouter()
   const { id } = router.query
   const [subtotal, setSubtotal] = useState(0)
+  // const [metadata, ]
 
   const query = gql`
     query getProductByID($id: ID!) {
@@ -30,6 +31,7 @@ const ShopDetail: NextPage = () => {
         price
         discount
         stock
+        metadata
         images {
           id
           image
@@ -57,6 +59,19 @@ const ShopDetail: NextPage = () => {
   let product: any = null
   if (data && data.product) {
     product = data.product
+    let metadata = product.metadata
+
+    try {
+      let parsed = JSON.parse(metadata)
+      // console.log(parsed)
+
+      for (let x of parsed) {
+        for (let key in x) {
+          let value = x[key]
+          console.log(key + ' ---> ' + value)
+        }
+      }
+    } catch (e) {}
   }
 
   const handleQuantity = (e: any) => {
