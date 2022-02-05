@@ -54,6 +54,7 @@ func main() {
 	db.AutoMigrate(&model.Category{})
 	db.AutoMigrate(&model.Product{})
 	db.AutoMigrate(&model.ProductImage{})
+	db.AutoMigrate(&model.Cart{})
 
 	c := generated.Config{
 		Resolvers: &graph.Resolver{

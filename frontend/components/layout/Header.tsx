@@ -72,7 +72,7 @@ export default function Header() {
                 </button>
               </div>
             </form>
-            <NavLink path="#" className="icon-button">
+            <NavLink path={links.cart} className="icon-button">
               <div>
                 <i className="fas fa-shopping-cart"></i>
                 <div className="dropdown">

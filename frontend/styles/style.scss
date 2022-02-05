@@ -109,7 +109,7 @@ textarea {
       // align-self: flex-end;
       visibility: none;
       opacity: 0;
-      // display: none;
+      display: none;
       position: absolute;
       min-width: 150px;
       max-width: 200px;
@@ -121,7 +121,6 @@ textarea {
       border-radius: 0 0 8px 8px;
       transition: opacity 400ms, visibility 400ms;
 
-      display: flex;
       flex-direction: column;
       text-align: center;
       // margin: 5px 0;
@@ -129,8 +128,11 @@ textarea {
     .icon-button:hover .dropdown,
     .profile-button:hover .dropdown {
       // display: block;
+      display: flex;
+
       visibility: visible;
       opacity: 1;
+      top: 40px;
     }
 
     .left-content {
@@ -149,7 +151,8 @@ textarea {
         justify-content: center;
         margin-left: 10px;
         height: 100%;
-        // cursor: pointer;
+
+        cursor: pointer;
         .profile-pic {
           margin-right: 5px;
           position: relative;
@@ -251,6 +254,105 @@ a {
   margin: 10px 0;
 }
 
+.list-card-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  width: 60vw;
+  flex-direction: column;
+  margin: 0 10px;
+
+  .card {
+    cursor: pointer;
+    flex: 1 1 150px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+
+    width: 100%;
+
+    min-height: fit-content;
+    margin: 10px 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    font-size: 13px;
+
+    padding: 10px 15px;
+    .card-content {
+      width: 100%;
+      height: 8vh;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      margin: 10px 0;
+      .card-image {
+        position: relative;
+        width: 10%;
+        height: 100%;
+        img {
+          border-radius: 10px;
+        }
+      }
+      .product-info {
+        display: flex;
+        flex-direction: column;
+        margin-left: 10px;
+        .product-name {
+          margin: 5px 0;
+          white-space: nowrap;
+          width: 100%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          text-align: left;
+        }
+        .product-price {
+          width: 10vw;
+          display: flex;
+          align-items: center;
+          .product-discount {
+            border-radius: 6px;
+            padding: 2px 5px;
+            background-color: #ffdbe2;
+            color: #f94d63;
+          }
+          .original-price {
+            margin: 0 5px;
+          }
+        }
+      }
+    }
+    .card-header {
+      width: 100%;
+      display: flex;
+    }
+    .card-footer {
+      width: 100%;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      i {
+        font-size: 16px;
+        color: grey;
+        margin-right: 10px;
+      }
+      input {
+        width: 50px;
+        text-align: center;
+      }
+    }
+    .store-link {
+      margin-top: 8px;
+      cursor: pointer;
+      i {
+        margin-right: 5px;
+      }
+    }
+  }
+}
+
 .card-container {
   display: flex;
   flex-wrap: wrap;
@@ -347,6 +449,52 @@ a {
   }
 }
 
+.cart-container {
+  margin: 5vh 0;
+  width: 70vw;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.action-container {
+  height: fit-content;
+  border: 1px solid #c7c6c6;
+  border-radius: 8px;
+  padding: 10px;
+  min-width: max-content;
+  .product-button {
+    button {
+      width: 100%;
+      margin: 10px 0;
+    }
+  }
+  .subtotal {
+    margin: 10px 0;
+    b {
+      width: fit-content;
+      margin-left: 10px;
+    }
+  }
+  .notes {
+    input {
+      width: 100%;
+    }
+  }
+  .action-footer {
+    display: flex;
+    color: grey;
+    margin-top: 20px;
+    .footer-links {
+      cursor: pointer;
+      margin: 0 5px;
+      display: flex;
+      align-items: center;
+      i {
+        margin-right: 5px;
+      }
+    }
+  }
+}
 .product-container {
   margin: 5vh 0;
   width: 80vw;
@@ -374,87 +522,48 @@ a {
       }
     }
   }
-  .product-action {
-    height: fit-content;
-    border: 1px solid #c7c6c6;
-    border-radius: 8px;
-    padding: 10px;
-    min-width: max-content;
-    .product-button {
-      button {
-        width: 100%;
-        margin: 10px 0;
-      }
-    }
-    .subtotal {
-      margin: 10px 0;
-      b {
-        width: fit-content;
-        margin-left: 10px;
-      }
-    }
-    .notes {
-      input {
-        width: 100%;
-      }
-    }
-    .action-footer {
-      display: flex;
-      color: grey;
-      margin-top: 20px;
-      .footer-links {
-        cursor: pointer;
-        margin: 0 5px;
-        display: flex;
-        align-items: center;
-        i {
-          margin-right: 5px;
-        }
-      }
-    }
-  }
-  .product-image {
-    display: flex;
-    position: relative;
+}
+.product-image {
+  display: flex;
+  position: relative;
+  width: 20vw;
+  height: 40vh;
+  .carousel-container {
+    margin: 20px;
     width: 20vw;
-    height: 40vh;
-    .carousel-container {
-      margin: 20px;
-      width: 20vw;
-    }
+  }
 
-    .selected-image {
-      width: 90%;
-      height: 15vw;
-      margin-bottom: 8px;
-      background-position: center center;
-      background-repeat: no-repeat;
-      background-size: contain;
-    }
+  .selected-image {
+    width: 90%;
+    height: 15vw;
+    margin-bottom: 8px;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
 
-    .carousel {
-      position: relative;
-    }
+  .carousel {
+    position: relative;
+  }
 
-    .carousel-images {
-      display: flex;
-      max-width: 90%;
-      overflow-x: hidden;
-    }
+  .carousel-images {
+    display: flex;
+    max-width: 90%;
+    overflow-x: hidden;
+  }
 
-    .carousel-image-selected {
-      border: 3px solid #ffa700 !important;
-    }
+  .carousel-image-selected {
+    border: 3px solid #ffa700 !important;
+  }
 
-    .carousel-image {
-      margin-right: 10px;
-      height: 5vw;
-      min-width: 5vw;
-      background-position: center center;
-      background-repeat: no-repeat;
-      background-size: cover;
-      border-radius: 8px;
-    }
+  .carousel-image {
+    margin-right: 10px;
+    height: 5vw;
+    min-width: 5vw;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    border-radius: 8px;
   }
 }
 

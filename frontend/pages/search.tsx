@@ -30,6 +30,7 @@ const Search: NextPage = () => {
         }
         shop {
           name
+          nameSlug
         }
       }
     }
@@ -104,6 +105,7 @@ const Search: NextPage = () => {
                 price={p.price}
                 name={p.name}
                 shop={p.shop.name}
+                shopNameSlug={p.shop.nameSlug}
               ></Card>
             ))}
           </div>

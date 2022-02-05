@@ -118,6 +118,11 @@ func (r *userResolver) Shop(ctx context.Context, obj *model.User) (*model.Shop, 
 	return shop, r.DB.FirstOrInit(shop, "user_id = ?", obj.ID).Error
 }
 
+func (r *userResolver) Carts(ctx context.Context, obj *model.User) ([]*model.Cart, error) {
+	var models []*model.Cart
+	return models, r.DB.Where("user_id = ?", obj.ID).Find(&models).Error
+}
+
 // AuthOps returns generated.AuthOpsResolver implementation.
 func (r *Resolver) AuthOps() generated.AuthOpsResolver { return &authOpsResolver{r} }
 

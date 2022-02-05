@@ -126,6 +126,7 @@ const Home: NextPage = () => {
         }
         shop {
           name
+          nameSlug
         }
       }
     }
@@ -173,6 +174,7 @@ const Home: NextPage = () => {
               price={p.price}
               name={p.name}
               shop={p.shop.name}
+              shopNameSlug={p.shop.nameSlug}
             ></Card>
           ))}
           {/* <Card image="/asset/test.jpg" productID="1" price={1000000} name="halo halo" shop="JVShop" /> */}

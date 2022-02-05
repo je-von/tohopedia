@@ -4,7 +4,7 @@ export const links = {
   register: '/auth/register',
   openShop: '/shop/open',
   sellProduct: '/product/sell',
-
+  cart: '/cart',
   shopDetail: (slug: string) => {
     return '/shop/' + slug
   },

@@ -1,0 +1,16 @@
+type Cart {
+  user: User! @goField(forceResolver: true)
+  product: Product! @goField(forceResolver: true)
+  quantity: Int!
+}
+
+extend type Query {
+  cart(productID: ID!): Cart! @auth
+  carts: [Cart!]!
+}
+
+extend type Mutation {
+  createCart(productID: ID!, quantity: Int!): Cart! @auth
+  updateCart(productID: ID!, quantity: Int!): Cart! @auth
+  deleteCart(productID: ID!): Boolean! @auth
+}

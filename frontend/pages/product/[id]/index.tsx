@@ -121,7 +121,7 @@ const ProductDetail: NextPage = () => {
               </Link>
             </div>
           </div>
-          <div className="product-action">
+          <div className="action-container">
             <div className="multi-input">
               <input
                 className="multi-input-item"
