@@ -55,7 +55,7 @@ const Cart: NextPage = () => {
 
   return (
     <Layout>
-      <div className="main-container">
+      <main>
         <div className="cart-container">
           <div className="list-card-container">
             <h2>Cart</h2>
@@ -82,7 +82,7 @@ const Cart: NextPage = () => {
             </div>
           </div>
         </div>
-      </div>
+      </main>
     </Layout>
   )
 }

@@ -55,10 +55,12 @@ textarea {
   padding: 5px 20px;
   font-size: $normal-font-size;
   .shipping-button {
+    margin: 5px 0;
     text-align: right;
     color: grey;
     i {
       margin: 0 10px;
+      cursor: pointer;
     }
   }
   .header-content {
@@ -672,6 +674,91 @@ a {
       position: relative;
       width: 100%;
       height: 200px;
+    }
+  }
+}
+
+.modal-overlay {
+  background-color: rgba(0, 0, 0, 0.5);
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .modal {
+    width: 50vw;
+    height: 70vh;
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    .modal-header {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      i {
+        cursor: pointer;
+      }
+    }
+    .modal-content {
+      display: flex;
+      flex-direction: column;
+      // justify-content: ;
+      align-items: center;
+      height: 100%;
+      width: 100%;
+      flex-grow: 1;
+      .address-list {
+        width: 100%;
+        margin: 10px 0;
+        padding: 10px 15px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+        border-radius: 8px;
+
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .primary {
+        background-color: rgb(237, 255, 238);
+        border: 1px solid $primary-color;
+      }
+      .address-content {
+        .address-header {
+          display: flex;
+          align-items: center;
+          margin-bottom: 5px;
+          .primary-tag {
+            margin-left: 5px;
+            padding: 4px 8px;
+            background-color: #f3f4f5;
+            color: #9fa6b0;
+            border-radius: 6px;
+            font-size: 11px;
+          }
+        }
+        .address-detail {
+          color: grey;
+        }
+      }
+
+      .action {
+        i {
+          color: $primary-color;
+        }
+        .text-button {
+          font-size: 12px;
+        }
+      }
     }
   }
 }

@@ -123,6 +123,12 @@ func (r *userResolver) Carts(ctx context.Context, obj *model.User) ([]*model.Car
 	return models, r.DB.Where("user_id = ?", obj.ID).Find(&models).Error
 }
 
+func (r *userResolver) Addresses(ctx context.Context, obj *model.User) ([]*model.Address, error) {
+	var models []*model.Address
+	return models, r.DB.Where("user_id = ?", obj.ID).Order("is_primary DESC").Find(&models).Error
+
+}
+
 // AuthOps returns generated.AuthOpsResolver implementation.
 func (r *Resolver) AuthOps() generated.AuthOpsResolver { return &authOpsResolver{r} }
 

@@ -1,4 +1,4 @@
-import { ReactNode } from 'react'
+import { ReactNode, useState } from 'react'
 
 import Link from 'next/link'
 import Image from 'next/image'
@@ -7,7 +7,7 @@ import { getCookie, removeCookies } from 'cookies-next'
 import { useRouter } from 'next/router'
 import UserSession from '../../util/user-session'
 import { links } from '../../util/route-links'
-
+import Geocode from 'react-geocode'
 const NavLink = ({ children, path, className }: { children: ReactNode; path: string; className: string }) => (
   <div className={className}>
     <Link href={path}>{children}</Link>
@@ -15,6 +15,7 @@ const NavLink = ({ children, path, className }: { children: ReactNode; path: str
 )
 
 export default function Header() {
+  const [modal, setModal] = useState(<></>)
   const router = useRouter()
   const query = gql`
     query getCurrentUser {
@@ -40,6 +41,12 @@ export default function Header() {
           }
           quantity
         }
+        addresses {
+          id
+          name
+          detail
+          isPrimary
+        }
       }
     }
   `
@@ -50,12 +57,29 @@ export default function Header() {
     return <>Loading...</>
   }
 
-  let user = null
+  let user: any = null
   if (data && data.getCurrentUser) {
     user = data.getCurrentUser
     UserSession.setCurrentUser(user)
     // console.log(user.shop)
   }
+
+  Geocode.setLanguage('en')
+  Geocode.setRegion('id')
+
+  navigator.geolocation.getCurrentPosition((p) => {
+    console.log(p.coords.latitude, p.coords.longitude)
+
+    // Geocode.fromLatLng(p.coords.latitude + '', p.coords.longitude + '').then(
+    //   (response) => {
+    //     const address = response.results[0].formatted_address
+    //     console.log(address)
+    //   },
+    //   (error) => {
+    //     console.error(error)
+    //   }
+    // )
+  })
 
   return (
     <>
@@ -211,15 +235,60 @@ export default function Header() {
           </div>
         </div>
         <div>
-          <NavLink path="" className="shipping-button">
+          <div className="shipping-button">
             <>
               <i className="fas fa-map-marker-alt"></i>
-              Dikirim ke <b>Address</b>
-              <i className="fas fa-caret-down"></i>
+              Dikirim ke{' '}
+              <b>
+                {user && user.addresses.length > 0 ? (
+                  <>
+                    {user.addresses[0].name}
+                    <i
+                      className="fas fa-caret-down"
+                      onClick={() => {
+                        setModal(
+                          <div className="modal-overlay">
+                            <div className="modal">
+                              <div className="modal-header">
+                                <h2>Choose Address</h2>
+                                <i
+                                  className="fas fa-times"
+                                  onClick={() => {
+                                    setModal(<></>)
+                                  }}
+                                ></i>
+                              </div>
+                              <div className="modal-content">
+                                {user.addresses.map((a: any) => (
+                                  <div className={'address-list ' + (a.isPrimary ? 'primary' : '')} key={a.id}>
+                                    <div className="address-content">
+                                      <p className="address-header">
+                                        {a.name} {a.isPrimary ? <b className="primary-tag">Primary</b> : ''}
+                                      </p>
+                                      <p className="address-detail">{a.detail}</p>
+                                    </div>
+                                    <div className="action">
+                                      {a.isPrimary ? <i className="far fa-check"></i> : <div className="text-button">Choose</div>}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                              <div className="text-button">Choose Other Address</div>
+                            </div>
+                          </div>
+                        )
+                      }}
+                    ></i>
+                  </>
+                ) : (
+                  'Jakarta Barat'
+                )}
+              </b>
             </>
-          </NavLink>
+          </div>
         </div>
       </nav>
+      {modal}
     </>
   )
 }

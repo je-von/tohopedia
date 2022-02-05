@@ -152,7 +152,7 @@ const ProductDetail: NextPage = () => {
 
   return (
     <Layout>
-      <div className="main-container">
+      <main>
         <div className="product-container">
           <div className="product-image">
             {product.images.length > 0 ? (
@@ -250,7 +250,7 @@ const ProductDetail: NextPage = () => {
             </div>
           </div>
         </div>
-      </div>
+      </main>
     </Layout>
   )
 }
