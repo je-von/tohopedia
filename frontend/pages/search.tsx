@@ -17,10 +17,11 @@ const Search: NextPage = () => {
   const router = useRouter()
   const { keyword } = router.query
   const [priceRange, setPriceRange] = useState({ min: 0, max: Number.MAX_SAFE_INTEGER })
+  const [orderBy, setOrderBy] = useState('')
 
   const query = gql`
-    query searchProducts($keyword: String!, $minPrice: Int!, $maxPrice: Int!) {
-      products(input: { keyword: $keyword, minPrice: $minPrice, maxPrice: $maxPrice }) {
+    query searchProducts($keyword: String!, $minPrice: Int!, $maxPrice: Int!, $orderBy: String!) {
+      products(input: { keyword: $keyword, minPrice: $minPrice, maxPrice: $maxPrice, orderBy: $orderBy }) {
         id
         name
         price
@@ -39,6 +40,7 @@ const Search: NextPage = () => {
       keyword: keyword,
       minPrice: priceRange.min,
       maxPrice: priceRange.max,
+      orderBy: orderBy,
     },
   })
 
@@ -63,6 +65,10 @@ const Search: NextPage = () => {
     }
   }
 
+  const handleOrderByChange = (e: any) => {
+    setOrderBy(e.target.value)
+  }
+
   return (
     <Layout>
       <main>
@@ -74,17 +80,33 @@ const Search: NextPage = () => {
             <input onKeyDown={handleKeyDown} type="number" id="max_price" name="max_price" placeholder="Maximum Price" />
           </div>
         </div>
-        <div className="card-container">
-          {data.products.map((p: any) => (
-            <Card
-              key={p.id}
-              image={p.images.length > 0 ? p.images[0].image : '/asset/no-image.png'}
-              productID={p.id}
-              price={p.price}
-              name={p.name}
-              shop={p.shop.name}
-            ></Card>
-          ))}
+        <div className="result-container">
+          <div className="result-header">
+            <p>
+              Showing products for &quot;<b>{keyword}</b>&quot;
+            </p>
+            <div>
+              <label>Order By</label>
+              <select name="order-by" id="order-by" onChange={handleOrderByChange}>
+                <option value="-">-</option>
+                <option value="newest">Newest</option>
+                <option value="highest-price">Highest Price</option>
+                <option value="lowest-price">Lowest Price</option>
+              </select>
+            </div>
+          </div>
+          <div className="card-container">
+            {data.products.map((p: any) => (
+              <Card
+                key={p.id}
+                image={p.images.length > 0 ? p.images[0].image : '/asset/no-image.png'}
+                productID={p.id}
+                price={p.price}
+                name={p.name}
+                shop={p.shop.name}
+              ></Card>
+            ))}
+          </div>
         </div>
       </main>
     </Layout>

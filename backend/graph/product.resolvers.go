@@ -116,6 +116,15 @@ func (r *queryResolver) Products(ctx context.Context, shopID *string, limit *int
 			// temp = temp.Where("name LIKE ?", "%"+*input.Keyword+"%")
 
 		}
+		if input.OrderBy != nil {
+			if *input.OrderBy == "newest" {
+				temp = temp.Order("created_at DESC")
+			} else if *input.OrderBy == "highest-price" {
+				temp = temp.Order("price DESC")
+			} else if *input.OrderBy == "lowest-price" {
+				temp = temp.Order("price ASC")
+			}
+		}
 	}
 
 	return models, temp.Find(&models).Error

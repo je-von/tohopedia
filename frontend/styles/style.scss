@@ -470,6 +470,18 @@ a {
   }
 }
 
+.result-container {
+  margin-top: 20px;
+  .result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    label {
+      margin-right: 10px;
+    }
+  }
+}
+
 .page-links {
   display: flex;
   a {
