@@ -21,7 +21,6 @@ const ProductDetail: NextPage = () => {
   const { id } = router.query
   const [subtotal, setSubtotal] = useState(0)
   const [errorMsg, setErrorMsg] = useState('')
-
   // const [metadata, ]
 
   const query = gql`
@@ -85,19 +84,43 @@ const ProductDetail: NextPage = () => {
   let product: any = null
   if (data && data.product) {
     product = data.product
-    let metadata = product.metadata
 
-    try {
-      let parsed = JSON.parse(metadata)
-      // console.log(parsed)
+    // if (metadataList.length < 1) {
+    //   let metadata = product.metadata
+    //   try {
+    //     let parsed = JSON.parse(metadata)
+    //     // console.log(parsed)
+    //     // console.log(metadataList.length)
+    //     if (parsed.length > 0) {
+    //       let temp = []
+    //       for (let x of parsed) {
+    //         for (let key in x) {
+    //           let value = x[key]
+    //           // console.log(key + ' ---> ' + value)
+    //           temp.push(
+    //             <div key={key}>
+    //               <label className="metadata-key">{key}</label> : {value}
+    //             </div>
+    //           )
+    //         }
+    //       }
+    //       setMetadataList(temp)
+    //     }
+    //     // console.log(metadataList)
+    //   } catch (e) {}
+    // }
+  }
 
-      for (let x of parsed) {
-        for (let key in x) {
-          let value = x[key]
-          console.log(key + ' ---> ' + value)
-        }
-      }
-    } catch (e) {}
+  const handleMetadata = (m: any) => {
+    for (let key in m) {
+      let value = m[key]
+      // console.log(key + ' --> ' + value)
+      return (
+        <div key={key}>
+          <label className="metadata-key">{key}</label> : {value}
+        </div>
+      )
+    }
   }
 
   const handleQuantity = (e: any) => {
@@ -146,6 +169,10 @@ const ProductDetail: NextPage = () => {
             <h1 className="product-price">Rp{product.price}</h1>
             <div className="product-description">
               <b>Detail</b>
+              <div className="product-metadata">
+                {product.metadata ? JSON.parse(product.metadata).map((m: any) => handleMetadata(m)) : ''}
+                {/* {metadataList} */}
+              </div>
               <p>{product.description}</p>
               <Link href={links.shopDetail(product.shop.nameSlug)} passHref>
                 <div className="shop-container">
@@ -175,7 +202,7 @@ const ProductDetail: NextPage = () => {
                 className="multi-input-item"
                 min={1}
                 max={product.stock}
-                placeholder="1"
+                placeholder="0"
                 type="number"
                 name="quantity"
                 id="quantity"

@@ -44,9 +44,10 @@ const ListCard = (c: Cart) => {
 
   const handleQuantity = (e: any) => {
     let productID = e.target.accessKey
-    setQuantity(e.target.value)
+    let qty = e.target.value > 0 ? e.target.value : 1
+    setQuantity(qty)
 
-    updateCart({ variables: { productID: productID, quantity: e.target.value, notes: '' } })
+    updateCart({ variables: { productID: productID, quantity: qty, notes: '' } })
   }
 
   const handleDeleteCart = (e: any) => {

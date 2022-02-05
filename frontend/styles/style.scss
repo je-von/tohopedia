@@ -93,7 +93,7 @@ textarea {
       }
     }
     .logo-container {
-      width: 12vw;
+      width: 9vw;
       cursor: pointer;
     }
     .icon-button {
@@ -107,32 +107,60 @@ textarea {
     }
     .dropdown {
       // align-self: flex-end;
-      visibility: none;
-      opacity: 0;
+
       display: none;
+      // visibility: none;
+      // opacity: 0;
       position: absolute;
       min-width: 150px;
-      max-width: 200px;
+      max-width: 250px;
       background-color: white;
       box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
       padding: 20px 15px;
-      z-index: 0;
+      z-index: 1;
       top: 60px;
       border-radius: 0 0 8px 8px;
-      transition: opacity 400ms, visibility 400ms;
+      // transition: opacity 400ms, visibility 400ms;
 
       flex-direction: column;
-      text-align: center;
+      // text-align: center;
       // margin: 5px 0;
+
+      .cart-item {
+        color: black;
+        display: flex;
+        justify-content: space-between;
+        height: 50px;
+        width: 200px;
+        margin-top: 5px;
+        padding: 5px 0;
+        border-top: 1px solid #c7c6c6;
+        .product-image {
+          position: relative;
+          width: 40px;
+          height: 100%;
+          img {
+            border-radius: 10px;
+          }
+        }
+        .product-name {
+          margin: 0 5px;
+          white-space: nowrap;
+          width: 50%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          text-align: left;
+        }
+      }
     }
     .icon-button:hover .dropdown,
     .profile-button:hover .dropdown {
       // display: block;
+      // visibility: visible;
+      // opacity: 1;
       display: flex;
 
-      visibility: visible;
-      opacity: 1;
-      top: 40px;
+      top: 38px;
     }
 
     .left-content {
@@ -281,7 +309,7 @@ a {
     flex-direction: column;
     align-items: center;
 
-    font-size: 13px;
+    font-size: 14px;
 
     padding: 10px 15px;
     .card-content {
@@ -349,8 +377,10 @@ a {
           margin-right: 10px;
         }
         input {
-          width: 50px;
+          width: 42px;
           text-align: center;
+          padding: 4px 0;
+          margin: 0;
         }
       }
     }
@@ -524,6 +554,12 @@ a {
       padding: 10px 0;
       text-align: justify;
       white-space: pre-wrap;
+      .product-metadata {
+        margin: 12px 0;
+        .metadata-key {
+          color: grey;
+        }
+      }
       b {
         color: $primary-color;
       }

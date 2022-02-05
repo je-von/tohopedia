@@ -17,7 +17,7 @@ const NavLink = ({ children, path, className }: { children: ReactNode; path: str
 export default function Header() {
   const router = useRouter()
   const query = gql`
-    query tes {
+    query getCurrentUser {
       getCurrentUser {
         id
         name
@@ -28,6 +28,17 @@ export default function Header() {
           name
           nameSlug
           profilePic
+        }
+        carts {
+          product {
+            id
+            name
+            price
+            images {
+              image
+            }
+          }
+          quantity
         }
       }
     }
@@ -76,7 +87,25 @@ export default function Header() {
               <div>
                 <i className="fas fa-shopping-cart"></i>
                 <div className="dropdown">
-                  <p>Empty!</p>
+                  {user && user.carts.length > 0 ? <b>Cart ({user.carts.length})</b> : ''}
+                  {user && user.carts.length > 0 ? (
+                    user.carts.map((c: any) => (
+                      <div className="cart-item" key={c.product.id}>
+                        <div className="product-image">
+                          <Image
+                            src={c.product.images.length > 0 ? c.product.images[0].image : '/asset/no-image.png'}
+                            alt="image"
+                            layout="fill"
+                            objectFit="cover"
+                          ></Image>
+                        </div>
+                        <p className="product-name">{c.product.name}</p>
+                        <b>Rp.{c.product.price}</b>
+                      </div>
+                    ))
+                  ) : (
+                    <p>Your cart is Empty!</p>
+                  )}
                 </div>
               </div>
             </NavLink>
