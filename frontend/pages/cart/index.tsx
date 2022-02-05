@@ -32,6 +32,7 @@ const Cart: NextPage = () => {
           }
         }
         quantity
+        notes
       }
     }
   `
@@ -69,6 +70,7 @@ const Cart: NextPage = () => {
                 shop={c.product.shop.name}
                 shopNameSlug={c.product.shop.nameSlug}
                 quantity={c.quantity}
+                notes={c.notes}
               ></ListCard>
             ))}
           </div>

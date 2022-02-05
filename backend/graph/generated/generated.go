@@ -58,6 +58,7 @@ type ComplexityRoot struct {
 	}
 
 	Cart struct {
+		Notes    func(childComplexity int) int
 		Product  func(childComplexity int) int
 		Quantity func(childComplexity int) int
 		User     func(childComplexity int) int
@@ -70,7 +71,7 @@ type ComplexityRoot struct {
 
 	Mutation struct {
 		Auth                func(childComplexity int) int
-		CreateCart          func(childComplexity int, productID string, quantity int) int
+		CreateCart          func(childComplexity int, productID string, quantity int, notes string) int
 		CreateProduct       func(childComplexity int, input model.NewProduct, shopID string) int
 		CreateProductImage  func(childComplexity int, image string, productID string) int
 		CreateProductImages func(childComplexity int, images []string, productID string) int
@@ -79,7 +80,7 @@ type ComplexityRoot struct {
 		DeleteCart          func(childComplexity int, productID string) int
 		Login               func(childComplexity int, email string, password string) int
 		ToggleSuspend       func(childComplexity int, id string) int
-		UpdateCart          func(childComplexity int, productID string, quantity int) int
+		UpdateCart          func(childComplexity int, productID string, quantity int, notes string) int
 		UpdateShop          func(childComplexity int, id string, input model.NewShop) int
 		UpdateUser          func(childComplexity int, id string, input model.NewUser) int
 	}
@@ -166,8 +167,8 @@ type MutationResolver interface {
 	ToggleSuspend(ctx context.Context, id string) (*model.User, error)
 	Login(ctx context.Context, email string, password string) (*model.User, error)
 	Auth(ctx context.Context) (*model.AuthOps, error)
-	CreateCart(ctx context.Context, productID string, quantity int) (*model.Cart, error)
-	UpdateCart(ctx context.Context, productID string, quantity int) (*model.Cart, error)
+	CreateCart(ctx context.Context, productID string, quantity int, notes string) (*model.Cart, error)
+	UpdateCart(ctx context.Context, productID string, quantity int, notes string) (*model.Cart, error)
 	DeleteCart(ctx context.Context, productID string) (bool, error)
 	CreateProduct(ctx context.Context, input model.NewProduct, shopID string) (*model.Product, error)
 	CreateProductImage(ctx context.Context, image string, productID string) (*model.ProductImage, error)
@@ -247,6 +248,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.AuthOps.Register(childComplexity, args["input"].(model.NewUser)), true
 
+	case "Cart.notes":
+		if e.complexity.Cart.Notes == nil {
+			break
+		}
+
+		return e.complexity.Cart.Notes(childComplexity), true
+
 	case "Cart.product":
 		if e.complexity.Cart.Product == nil {
 			break
@@ -299,7 +307,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateCart(childComplexity, args["productID"].(string), args["quantity"].(int)), true
+		return e.complexity.Mutation.CreateCart(childComplexity, args["productID"].(string), args["quantity"].(int), args["notes"].(string)), true
 
 	case "Mutation.createProduct":
 		if e.complexity.Mutation.CreateProduct == nil {
@@ -407,7 +415,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateCart(childComplexity, args["productID"].(string), args["quantity"].(int)), true
+		return e.complexity.Mutation.UpdateCart(childComplexity, args["productID"].(string), args["quantity"].(int), args["notes"].(string)), true
 
 	case "Mutation.updateShop":
 		if e.complexity.Mutation.UpdateShop == nil {
@@ -900,6 +908,7 @@ var sources = []*ast.Source{
   user: User! @goField(forceResolver: true)
   product: Product! @goField(forceResolver: true)
   quantity: Int!
+  notes: String!
 }
 
 extend type Query {
@@ -908,8 +917,8 @@ extend type Query {
 }
 
 extend type Mutation {
-  createCart(productID: ID!, quantity: Int!): Cart! @auth
-  updateCart(productID: ID!, quantity: Int!): Cart! @auth
+  createCart(productID: ID!, quantity: Int!, notes: String!): Cart! @auth
+  updateCart(productID: ID!, quantity: Int!, notes: String!): Cart! @auth
   deleteCart(productID: ID!): Boolean! @auth
 }
 `, BuiltIn: false},
@@ -1138,6 +1147,15 @@ func (ec *executionContext) field_Mutation_createCart_args(ctx context.Context, 
 		}
 	}
 	args["quantity"] = arg1
+	var arg2 string
+	if tmp, ok := rawArgs["notes"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("notes"))
+		arg2, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["notes"] = arg2
 	return args, nil
 }
 
@@ -1318,6 +1336,15 @@ func (ec *executionContext) field_Mutation_updateCart_args(ctx context.Context, 
 		}
 	}
 	args["quantity"] = arg1
+	var arg2 string
+	if tmp, ok := rawArgs["notes"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("notes"))
+		arg2, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["notes"] = arg2
 	return args, nil
 }
 
@@ -1752,6 +1779,41 @@ func (ec *executionContext) _Cart_quantity(ctx context.Context, field graphql.Co
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Cart_notes(ctx context.Context, field graphql.CollectedField, obj *model.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Notes, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Category_id(ctx context.Context, field graphql.CollectedField, obj *model.Category) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -2051,7 +2113,7 @@ func (ec *executionContext) _Mutation_createCart(ctx context.Context, field grap
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().CreateCart(rctx, args["productID"].(string), args["quantity"].(int))
+			return ec.resolvers.Mutation().CreateCart(rctx, args["productID"].(string), args["quantity"].(int), args["notes"].(string))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.Auth == nil {
@@ -2113,7 +2175,7 @@ func (ec *executionContext) _Mutation_updateCart(ctx context.Context, field grap
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().UpdateCart(rctx, args["productID"].(string), args["quantity"].(int))
+			return ec.resolvers.Mutation().UpdateCart(rctx, args["productID"].(string), args["quantity"].(int), args["notes"].(string))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.Auth == nil {
@@ -5946,6 +6008,11 @@ func (ec *executionContext) _Cart(ctx context.Context, sel ast.SelectionSet, obj
 			})
 		case "quantity":
 			out.Values[i] = ec._Cart_quantity(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "notes":
+			out.Values[i] = ec._Cart_notes(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}

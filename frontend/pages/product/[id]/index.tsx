@@ -20,6 +20,8 @@ const ProductDetail: NextPage = () => {
   const router = useRouter()
   const { id } = router.query
   const [subtotal, setSubtotal] = useState(0)
+  const [errorMsg, setErrorMsg] = useState('')
+
   // const [metadata, ]
 
   const query = gql`
@@ -48,12 +50,36 @@ const ProductDetail: NextPage = () => {
 
   const { loading, data, error } = useQuery(query, { variables: { id: id } })
 
-  if (loading) {
+  const mutation = gql`
+    mutation addToCart($productID: ID!, $quantity: Int!, $notes: String!) {
+      createCart(productID: $productID, quantity: $quantity, notes: $notes) {
+        product {
+          name
+        }
+        user {
+          name
+        }
+        quantity
+        notes
+      }
+    }
+  `
+  const [addToCart, { data: d, loading: l, error: e }] = useMutation(mutation)
+
+  if (loading || l) {
     return <>Loading...</>
   }
 
   if (error) {
     return <>{error.message}</>
+  }
+
+  if (d && d.createCart) {
+    router.push(links.cart, undefined, { shallow: true })
+  }
+
+  if (e) {
+    console.log(e.message)
   }
 
   let product: any = null
@@ -77,6 +103,28 @@ const ProductDetail: NextPage = () => {
   const handleQuantity = (e: any) => {
     let quantity = e.target.value > 0 ? e.target.value : 1
     setSubtotal(product.price * quantity)
+  }
+
+  const handleAddToCart = async () => {
+    let quantity = (document.getElementById('quantity') as HTMLInputElement).value
+    let notes = (document.getElementById('notes') as HTMLInputElement).value
+
+    // console.log(quantity, notes)
+    if (!quantity || !notes) {
+      setErrorMsg('Quantity and Notes must be filled!')
+    } else {
+      try {
+        await addToCart({
+          variables: {
+            productID: product.id,
+            quantity: quantity,
+            notes: notes,
+          },
+        })
+      } catch (e) {
+        setErrorMsg('Please login first!')
+      }
+    }
   }
 
   return (
@@ -145,8 +193,11 @@ const ProductDetail: NextPage = () => {
               <b className="multi-input-item">Rp{subtotal}</b>
             </div>
             <div className="product-button">
-              <button className="text-button">+ Add to Cart</button>
+              <button className="text-button" onClick={handleAddToCart}>
+                + Add to Cart
+              </button>
               <button className="text-button">Buy</button>
+              <p className="error">{errorMsg}</p>
             </div>
 
             <div className="action-footer">

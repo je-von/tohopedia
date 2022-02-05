@@ -2,6 +2,7 @@ type Cart {
   user: User! @goField(forceResolver: true)
   product: Product! @goField(forceResolver: true)
   quantity: Int!
+  notes: String!
 }
 
 extend type Query {
@@ -10,7 +11,7 @@ extend type Query {
 }
 
 extend type Mutation {
-  createCart(productID: ID!, quantity: Int!): Cart! @auth
-  updateCart(productID: ID!, quantity: Int!): Cart! @auth
+  createCart(productID: ID!, quantity: Int!, notes: String!): Cart! @auth
+  updateCart(productID: ID!, quantity: Int!, notes: String!): Cart! @auth
   deleteCart(productID: ID!): Boolean! @auth
 }

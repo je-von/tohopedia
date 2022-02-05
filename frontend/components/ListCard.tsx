@@ -13,6 +13,7 @@ interface Cart {
   shop: string
   shopNameSlug: string
   quantity: number
+  notes: string
 }
 
 const ListCard = (c: Cart) => {
@@ -49,19 +50,26 @@ const ListCard = (c: Cart) => {
         </Link>
         <div className="card-footer">
           <div>
-            <i className="far fa-trash-alt"></i>
+            <p>
+              <b>Notes</b>: {c.notes}
+            </p>
           </div>
-          <input
-            className="multi-input-item"
-            min={1}
-            // max={product.stock}
-            value={quantity}
-            placeholder="1"
-            type="number"
-            name="quantity"
-            id="quantity"
-            onChange={handleQuantity}
-          />
+          <div className="left-footer">
+            <div>
+              <i className="far fa-trash-alt"></i>
+            </div>
+            <input
+              className="multi-input-item"
+              min={1}
+              // max={product.stock}
+              value={quantity}
+              placeholder="1"
+              type="number"
+              name="quantity"
+              id="quantity"
+              onChange={handleQuantity}
+            />
+          </div>
         </div>
       </div>
     </>

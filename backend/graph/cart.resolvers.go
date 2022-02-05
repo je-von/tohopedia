@@ -25,11 +25,27 @@ func (r *cartResolver) Product(ctx context.Context, obj *model.Cart) (*model.Pro
 	return product, r.DB.First(product, "id = ?", obj.ProductID).Error
 }
 
-func (r *mutationResolver) CreateCart(ctx context.Context, productID string, quantity int) (*model.Cart, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *mutationResolver) CreateCart(ctx context.Context, productID string, quantity int, notes string) (*model.Cart, error) {
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	cart, _ := service.CartGetByUserProduct(ctx, userID, productID)
+
+	if cart != nil {
+		cart.Quantity += quantity
+		cart.Notes = notes
+
+		return cart, r.DB.Save(cart).Error
+	}
+	return service.CartCreate(ctx, userID, productID, quantity, notes)
 }
 
-func (r *mutationResolver) UpdateCart(ctx context.Context, productID string, quantity int) (*model.Cart, error) {
+func (r *mutationResolver) UpdateCart(ctx context.Context, productID string, quantity int, notes string) (*model.Cart, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 

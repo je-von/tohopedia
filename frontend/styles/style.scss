@@ -116,7 +116,7 @@ textarea {
       background-color: white;
       box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
       padding: 20px 15px;
-      z-index: 1;
+      z-index: 0;
       top: 60px;
       border-radius: 0 0 8px 8px;
       transition: opacity 400ms, visibility 400ms;
@@ -151,7 +151,9 @@ textarea {
         justify-content: center;
         margin-left: 10px;
         height: 100%;
-
+        p {
+          z-index: 100;
+        }
         cursor: pointer;
         .profile-pic {
           margin-right: 5px;
@@ -160,6 +162,7 @@ textarea {
           height: 4vh;
           img {
             border-radius: 50%;
+            z-index: 100;
           }
         }
       }
@@ -331,16 +334,23 @@ a {
     .card-footer {
       width: 100%;
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
       align-items: center;
-      i {
-        font-size: 16px;
+      p {
         color: grey;
-        margin-right: 10px;
       }
-      input {
-        width: 50px;
-        text-align: center;
+      .left-footer {
+        display: flex;
+        align-items: center;
+        i {
+          font-size: 16px;
+          color: grey;
+          margin-right: 10px;
+        }
+        input {
+          width: 50px;
+          text-align: center;
+        }
       }
     }
     .store-link {
