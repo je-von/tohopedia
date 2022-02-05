@@ -10,7 +10,7 @@ var UserSession = (function () {
 
   var setCurrentUser = function (user: any) {
     u = user
-    console.log(u)
+    // console.log(u)
   }
 
   return {

@@ -286,7 +286,7 @@ a {
     padding: 10px 15px;
     .card-content {
       width: 100%;
-      height: 8vh;
+      height: 10vh;
       display: flex;
       flex-direction: row;
       align-items: center;
@@ -303,6 +303,7 @@ a {
         display: flex;
         flex-direction: column;
         margin-left: 10px;
+        width: 90%;
         .product-name {
           margin: 5px 0;
           white-space: nowrap;

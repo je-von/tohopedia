@@ -46,11 +46,45 @@ func (r *mutationResolver) CreateCart(ctx context.Context, productID string, qua
 }
 
 func (r *mutationResolver) UpdateCart(ctx context.Context, productID string, quantity int, notes string) (*model.Cart, error) {
-	panic(fmt.Errorf("not implemented"))
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	cart, _ := service.CartGetByUserProduct(ctx, userID, productID)
+
+	if cart == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, cart gaada",
+		}
+	}
+	if quantity > 0 {
+		cart.Quantity = quantity
+		// cart.Notes = notes
+
+		return cart, r.DB.Save(cart).Error
+	}
+	return cart, r.DB.Delete(cart).Error
 }
 
 func (r *mutationResolver) DeleteCart(ctx context.Context, productID string) (bool, error) {
-	panic(fmt.Errorf("not implemented"))
+	if ctx.Value("auth") == nil {
+		return false, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	model := new(model.Cart)
+	if err := r.DB.First(model, "user_id = ? AND product_id = ?", userID, productID).Error; err != nil {
+		return false, err
+	}
+
+	return true, r.DB.Delete(model).Error
 }
 
 func (r *queryResolver) Cart(ctx context.Context, productID string) (*model.Cart, error) {

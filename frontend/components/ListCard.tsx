@@ -1,6 +1,8 @@
+import { gql, useMutation } from '@apollo/client'
 import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import React, { ReactNode, useState } from 'react'
 import { links } from '../util/route-links'
 
@@ -17,11 +19,47 @@ interface Cart {
 }
 
 const ListCard = (c: Cart) => {
+  const router = useRouter()
+
   const [quantity, setQuantity] = useState(c.quantity)
 
+  const updateMutation = gql`
+    mutation updateCart($productID: ID!, $quantity: Int!, $notes: String!) {
+      updateCart(productID: $productID, quantity: $quantity, notes: $notes) {
+        product {
+          name
+        }
+        quantity
+      }
+    }
+  `
+  const [updateCart, { data, loading, error }] = useMutation(updateMutation)
+
+  const deleteMutation = gql`
+    mutation deleteCart($productID: ID!) {
+      deleteCart(productID: $productID)
+    }
+  `
+  const [deleteCart, { data: d, loading: l, error: e }] = useMutation(deleteMutation)
+
   const handleQuantity = (e: any) => {
+    let productID = e.target.accessKey
     setQuantity(e.target.value)
+
+    updateCart({ variables: { productID: productID, quantity: e.target.value, notes: '' } })
   }
+
+  const handleDeleteCart = (e: any) => {
+    // console.log(e.target.accessKey)
+    let productID = e.target.accessKey
+
+    deleteCart({ variables: { productID: productID } })
+  }
+
+  if (d && d.deleteCart) {
+    router.reload()
+  }
+
   return (
     <>
       <div className="card">
@@ -56,7 +94,7 @@ const ListCard = (c: Cart) => {
           </div>
           <div className="left-footer">
             <div>
-              <i className="far fa-trash-alt"></i>
+              <i accessKey={c.productID} className="far fa-trash-alt" onClick={handleDeleteCart}></i>
             </div>
             <input
               className="multi-input-item"
@@ -67,7 +105,11 @@ const ListCard = (c: Cart) => {
               type="number"
               name="quantity"
               id="quantity"
+              accessKey={c.productID}
               onChange={handleQuantity}
+              // onChange={(e) => {
+              //   console.log(e.target.key)
+              // }}
             />
           </div>
         </div>

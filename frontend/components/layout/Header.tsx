@@ -43,7 +43,7 @@ export default function Header() {
   if (data && data.getCurrentUser) {
     user = data.getCurrentUser
     UserSession.setCurrentUser(user)
-    console.log(user.shop)
+    // console.log(user.shop)
   }
 
   return (
