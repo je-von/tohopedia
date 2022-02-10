@@ -2,7 +2,7 @@ import { ReactNode, useState } from 'react'
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { gql, useQuery } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import { getCookie, removeCookies } from 'cookies-next'
 import { useRouter } from 'next/router'
 import UserSession from '../../util/user-session'
@@ -53,14 +53,27 @@ export default function Header() {
 
   const { loading, data, error } = useQuery(query)
 
+  const mutation = gql`
+    mutation togglePrimary($id: ID!) {
+      togglePrimary(id: $id) {
+        id
+        isPrimary
+      }
+    }
+  `
+  const [togglePrimary, { data: d, loading: l, error: e }] = useMutation(mutation)
+
   if (loading) {
     return <>Loading...</>
   }
 
   let user: any = null
+  let primaryAddress: any = null
   if (data && data.getCurrentUser) {
     user = data.getCurrentUser
     UserSession.setCurrentUser(user)
+
+    primaryAddress = user.addresses.length > 0 ? user.addresses[0].id : null
     // console.log(user.shop)
   }
 
@@ -80,6 +93,18 @@ export default function Header() {
     //   }
     // )
   })
+
+  const handleChooseAddress = async (e: any) => {
+    // console.log(e.target.accessKey)
+    // console.log('primary: ' + primaryAddress)
+
+    try {
+      await togglePrimary({ variables: { id: e.target.accessKey } })
+      await togglePrimary({ variables: { id: primaryAddress } })
+
+      router.reload()
+    } catch (e) {}
+  }
 
   return (
     <>
@@ -268,7 +293,13 @@ export default function Header() {
                                       <p className="address-detail">{a.detail}</p>
                                     </div>
                                     <div className="action">
-                                      {a.isPrimary ? <i className="far fa-check"></i> : <div className="text-button">Choose</div>}
+                                      {a.isPrimary ? (
+                                        <i className="far fa-check"></i>
+                                      ) : (
+                                        <div className="text-button" accessKey={a.id} onClick={handleChooseAddress}>
+                                          Choose
+                                        </div>
+                                      )}
                                     </div>
                                   </div>
                                 ))}
