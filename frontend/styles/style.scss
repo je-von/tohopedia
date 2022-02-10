@@ -234,50 +234,50 @@ a {
   width: 400px;
   padding: 30px 0;
   margin: 10vh 0;
-  .form-content {
+}
+.form-content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0 40px;
+  font-size: 14px;
+
+  .container-header {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 25px;
+    align-items: center;
+    h3 {
+      font-size: 24px;
+    }
+  }
+  .form-input {
     display: flex;
     flex-direction: column;
-    width: 100%;
-    padding: 0 40px;
-    font-size: 14px;
-
-    .container-header {
+    margin-top: 25px;
+    textarea {
+      resize: vertical;
+    }
+    .multi-title {
       display: flex;
-      justify-content: space-between;
-      margin-top: 25px;
       align-items: center;
-      h3 {
-        font-size: 24px;
+      .text-button {
+        margin-left: 10px;
+        width: 25px;
+        padding: 0;
       }
     }
-    .form-input {
-      display: flex;
-      flex-direction: column;
-      margin-top: 25px;
-      textarea {
-        resize: vertical;
-      }
-      .multi-title {
-        display: flex;
-        align-items: center;
-        .text-button {
-          margin-left: 10px;
-          width: 25px;
-          padding: 0;
-        }
-      }
-    }
+  }
 
-    button {
-      margin-top: 50px;
-      background-color: $primary-color;
-      color: #ffffff;
-      padding: 10px 0;
-      font-weight: bold;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-    }
+  button {
+    margin-top: 50px;
+    background-color: $primary-color;
+    color: #ffffff;
+    padding: 10px 0;
+    font-weight: bold;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
   }
 }
 

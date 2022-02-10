@@ -8,6 +8,7 @@ import { useRouter } from 'next/router'
 import UserSession from '../../util/user-session'
 import { links } from '../../util/route-links'
 import Geocode from 'react-geocode'
+import Modal from '../Modal'
 const NavLink = ({ children, path, className }: { children: ReactNode; path: string; className: string }) => (
   <div className={className}>
     <Link href={path}>{children}</Link>
@@ -16,6 +17,8 @@ const NavLink = ({ children, path, className }: { children: ReactNode; path: str
 
 export default function Header() {
   const [modal, setModal] = useState(<></>)
+  const [errorMsg, setErrorMsg] = useState('')
+
   const router = useRouter()
   const query = gql`
     query getCurrentUser {
@@ -53,15 +56,25 @@ export default function Header() {
 
   const { loading, data, error } = useQuery(query)
 
-  const mutation = gql`
+  const [togglePrimary, { data: d, loading: l, error: e }] = useMutation(gql`
     mutation togglePrimary($id: ID!) {
       togglePrimary(id: $id) {
         id
         isPrimary
       }
     }
-  `
-  const [togglePrimary, { data: d, loading: l, error: e }] = useMutation(mutation)
+  `)
+
+  const [createAddress, { data: d2, loading: l2, error: e2 }] = useMutation(gql`
+    mutation createAddress($name: String!, $detail: String!, $isPrimary: Boolean!) {
+      createAddress(name: $name, detail: $detail, isPrimary: $isPrimary) {
+        id
+        name
+        detail
+        isPrimary
+      }
+    }
+  `)
 
   if (loading) {
     return <>Loading...</>
@@ -104,6 +117,60 @@ export default function Header() {
 
       router.reload()
     } catch (e) {}
+  }
+
+  const showAddAddressForm = () => {
+    setModal(
+      <Modal
+        modalHeader={
+          <>
+            <h2>Add Address</h2>
+            <i
+              className="fas fa-times"
+              onClick={() => {
+                setModal(<></>)
+              }}
+            ></i>
+          </>
+        }
+        modalContent={
+          <div className="form-content">
+            <div className="form-input">
+              <label htmlFor="address_name">Address Name</label>
+              <input type="text" id="address_name" name="address_name" placeholder="Example Address" required />
+            </div>
+
+            <div className="form-input">
+              <label htmlFor="address_detail">Address Detail</label>
+              <textarea id="address_detail" name="address_detail" placeholder="Example Street" required></textarea>
+            </div>
+          </div>
+        }
+        modalExtras={
+          <>
+            <div
+              className="text-button"
+              onClick={async () => {
+                let name = (document.getElementById('address_name') as HTMLInputElement).value
+                let detail = (document.getElementById('address_detail') as HTMLInputElement).value
+
+                if (!name || !detail) {
+                  setErrorMsg('All field must be filled!')
+                } else {
+                  try {
+                    await createAddress({ variables: { name: name, detail: detail, isPrimary: user.addresses.length <= 0 } })
+                    router.reload()
+                  } catch (e) {}
+                }
+              }}
+            >
+              Add
+            </div>
+            {errorMsg}
+          </>
+        }
+      ></Modal>
+    )
   }
 
   return (
@@ -263,58 +330,62 @@ export default function Header() {
           <div className="shipping-button">
             <>
               <i className="fas fa-map-marker-alt"></i>
-              Dikirim ke{' '}
-              <b>
-                {user && user.addresses.length > 0 ? (
-                  <>
-                    {user.addresses[0].name}
-                    <i
-                      className="fas fa-caret-down"
-                      onClick={() => {
-                        setModal(
-                          <div className="modal-overlay">
-                            <div className="modal">
-                              <div className="modal-header">
-                                <h2>Choose Address</h2>
-                                <i
-                                  className="fas fa-times"
-                                  onClick={() => {
-                                    setModal(<></>)
-                                  }}
-                                ></i>
-                              </div>
-                              <div className="modal-content">
-                                {user.addresses.map((a: any) => (
-                                  <div className={'address-list ' + (a.isPrimary ? 'primary' : '')} key={a.id}>
-                                    <div className="address-content">
-                                      <p className="address-header">
-                                        {a.name} {a.isPrimary ? <b className="primary-tag">Primary</b> : ''}
-                                      </p>
-                                      <p className="address-detail">{a.detail}</p>
-                                    </div>
-                                    <div className="action">
-                                      {a.isPrimary ? (
-                                        <i className="far fa-check"></i>
-                                      ) : (
-                                        <div className="text-button" accessKey={a.id} onClick={handleChooseAddress}>
-                                          Choose
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                              <div className="text-button">Choose Other Address</div>
-                            </div>
+              Dikirim ke <b>{user && user.addresses.length > 0 ? <>{user.addresses[0].name}</> : 'Jakarta Barat'}</b>
+              <i
+                className="fas fa-caret-down"
+                onClick={() => {
+                  setModal(
+                    <Modal
+                      modalHeader={
+                        <>
+                          <h2>Choose Address</h2>
+                          <i
+                            className="fas fa-times"
+                            onClick={() => {
+                              setModal(<></>)
+                            }}
+                          ></i>
+                        </>
+                      }
+                      modalContent={user.addresses.map((a: any) => (
+                        <div className={'address-list ' + (a.isPrimary ? 'primary' : '')} key={a.id}>
+                          <div className="address-content">
+                            <p className="address-header">
+                              {a.name} {a.isPrimary ? <b className="primary-tag">Primary</b> : ''}
+                            </p>
+                            <p className="address-detail">{a.detail}</p>
                           </div>
-                        )
-                      }}
-                    ></i>
-                  </>
-                ) : (
-                  'Jakarta Barat'
-                )}
-              </b>
+                          <div className="action">
+                            {a.isPrimary ? (
+                              <i className="far fa-check"></i>
+                            ) : (
+                              <div className="text-button" accessKey={a.id} onClick={handleChooseAddress}>
+                                Choose
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                      modalExtras={
+                        <div className="text-button" onClick={showAddAddressForm}>
+                          Add Address
+                        </div>
+                      }
+                    ></Modal>
+                    // <div className="modal-overlay">
+                    //   <div className="modal">
+                    //     <div className="modal-header">
+
+                    //     </div>
+                    //     <div className="modal-content">
+
+                    //     </div>
+                    //
+                    //   </div>
+                    // </div>
+                  )
+                }}
+              ></i>
             </>
           </div>
         </div>
