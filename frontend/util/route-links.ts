@@ -1,7 +1,7 @@
 export const links = {
   home: '/',
-  login: '/auth/login',
-  register: '/auth/register',
+  login: '/user/auth/login',
+  register: '/user/auth/register',
   openShop: '/shop/open',
   sellProduct: '/product/sell',
   cart: '/cart',
@@ -11,4 +11,5 @@ export const links = {
   productDetail: (productID: string) => {
     return '/product/' + productID
   },
+  editProfile: '/user/edit',
 }

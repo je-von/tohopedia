@@ -2,15 +2,16 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../../../styles/Home.module.css'
-import Layout from '../../components/layout/Layout'
+import Layout from '../../../components/layout/Layout'
 import Link from 'next/link'
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { useState } from 'react'
 import { redirect } from 'next/dist/server/api-utils'
 import { url } from 'inspector'
 import { useRouter } from 'next/router'
-import UserSession from '../../util/user-session'
+import UserSession from '../../../util/user-session'
 import { setCookies } from 'cookies-next'
+import { links } from '../../../util/route-links'
 const Login: NextPage = () => {
   const router = useRouter()
   const [credential, setCredential] = useState([''])
@@ -66,7 +67,7 @@ const Login: NextPage = () => {
           <div className="form-content">
             <div className="container-header">
               <h3>Login</h3>
-              <Link href="/user/register">Sign Up</Link>
+              <Link href={links.register}>Sign Up</Link>
             </div>
             <div className="form-input">
               <label htmlFor="email">Email</label>

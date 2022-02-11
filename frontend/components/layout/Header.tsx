@@ -300,6 +300,9 @@ export default function Header() {
                     </div>
                     <p>{user.name}</p>
                     <div className="dropdown">
+                      <Link href={links.editProfile} passHref>
+                        <div className="text-button">Edit Profile</div>
+                      </Link>
                       <button
                         className="text-button"
                         onClick={() => {
@@ -331,61 +334,65 @@ export default function Header() {
             <>
               <i className="fas fa-map-marker-alt"></i>
               Dikirim ke <b>{user && user.addresses.length > 0 ? <>{user.addresses[0].name}</> : 'Jakarta Barat'}</b>
-              <i
-                className="fas fa-caret-down"
-                onClick={() => {
-                  setModal(
-                    <Modal
-                      modalHeader={
-                        <>
-                          <h2>Choose Address</h2>
-                          <i
-                            className="fas fa-times"
-                            onClick={() => {
-                              setModal(<></>)
-                            }}
-                          ></i>
-                        </>
-                      }
-                      modalContent={user.addresses.map((a: any) => (
-                        <div className={'address-list ' + (a.isPrimary ? 'primary' : '')} key={a.id}>
-                          <div className="address-content">
-                            <p className="address-header">
-                              {a.name} {a.isPrimary ? <b className="primary-tag">Primary</b> : ''}
-                            </p>
-                            <p className="address-detail">{a.detail}</p>
+              {user ? (
+                <i
+                  className="fas fa-caret-down"
+                  onClick={() => {
+                    setModal(
+                      <Modal
+                        modalHeader={
+                          <>
+                            <h2>Choose Address</h2>
+                            <i
+                              className="fas fa-times"
+                              onClick={() => {
+                                setModal(<></>)
+                              }}
+                            ></i>
+                          </>
+                        }
+                        modalContent={user.addresses.map((a: any) => (
+                          <div className={'address-list ' + (a.isPrimary ? 'primary' : '')} key={a.id}>
+                            <div className="address-content">
+                              <p className="address-header">
+                                {a.name} {a.isPrimary ? <b className="primary-tag">Primary</b> : ''}
+                              </p>
+                              <p className="address-detail">{a.detail}</p>
+                            </div>
+                            <div className="action">
+                              {a.isPrimary ? (
+                                <i className="far fa-check"></i>
+                              ) : (
+                                <div className="text-button" accessKey={a.id} onClick={handleChooseAddress}>
+                                  Choose
+                                </div>
+                              )}
+                            </div>
                           </div>
-                          <div className="action">
-                            {a.isPrimary ? (
-                              <i className="far fa-check"></i>
-                            ) : (
-                              <div className="text-button" accessKey={a.id} onClick={handleChooseAddress}>
-                                Choose
-                              </div>
-                            )}
+                        ))}
+                        modalExtras={
+                          <div className="text-button" onClick={showAddAddressForm}>
+                            Add Address
                           </div>
-                        </div>
-                      ))}
-                      modalExtras={
-                        <div className="text-button" onClick={showAddAddressForm}>
-                          Add Address
-                        </div>
-                      }
-                    ></Modal>
-                    // <div className="modal-overlay">
-                    //   <div className="modal">
-                    //     <div className="modal-header">
+                        }
+                      ></Modal>
+                      // <div className="modal-overlay">
+                      //   <div className="modal">
+                      //     <div className="modal-header">
 
-                    //     </div>
-                    //     <div className="modal-content">
+                      //     </div>
+                      //     <div className="modal-content">
 
-                    //     </div>
-                    //
-                    //   </div>
-                    // </div>
-                  )
-                }}
-              ></i>
+                      //     </div>
+                      //
+                      //   </div>
+                      // </div>
+                    )
+                  }}
+                ></i>
+              ) : (
+                ''
+              )}
             </>
           </div>
         </div>

@@ -46,8 +46,30 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
 	return model, err
 }
 
-func (r *mutationResolver) UpdateUser(ctx context.Context, id string, input model.NewUser) (*model.User, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *mutationResolver) UpdateUser(ctx context.Context, input model.NewUser) (*model.User, error) {
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	user, _ := service.UserGetByID(ctx, userID)
+
+	if user == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, user gaada",
+		}
+	}
+	user.Name = input.Name
+	user.Email = input.Email
+	user.Dob = input.Dob
+	user.Gender = input.Gender
+	user.Phone = input.Phone
+	user.ProfilePic = input.ProfilePic
+
+	return user, r.DB.Save(user).Error
 }
 
 func (r *mutationResolver) ToggleSuspend(ctx context.Context, id string) (*model.User, error) {
@@ -126,7 +148,6 @@ func (r *userResolver) Carts(ctx context.Context, obj *model.User) ([]*model.Car
 func (r *userResolver) Addresses(ctx context.Context, obj *model.User) ([]*model.Address, error) {
 	var models []*model.Address
 	return models, r.DB.Where("user_id = ?", obj.ID).Order("is_primary DESC").Find(&models).Error
-
 }
 
 // AuthOps returns generated.AuthOpsResolver implementation.

@@ -93,7 +93,7 @@ type ComplexityRoot struct {
 		ToggleSuspend       func(childComplexity int, id string) int
 		UpdateCart          func(childComplexity int, productID string, quantity int, notes string) int
 		UpdateShop          func(childComplexity int, id string, input model.NewShop) int
-		UpdateUser          func(childComplexity int, id string, input model.NewUser) int
+		UpdateUser          func(childComplexity int, input model.NewUser) int
 	}
 
 	Product struct {
@@ -180,7 +180,7 @@ type CartResolver interface {
 }
 type MutationResolver interface {
 	CreateUser(ctx context.Context, input model.NewUser) (*model.User, error)
-	UpdateUser(ctx context.Context, id string, input model.NewUser) (*model.User, error)
+	UpdateUser(ctx context.Context, input model.NewUser) (*model.User, error)
 	ToggleSuspend(ctx context.Context, id string) (*model.User, error)
 	Login(ctx context.Context, email string, password string) (*model.User, error)
 	Auth(ctx context.Context) (*model.AuthOps, error)
@@ -520,7 +520,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateUser(childComplexity, args["id"].(string), args["input"].(model.NewUser)), true
+		return e.complexity.Mutation.UpdateUser(childComplexity, args["input"].(model.NewUser)), true
 
 	case "Product.category":
 		if e.complexity.Product.Category == nil {
@@ -1188,7 +1188,7 @@ type Query {
 
 type Mutation {
   createUser(input: NewUser!): User!
-  updateUser(id: ID!, input: NewUser!): User!
+  updateUser(input: NewUser!): User! @auth
   toggleSuspend(id: ID!): User! # block / unblock
   login(email: String!, password: String!): User!
 
@@ -1549,24 +1549,15 @@ func (ec *executionContext) field_Mutation_updateShop_args(ctx context.Context, 
 func (ec *executionContext) field_Mutation_updateUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["id"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["id"] = arg0
-	var arg1 model.NewUser
+	var arg0 model.NewUser
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg1, err = ec.unmarshalNNewUser2githubᚗcomᚋjeᚑvonᚋTPAᚑWebᚑJVᚋbackendᚋgraphᚋmodelᚐNewUser(ctx, tmp)
+		arg0, err = ec.unmarshalNNewUser2githubᚗcomᚋjeᚑvonᚋTPAᚑWebᚑJVᚋbackendᚋgraphᚋmodelᚐNewUser(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["input"] = arg1
+	args["input"] = arg0
 	return args, nil
 }
 
@@ -2314,8 +2305,28 @@ func (ec *executionContext) _Mutation_updateUser(ctx context.Context, field grap
 	}
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateUser(rctx, args["id"].(string), args["input"].(model.NewUser))
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().UpdateUser(rctx, args["input"].(model.NewUser))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.Auth == nil {
+				return nil, errors.New("directive auth is not implemented")
+			}
+			return ec.directives.Auth(ctx, nil, directive0)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.User); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/je-von/TPA-Web-JV/backend/graph/model.User`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)

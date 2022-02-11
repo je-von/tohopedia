@@ -37,7 +37,7 @@ type Query {
 
 type Mutation {
   createUser(input: NewUser!): User!
-  updateUser(id: ID!, input: NewUser!): User!
+  updateUser(input: NewUser!): User! @auth
   toggleSuspend(id: ID!): User! # block / unblock
   login(email: String!, password: String!): User!
 

@@ -120,7 +120,7 @@ textarea {
       box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
       padding: 20px 15px;
       z-index: 1;
-      top: 60px;
+      // top: 40px;
       border-radius: 0 0 8px 8px;
       // transition: opacity 400ms, visibility 400ms;
 
@@ -162,7 +162,7 @@ textarea {
       // opacity: 1;
       display: flex;
 
-      top: 38px;
+      top: 4vh;
     }
 
     .left-content {
@@ -185,18 +185,18 @@ textarea {
           z-index: 100;
         }
         cursor: pointer;
-        .profile-pic {
-          margin-right: 5px;
-          position: relative;
-          width: 4vh;
-          height: 4vh;
-          img {
-            border-radius: 50%;
-            z-index: 100;
-          }
-        }
       }
     }
+  }
+}
+.profile-pic {
+  margin-right: 5px;
+  position: relative;
+  width: 4vh;
+  height: 4vh;
+  img {
+    border-radius: 50%;
+    z-index: 100;
   }
 }
 
@@ -715,6 +715,8 @@ a {
       height: 100%;
       width: 100%;
       flex-grow: 1;
+      overflow-y: scroll;
+      padding: 0 10px;
       .address-list {
         width: 100%;
         margin: 10px 0;
