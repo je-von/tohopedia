@@ -53,7 +53,7 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, input model.NewUser) 
 		}
 	}
 
-	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+	userID := ctx.Value("auth").(*service.JwtCustom).ID
 
 	user, _ := service.UserGetByID(ctx, userID)
 
@@ -124,7 +124,7 @@ func (r *queryResolver) GetCurrentUser(ctx context.Context) (*model.User, error)
 		}
 	}
 
-	id := ctx.Value("auth").(*service.JwtCustomClaim).ID
+	id := ctx.Value("auth").(*service.JwtCustom).ID
 
 	return service.UserGetByID(ctx, id)
 }

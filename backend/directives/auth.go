@@ -12,7 +12,7 @@ func Auth(ctx context.Context, obj interface{}, next graphql.Resolver) (interfac
 	tokenData := middlewares.CtxValue(ctx)
 	if tokenData == nil {
 		return nil, &gqlerror.Error{
-			Message: "Access Denied",
+			Message: "access denied, belom login",
 		}
 	}
 

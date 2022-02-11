@@ -32,7 +32,7 @@ func (r *mutationResolver) CreateCart(ctx context.Context, productID string, qua
 		}
 	}
 
-	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+	userID := ctx.Value("auth").(*service.JwtCustom).ID
 
 	cart, _ := service.CartGetByUserProduct(ctx, userID, productID)
 
@@ -52,7 +52,7 @@ func (r *mutationResolver) UpdateCart(ctx context.Context, productID string, qua
 		}
 	}
 
-	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+	userID := ctx.Value("auth").(*service.JwtCustom).ID
 
 	cart, _ := service.CartGetByUserProduct(ctx, userID, productID)
 
@@ -77,7 +77,7 @@ func (r *mutationResolver) DeleteCart(ctx context.Context, productID string) (bo
 		}
 	}
 
-	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+	userID := ctx.Value("auth").(*service.JwtCustom).ID
 
 	model := new(model.Cart)
 	if err := r.DB.First(model, "user_id = ? AND product_id = ?", userID, productID).Error; err != nil {
@@ -98,7 +98,7 @@ func (r *queryResolver) Carts(ctx context.Context) ([]*model.Cart, error) {
 		}
 	}
 
-	id := ctx.Value("auth").(*service.JwtCustomClaim).ID
+	id := ctx.Value("auth").(*service.JwtCustom).ID
 
 	var models []*model.Cart
 	return models, r.DB.Where("user_id = ?", id).Find(&models).Error

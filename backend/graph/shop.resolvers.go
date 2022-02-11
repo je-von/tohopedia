@@ -20,7 +20,7 @@ func (r *mutationResolver) CreateShop(ctx context.Context, input model.NewShop) 
 		}
 	}
 
-	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+	userID := ctx.Value("auth").(*service.JwtCustom).ID
 
 	shop, _ := service.ShopGetByUserID(ctx, userID)
 
@@ -57,7 +57,7 @@ func (r *mutationResolver) UpdateShop(ctx context.Context, input model.NewShop) 
 		}
 	}
 
-	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+	userID := ctx.Value("auth").(*service.JwtCustom).ID
 
 	shop, _ := service.ShopGetByUserID(ctx, userID)
 

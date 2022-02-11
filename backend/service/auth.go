@@ -36,10 +36,9 @@ func UserRegister(ctx context.Context, input model.NewUser) (interface{}, error)
 func UserLogin(ctx context.Context, email string, password string) (interface{}, error) {
 	getUser, err := UserGetByEmail(ctx, email)
 	if err != nil {
-		// if user not found
 		if err == gorm.ErrRecordNotFound {
 			return nil, &gqlerror.Error{
-				Message: "Email not found",
+				Message: "user ga ketemu",
 			}
 		}
 		return nil, err

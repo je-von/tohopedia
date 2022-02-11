@@ -23,44 +23,25 @@ func GetDB() *gorm.DB {
 
 func init() {
 	godotenv.Load()
-	connectDatabase()
-}
-
-func connectDatabase() {
-
 	databaseConfig := "root:@tcp(127.0.0.1:3306)/tohopedia-jv?charset=utf8mb4&parseTime=True&loc=Local"
 
 	var err error
-	db, err = gorm.Open(mysql.Open(databaseConfig), initConfig())
 
-	if err != nil {
-		panic("Fail To Connect Database")
-	}
-}
-
-//InitConfig Initialize Config
-func initConfig() *gorm.Config {
-	return &gorm.Config{
-		Logger:         initLog(),
-		NamingStrategy: initNamingStrategy(),
-	}
-}
-
-//InitLog Connection Log Configuration
-func initLog() logger.Interface {
 	f, _ := os.Create("gorm.log")
 	newLogger := logger.New(log.New(io.MultiWriter(f), "\r\n", log.LstdFlags), logger.Config{
 		Colorful:      true,
 		LogLevel:      logger.Info,
 		SlowThreshold: time.Second,
 	})
-	return newLogger
-}
+	db, err = gorm.Open(mysql.Open(databaseConfig), &gorm.Config{
+		Logger: newLogger,
+		NamingStrategy: &schema.NamingStrategy{
+			SingularTable: false,
+			TablePrefix:   "",
+		},
+	})
 
-//InitNamingStrategy Init NamingStrategy
-func initNamingStrategy() *schema.NamingStrategy {
-	return &schema.NamingStrategy{
-		SingularTable: false,
-		TablePrefix:   "",
+	if err != nil {
+		panic("Error Connect Database")
 	}
 }

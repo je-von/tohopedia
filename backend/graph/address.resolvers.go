@@ -26,7 +26,7 @@ func (r *mutationResolver) CreateAddress(ctx context.Context, name string, detai
 		}
 	}
 
-	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+	userID := ctx.Value("auth").(*service.JwtCustom).ID
 
 	model := &model.Address{
 		ID:        uuid.NewString(),

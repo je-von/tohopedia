@@ -3,12 +3,13 @@ package service
 import (
 	"context"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
 )
 
-type JwtCustomClaim struct {
+type JwtCustom struct {
 	ID string `json:"id"`
 	jwt.StandardClaims
 }
@@ -16,15 +17,15 @@ type JwtCustomClaim struct {
 var jwtSecret = []byte(getJwtSecret())
 
 func getJwtSecret() string {
-	// secret := os.Getenv("JWT_SECRET")
-	// if secret == "" {
-	// 	return "aSecret"
-	// }
-	return ""
+	secret := os.Getenv("JWT_SECRET")
+	if secret == "" {
+		return "jevon_tohopedia_secret"
+	}
+	return secret
 }
 
 func JwtGenerate(ctx context.Context, userID string) (string, error) {
-	t := jwt.NewWithClaims(jwt.SigningMethodHS256, &JwtCustomClaim{
+	t := jwt.NewWithClaims(jwt.SigningMethodHS256, &JwtCustom{
 		ID: userID,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 72).Unix(),
@@ -41,11 +42,10 @@ func JwtGenerate(ctx context.Context, userID string) (string, error) {
 }
 
 func JwtValidate(ctx context.Context, token string) (*jwt.Token, error) {
-	return jwt.ParseWithClaims(token, &JwtCustomClaim{}, func(t *jwt.Token) (interface{}, error) {
-		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("there's a problem with the signing method")
+	return jwt.ParseWithClaims(token, &JwtCustom{}, func(t *jwt.Token) (interface{}, error) {
+		if _, success := t.Method.(*jwt.SigningMethodHMAC); !success {
+			return nil, fmt.Errorf("jwt token ngaco")
 		}
-		// jwt.Token.Claims
 		return jwtSecret, nil
 	})
 }
