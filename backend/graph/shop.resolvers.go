@@ -5,7 +5,6 @@ package graph
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/je-von/TPA-Web-JV/backend/graph/generated"
@@ -37,7 +36,7 @@ func (r *mutationResolver) CreateShop(ctx context.Context, input model.NewShop) 
 	model := &model.Shop{
 		ID:                uuid.NewString(),
 		Name:              input.Name,
-		NameSlug:          input.Name,
+		NameSlug:          input.NameSlug,
 		Address:           input.Address,
 		ProfilePic:        input.ProfilePic,
 		Slogan:            input.Slogan,
@@ -51,8 +50,32 @@ func (r *mutationResolver) CreateShop(ctx context.Context, input model.NewShop) 
 	return model, r.DB.Create(model).Error
 }
 
-func (r *mutationResolver) UpdateShop(ctx context.Context, id string, input model.NewShop) (*model.Shop, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *mutationResolver) UpdateShop(ctx context.Context, input model.NewShop) (*model.Shop, error) {
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustomClaim).ID
+
+	shop, _ := service.ShopGetByUserID(ctx, userID)
+
+	if shop == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, shop gaada",
+		}
+	}
+	shop.Name = input.Name
+	shop.NameSlug = input.NameSlug
+	shop.Slogan = input.Slogan
+	shop.Description = input.Description
+	shop.OpenTime = input.OpenTime
+	shop.CloseTime = input.CloseTime
+	shop.OperationalStatus = input.OperationalStatus
+	shop.ProfilePic = input.ProfilePic
+
+	return shop, r.DB.Save(shop).Error
 }
 
 func (r *queryResolver) Shop(ctx context.Context, id *string, userID *string) (*model.Shop, error) {

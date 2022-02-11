@@ -268,6 +268,9 @@ export default function Header() {
                           <NavLink path={links.shopDetail(user.shop.nameSlug)} className="text-button">
                             View Shop Details
                           </NavLink>
+                          <NavLink path={links.editShop} className="text-button">
+                            Edit Shop
+                          </NavLink>
                           <NavLink path={links.sellProduct} className="text-button">
                             Sell Product
                           </NavLink>
@@ -303,7 +306,7 @@ export default function Header() {
                       <Link href={links.editProfile} passHref>
                         <div className="text-button">Edit Profile</div>
                       </Link>
-                      <button
+                      <div
                         className="text-button"
                         onClick={() => {
                           removeCookies('token')
@@ -312,7 +315,7 @@ export default function Header() {
                       >
                         <i className="fal fa-sign-out"></i>
                         <p>Logout</p>
-                      </button>
+                      </div>
                     </div>
                   </>
                 </NavLink>

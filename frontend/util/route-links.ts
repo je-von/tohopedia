@@ -12,4 +12,5 @@ export const links = {
     return '/product/' + productID
   },
   editProfile: '/user/edit',
+  editShop: '/shop/edit',
 }

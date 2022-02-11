@@ -74,7 +74,9 @@ const ProductDetail: NextPage = () => {
   }
 
   if (d && d.createCart) {
-    router.push(links.cart, undefined, { shallow: true })
+    router.push(links.cart, undefined, { shallow: true }).then(() => {
+      router.reload()
+    })
   }
 
   if (e) {

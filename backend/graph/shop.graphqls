@@ -26,7 +26,7 @@ extend type Query {
 
 extend type Mutation {
   createShop(input: NewShop!): Shop! @auth
-  updateShop(id: ID!, input: NewShop!): Shop!
+  updateShop(input: NewShop!): Shop! @auth
 }
 
 input NewShop {

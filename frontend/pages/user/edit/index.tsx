@@ -14,7 +14,7 @@ import { links } from '../../../util/route-links'
 
 // let email = ''
 // let profilePic = ''
-const Register: NextPage = () => {
+const EditProfile: NextPage = () => {
   const router = useRouter()
   const [errorMsg, setErrorMsg] = useState('')
   // const [email, setEmail] = useState('')
@@ -152,7 +152,7 @@ const Register: NextPage = () => {
               <div className="multi-input">
                 <div className="profile-pic">
                   <Image
-                    src={profilePic ? profilePic : user.profilePic ? user.profilePic : '/asset/seller_no_logo.png'}
+                    src={profilePic ? profilePic : user.profilePic ? user.profilePic : '/asset/no-image.png'}
                     alt=""
                     layout="fill"
                     objectFit="cover"
@@ -172,4 +172,4 @@ const Register: NextPage = () => {
   )
 }
 
-export default Register
+export default EditProfile
