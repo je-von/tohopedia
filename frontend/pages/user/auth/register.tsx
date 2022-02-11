@@ -11,9 +11,11 @@ import { url } from 'inspector'
 import { useRouter } from 'next/router'
 import { convertToBase64 } from '../../../util/convert-base64'
 import { links } from '../../../util/route-links'
-
+import ReCAPTCHA from 'react-google-recaptcha'
 let email = ''
 let profilePic = ''
+
+let captcha: any = ''
 const Register: NextPage = () => {
   const router = useRouter()
   const [errorMsg, setErrorMsg] = useState('')
@@ -33,7 +35,11 @@ const Register: NextPage = () => {
 
     if (!name || !password || !phone || !gender || !dob) {
       setErrorMsg('All field must be filled!')
+    } else if (!captcha) {
+      setErrorMsg('Captcha must be checked!')
     } else {
+      setErrorMsg('')
+
       createUser({
         variables: { name: name, email: email, password: password, phone: phone, gender: gender, dob: dob, profilePic: profilePic, role: 'User' },
       })
@@ -45,6 +51,7 @@ const Register: NextPage = () => {
     if (!email) {
       setErrorMsg('All field must be filled!')
     } else {
+      setErrorMsg('')
       const { Auth } = require('two-step-auth')
       const res = await Auth(email, 'tohopedia by JV [REGISTER]')
       // console.log(res)
@@ -56,6 +63,8 @@ const Register: NextPage = () => {
         if (input.length >= 6) {
           if (input == res.OTP) {
             console.log('bener')
+            setErrorMsg('')
+
             setForm(
               <>
                 <div className="container-header">
@@ -93,14 +102,17 @@ const Register: NextPage = () => {
                   <label htmlFor="picture">Profile Picture</label>
                   <input type="file" id="picture" name="picture" onChange={handleImage} />
                 </div>
+                <div className="form-input">
+                  <ReCAPTCHA sitekey="6LfwAD0aAAAAABGGc6HQSoFlYWmY8DUY2VsU8hCU" onChange={(c) => (captcha = c)} />
+                </div>
                 <button type="submit" onClick={handleSignUp}>
                   Sign Up
                 </button>
-                <p className="error">{errorMsg}</p>
               </>
             )
           } else {
-            alert('OTP is invalid!')
+            // alert('OTP is invalid!')
+            setErrorMsg('OTP is invalid!')
           }
         }
       }
@@ -145,7 +157,6 @@ const Register: NextPage = () => {
       <button type="submit" onClick={handleFirstSubmit}>
         Sign Up
       </button>
-      <p className="error">{errorMsg}</p>
     </>
   )
 
@@ -198,7 +209,10 @@ const Register: NextPage = () => {
     <Layout>
       <div className="main-container">
         <div className="form-container">
-          <div className="form-content">{form}</div>
+          <div className="form-content">
+            {form}
+            <p className="error">{errorMsg}</p>
+          </div>
         </div>
       </div>
     </Layout>
