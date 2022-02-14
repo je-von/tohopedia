@@ -41,7 +41,7 @@ const ProductList = ({ variables }: any) => {
 
   if (error) {
     console.log(error)
-    return <>{error.message}</>
+    return <i>Error!</i>
   }
   //   if (!data || !data.products) {
   //     removeCookies('token')
@@ -64,7 +64,7 @@ const ProductList = ({ variables }: any) => {
 
   window.onscroll = function (ev) {
     // console.log(window.scrollY, document.body.clientHeight, document.body.scrollHeight)
-    if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
       // ev.preventDefault()
       // setCurrentScroll({ x: scrollX, y: scrollY })
       //   console.log(data.products.length, limit)

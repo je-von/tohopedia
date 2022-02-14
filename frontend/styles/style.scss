@@ -2,7 +2,8 @@
 
 $primary-color: rgb(62, 171, 0);
 $normal-font-size: 12px;
-
+$ipad-screen: 900px;
+$iphone-screen: 420px;
 * {
   padding: 0;
   margin: 0;
@@ -50,10 +51,14 @@ textarea {
   background-color: #f1f1f1;
 }
 .header-container {
+  position: sticky;
+  top: 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
   padding: 5px 20px;
   font-size: $normal-font-size;
+  background-color: white;
+  z-index: 100;
   .shipping-button {
     margin: 5px 0;
     text-align: right;
@@ -65,9 +70,10 @@ textarea {
   }
   .header-content {
     display: flex;
-    justify-content: space-between;
+    flex-wrap: wrap;
+    justify-content: space-around;
     align-items: center;
-
+    height: 100%;
     div {
       display: flex;
       align-items: center;
@@ -76,7 +82,12 @@ textarea {
         border-radius: 8px;
         border: 1px solid rgba(0, 0, 0, 0.3);
         padding: 4px 8px;
-
+        @media screen and (max-width: $ipad-screen) {
+          width: 20vw;
+        }
+        @media screen and (max-width: $iphone-screen) {
+          width: 40vw;
+        }
         input {
           width: 100%;
           border: none;
@@ -97,6 +108,9 @@ textarea {
     .logo-container {
       width: 9vw;
       cursor: pointer;
+      @media screen and (max-width: $iphone-screen) {
+        width: 20vw;
+      }
     }
     .icon-button {
       color: grey;
@@ -165,26 +179,102 @@ textarea {
       top: 4vh;
     }
 
+    .category-dropdown {
+      p {
+        z-index: 100;
+      }
+      .dropdown {
+        max-width: none;
+        // width: 70vw;
+        width: fit-content;
+        text-align: left;
+        padding: 0;
+        max-height: 30vh;
+        overflow-y: scroll;
+        .category {
+          width: 100%;
+          padding: 10px 20px;
+        }
+        .category:hover {
+          background-color: #f1f1f1;
+        }
+      }
+    }
+
     .left-content {
       a {
         margin-left: 20px;
         color: grey;
       }
     }
+    // .middle-content {
+    //   // padding-right: 20px;
+    //   // border-right: 1px solid rgba(0, 0, 0, 0.3);
+    //   @media screen and (max-width: $iphone-screen) {
+    //     border: none;
+    //     padding-right: 0;
+    //     margin: 10px 0;
+    //   }
+    // }
     .right-content {
-      border-left: 1px solid rgba(0, 0, 0, 0.3);
-      width: 15vw;
+      min-width: fit-content;
+      width: 25vw;
       display: flex;
-      justify-content: space-around;
-      .profile-button {
+      justify-content: space-between;
+      // cursor: pointer;
+      height: 100%;
+      .icon {
         display: flex;
-        justify-content: center;
-        margin-left: 10px;
-        height: 100%;
-        p {
-          z-index: 100;
+        // width: 100%;
+        // justify-content: space-between;
+        // padding-right: 5vw;
+      }
+      .line {
+        border-right: 1px solid rgba(0, 0, 0, 0.3);
+        width: 10px;
+        height: 20px;
+      }
+      .profile {
+        display: flex;
+        justify-content: space-evenly;
+        width: fit-content;
+        .auth-button {
+          .text-button {
+            margin: 0 10px;
+          }
         }
-        cursor: pointer;
+        .profile-button {
+          display: flex;
+          justify-content: center;
+          min-width: fit-content;
+          margin-left: 10px;
+          height: 100%;
+          cursor: pointer;
+          p {
+            z-index: 100;
+            max-width: 100px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+      @media screen and (max-width: $ipad-screen) {
+        p {
+          max-width: 30px;
+        }
+        .icon {
+          padding-right: 20px;
+          // border: none;
+        }
+      }
+
+      @media screen and (max-width: $iphone-screen) {
+        max-width: none;
+        width: fit-content;
+        margin: 10px 0;
+        .line {
+          display: none;
+        }
       }
     }
   }
@@ -456,7 +546,16 @@ a {
 .home {
   .category {
     .card {
+      // background-color: $primary-color;
+      background-image: url('/asset/background-1.jpg');
+      background-repeat: no-repeat;
+      background-size: cover;
+      color: white;
       height: fit-content;
+      min-width: none;
+      width: 100%;
+      // box-shadow: none;
+      border: none;
     }
   }
   .section-title {
@@ -466,7 +565,7 @@ a {
     .card {
       // min-width: fit-content;
       .product-price {
-        // width: fit-content;
+        width: 100%;
         flex-wrap: wrap;
         justify-content: center;
         font-size: 12px;

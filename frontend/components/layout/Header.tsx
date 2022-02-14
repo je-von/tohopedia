@@ -78,7 +78,20 @@ export default function Header() {
     }
   `)
 
-  if (loading) {
+  const {
+    loading: l3,
+    data: d3,
+    error: e3,
+  } = useQuery(gql`
+    query categories {
+      categories {
+        id
+        name
+      }
+    }
+  `)
+
+  if (loading || l3) {
     return <>Loading...</>
   }
 
@@ -91,6 +104,11 @@ export default function Header() {
     primaryAddress = user.addresses.length > 0 ? user.addresses[0].id : null
     // console.log(user.shop)
   }
+
+  // let categories: any = null
+  // if (d3 && d3.categories) {
+  //   categories = d3.categories
+  // }
 
   // Geocode.setLanguage('en')
   // Geocode.setRegion('id')
@@ -199,14 +217,27 @@ export default function Header() {
                 <Image src="/asset/logo.png" alt="tohopedia by JV" width={3867} height={1122}></Image>
               </div>
             </Link>
-            <Link href="#">Category</Link>
+            <div className="icon-button">
+              <div className="category-dropdown">
+                <p>Category</p>
+                <div className="dropdown">
+                  {d3.categories
+                    ? d3.categories.map((c: any) => (
+                        <Link key={c.id} href={links.search('?category=' + c.id)} passHref>
+                          <div className="category">{c.name}</div>
+                        </Link>
+                      ))
+                    : ''}
+                </div>
+              </div>
+            </div>
           </div>
           {/* {Links.map(({ name, path }) => (
           <NavLink key={path} path={path}>
             {name}
           </NavLink>
         ))} */}
-          <div>
+          <div className="middle-content">
             <form action={links.search()}>
               <div className="search-container">
                 <input type="text" placeholder="Search.." id="keyword" name="keyword" />
@@ -215,137 +246,142 @@ export default function Header() {
                 </button>
               </div>
             </form>
-            <NavLink path={links.cart} className="icon-button">
-              <div>
-                <i className="fas fa-shopping-cart"></i>
-                <div className="dropdown">
-                  {user && user.carts.length > 0 ? <b>Cart ({user.carts.length})</b> : ''}
-                  {user && user.carts.length > 0 ? (
-                    user.carts.map((c: any) => (
-                      <div className="cart-item" key={c.product.id}>
-                        <div className="product-image">
-                          <Image
-                            src={c.product.images.length > 0 ? c.product.images[0].image : '/asset/no-image.png'}
-                            alt="image"
-                            layout="fill"
-                            objectFit="cover"
-                          ></Image>
-                        </div>
-                        <p className="product-name">{c.product.name}</p>
-                        <b>Rp.{c.product.price}</b>
-                      </div>
-                    ))
-                  ) : (
-                    <p>Your cart is Empty!</p>
-                  )}
-                </div>
-              </div>
-            </NavLink>
-            {user ? (
-              <>
-                <NavLink path="#" className="icon-button">
-                  <div>
-                    <i className="fas fa-bell"></i>
-                    <div className="dropdown">
-                      <p>Empty!</p>
-                    </div>
-                  </div>
-                </NavLink>
-                <NavLink path="#" className="icon-button">
-                  <div>
-                    <i className="fas fa-envelope"></i>
-                    <div className="dropdown">
-                      <p>Empty!</p>
-                    </div>
-                  </div>
-                </NavLink>
-              </>
-            ) : (
-              <></>
-            )}
           </div>
           <div className="right-content">
-            {user ? (
-              <>
-                {user.shop.id ? (
-                  <>
-                    <NavLink path="" className="profile-button">
-                      <>
-                        <div className="profile-pic">
-                          <Image
-                            src={user.shop.profilePic ? user.shop.profilePic : '/asset/seller_no_logo.png'}
-                            alt=""
-                            layout="fill"
-                            objectFit="cover"
-                          ></Image>
+            <div className="icon">
+              <NavLink path={links.cart} className="icon-button">
+                <div>
+                  <i className="fas fa-shopping-cart"></i>
+                  <div className="dropdown">
+                    {user && user.carts.length > 0 ? <b>Cart ({user.carts.length})</b> : ''}
+                    {user && user.carts.length > 0 ? (
+                      user.carts.map((c: any) => (
+                        <div className="cart-item" key={c.product.id}>
+                          <div className="product-image">
+                            <Image
+                              src={c.product.images.length > 0 ? c.product.images[0].image : '/asset/no-image.png'}
+                              alt="image"
+                              layout="fill"
+                              objectFit="cover"
+                            ></Image>
+                          </div>
+                          <p className="product-name">{c.product.name}</p>
+                          <b>Rp.{c.product.price}</b>
                         </div>
-                        <p>{user.shop.name}</p>
-                        <div className="dropdown">
-                          <NavLink path={links.shopDetail(user.shop.nameSlug)} className="text-button">
-                            View Shop Details
-                          </NavLink>
-                          <NavLink path={links.editShop} className="text-button">
-                            Edit Shop
-                          </NavLink>
-                          <NavLink path={links.sellProduct} className="text-button">
-                            Sell Product
-                          </NavLink>
-                        </div>
-                      </>
-                    </NavLink>
-                  </>
-                ) : (
-                  <>
-                    <NavLink path="" className="profile-button">
-                      <>
-                        <div className="profile-pic">
-                          <Image src="/asset/shopnophoto.png" alt="" layout="fill" objectFit="cover"></Image>
-                        </div>
-                        <p>Toko</p>
-                        <div className="dropdown">
-                          <p>You don&apos;t have any shop yet</p>
-                          <NavLink path={links.openShop} className="text-button">
-                            Open Shop
-                          </NavLink>
-                        </div>
-                      </>
-                    </NavLink>
-                  </>
-                )}
-                <NavLink path="" className="profile-button">
-                  <>
-                    <div className="profile-pic">
-                      <Image src={user.profilePic ? user.profilePic : '/asset/default_toped.jpg'} alt="" layout="fill" objectFit="cover"></Image>
-                    </div>
-                    <p>{user.name}</p>
-                    <div className="dropdown">
-                      <Link href={links.editProfile} passHref>
-                        <div className="text-button">Edit Profile</div>
-                      </Link>
-                      <div
-                        className="text-button"
-                        onClick={() => {
-                          removeCookies('token')
-                          router.reload()
-                        }}
-                      >
-                        <i className="fal fa-sign-out"></i>
-                        <p>Logout</p>
+                      ))
+                    ) : (
+                      <p>Your cart is Empty!</p>
+                    )}
+                  </div>
+                </div>
+              </NavLink>
+              {user ? (
+                <>
+                  <NavLink path="#" className="icon-button">
+                    <div>
+                      <i className="fas fa-bell"></i>
+                      <div className="dropdown">
+                        <p>Empty!</p>
                       </div>
                     </div>
-                  </>
-                </NavLink>
-              </>
-            ) : (
-              <>
-                <NavLink path={links.login} className="text-button">
-                  Login
-                </NavLink>
-                <NavLink path={links.register} className="text-button">
-                  Register
-                </NavLink>
-              </>
-            )}
+                  </NavLink>
+                  <NavLink path="#" className="icon-button">
+                    <div>
+                      <i className="fas fa-envelope"></i>
+                      <div className="dropdown">
+                        <p>Empty!</p>
+                      </div>
+                    </div>
+                  </NavLink>
+                </>
+              ) : (
+                <></>
+              )}
+            </div>
+            <div className="line"></div>
+            <div className="profile">
+              {user ? (
+                <>
+                  {user.shop.id ? (
+                    <>
+                      <NavLink path="" className="profile-button shop">
+                        <>
+                          <div className="profile-pic">
+                            <Image
+                              src={user.shop.profilePic ? user.shop.profilePic : '/asset/seller_no_logo.png'}
+                              alt=""
+                              layout="fill"
+                              objectFit="cover"
+                            ></Image>
+                          </div>
+                          <p>{user.shop.name}</p>
+                          <div className="dropdown">
+                            <NavLink path={links.shopDetail(user.shop.nameSlug)} className="text-button">
+                              View Shop Details
+                            </NavLink>
+                            <NavLink path={links.editShop} className="text-button">
+                              Edit Shop
+                            </NavLink>
+                            <NavLink path={links.sellProduct} className="text-button">
+                              Sell Product
+                            </NavLink>
+                          </div>
+                        </>
+                      </NavLink>
+                    </>
+                  ) : (
+                    <>
+                      <NavLink path="" className="profile-button">
+                        <>
+                          <div className="profile-pic">
+                            <Image src="/asset/shopnophoto.png" alt="" layout="fill" objectFit="cover"></Image>
+                          </div>
+                          <p>Toko</p>
+                          <div className="dropdown">
+                            <p>You don&apos;t have any shop yet</p>
+                            <NavLink path={links.openShop} className="text-button">
+                              Open Shop
+                            </NavLink>
+                          </div>
+                        </>
+                      </NavLink>
+                    </>
+                  )}
+                  <NavLink path="" className="profile-button">
+                    <>
+                      <div className="profile-pic">
+                        <Image src={user.profilePic ? user.profilePic : '/asset/default_toped.jpg'} alt="" layout="fill" objectFit="cover"></Image>
+                      </div>
+                      <p>{user.name}</p>
+                      <div className="dropdown">
+                        <Link href={links.editProfile} passHref>
+                          <div className="text-button">Edit Profile</div>
+                        </Link>
+                        <div
+                          className="text-button"
+                          onClick={() => {
+                            removeCookies('token')
+                            router.reload()
+                          }}
+                        >
+                          <i className="fal fa-sign-out"></i>
+                          <p>Logout</p>
+                        </div>
+                      </div>
+                    </>
+                  </NavLink>
+                </>
+              ) : (
+                <div className="auth-button">
+                  <NavLink path={links.login} className="text-button">
+                    Login
+                  </NavLink>
+                  <NavLink path={links.register} className="text-button">
+                    Register
+                  </NavLink>
+                </div>
+              )}
+            </div>
           </div>
         </div>
         <div>
