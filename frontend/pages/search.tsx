@@ -103,7 +103,7 @@ const Search: NextPage = () => {
                 key={p.id}
                 image={p.images.length > 0 ? p.images[0].image : '/asset/no-image.png'}
                 productID={p.id}
-                price={p.price}
+                priceTag={<b>Rp.{p.price}</b>}
                 name={p.name}
                 shop={p.shop.name}
                 shopNameSlug={p.shop.nameSlug}

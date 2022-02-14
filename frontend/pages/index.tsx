@@ -12,12 +12,20 @@ import { removeCookies } from 'cookies-next'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { links } from '../util/route-links'
+import ProductList from '../components/ProductList'
 
 let str = ''
 let flag = false
 const Home: NextPage = () => {
+  // const [limit, setLimit] = useState(5)
+  // const [currentScroll, setCurrentScroll] = useState({ x: 0, y: 0 })
   const router = useRouter()
   const faker = require('faker')
+  // if (currentScroll.y != 0) {
+  //   console.log('masuk')
+  //   scrollTo(currentScroll.x, currentScroll.y)
+  //   setCurrentScroll({ x: 0, y: 0 })
+  // }
   // console.log(faker.commerce.productName())
   // console.log(faker.datatype.number({ min: 1000, max: 10000000 }))
   // console.log(faker.datatype.float({ min: 0, max: 0.7, precision: 0.15 }))
@@ -117,24 +125,24 @@ const Home: NextPage = () => {
   //   console.log(d)
   // }
 
-  const productQuery = gql`
-    query products {
-      products {
-        id
-        name
-        price
-        images {
-          image
-        }
-        shop {
-          name
-          nameSlug
-        }
-      }
-    }
-  `
+  // const productQuery = gql`
+  //   query products($limit: Int) {
+  //     products(limit: $limit) {
+  //       id
+  //       name
+  //       price
+  //       images {
+  //         image
+  //       }
+  //       shop {
+  //         name
+  //         nameSlug
+  //       }
+  //     }
+  //   }
+  // `
 
-  const { loading, error, data } = useQuery(productQuery)
+  // const { loading, error, data } = useQuery(productQuery, { variables: { limit: limit } })
 
   const categoryQuery = gql`
     query categories {
@@ -147,7 +155,7 @@ const Home: NextPage = () => {
 
   const { loading: l, error: e, data: d } = useQuery(categoryQuery)
 
-  if (loading || l) {
+  if (l) {
     return (
       <Layout>
         <main>Loading...</main>
@@ -155,15 +163,36 @@ const Home: NextPage = () => {
     )
   }
 
-  if (!data || !data.products || !d) {
+  if (!d) {
     removeCookies('token')
     router.reload()
   }
+
+  // window.onscroll = function (ev) {
+  //   if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+  //     ev.preventDefault()
+  //     setCurrentScroll({ x: scrollX, y: scrollY })
+  //     setLimit(limit + 10)
+  //     // scrollTo(scrollX, scrollY)
+  //   }
+  // }
 
   return (
     <Layout>
       <main>
         <div className="home">
+          <h2 className="section-title">Top Discounted Items</h2>
+          <div className="card-container">
+            <Card
+              // key={p.id}
+              image={'/asset/no-image.png'}
+              productID={'p.id'}
+              priceTag={123}
+              name={'asd'}
+              shop={'asd'}
+              shopNameSlug={'asd'}
+            ></Card>
+          </div>
           <h2 className="section-title">Categories</h2>
           <div className="card-container category">
             {d.categories.map((c: any) => (
@@ -178,38 +207,38 @@ const Home: NextPage = () => {
           </div>
 
           <h2 className="section-title">Products</h2>
-
-          <div className="card-container">
-            {/* <main className={styles.main}>
+          <ProductList></ProductList>
+          {/* <div className="card-container"> */}
+          {/* <main className={styles.main}>
           <h1 className={styles.title}>
             Welcome to <a href="#">tohopedia</a>, {u ? u.name : 'Guest'} !
           </h1> */}
-            {/* <input type="file" name="image" id="image" onChange={handleSubmit} /> */}
-            {/* <button type="submit" onClick={handleSubmit}>
+          {/* <input type="file" name="image" id="image" onChange={handleSubmit} /> */}
+          {/* <button type="submit" onClick={handleSubmit}>
             tes
           </button> */}
-            {/* <Image src={u ? u.profilePic : '/asset/logo.png'} alt="img" width={100} height={100}></Image> */}
+          {/* <Image src={u ? u.profilePic : '/asset/logo.png'} alt="img" width={100} height={100}></Image> */}
 
-            {/* </main> */}
+          {/* </main> */}
 
-            {/* <div className="card">
+          {/* <div className="card">
             <Image src="/asset/no-image.png" alt="product image" width={100} height={100}></Image>
           </div> */}
 
-            {data.products.map((p: any) => (
+          {/* {data.products.map((p: any) => (
               <Card
                 key={p.id}
                 image={p.images.length > 0 ? p.images[0].image : '/asset/no-image.png'}
                 productID={p.id}
-                price={p.price}
+                priceTag={<b>Rp.{p.price}</b>}
                 name={p.name}
                 shop={p.shop.name}
                 shopNameSlug={p.shop.nameSlug}
               ></Card>
-            ))}
-            {/* <Card image="/asset/test.jpg" productID="1" price={1000000} name="halo halo" shop="JVShop" /> */}
-          </div>
+            ))} */}
+          {/* <Card image="/asset/test.jpg" productID="1" price={1000000} name="halo halo" shop="JVShop" /> */}
         </div>
+        {/* </div> */}
       </main>
     </Layout>
   )

@@ -105,8 +105,8 @@ export default function Header() {
     req.onload = function () {
       if (req.status === 200) {
         var data = JSON.parse(req.responseText)
-        console.log(data)
-        console.log(data.results[0].formatted)
+        // console.log(data)
+        // console.log(data.results[0].formatted)
 
         setCurrentLocation(data.results[0].formatted)
       } else {

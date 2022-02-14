@@ -113,6 +113,7 @@ func (r *queryResolver) Products(ctx context.Context, shopID *string, limit *int
 	}
 
 	temp := r.DB
+
 	if input != nil {
 		if input.MinPrice != nil {
 			temp = temp.Where("price >= ?", *input.MinPrice)
@@ -137,6 +138,10 @@ func (r *queryResolver) Products(ctx context.Context, shopID *string, limit *int
 				temp = temp.Order("price ASC")
 			}
 		}
+	}
+
+	if limit != nil {
+		temp = temp.Limit(*limit)
 	}
 
 	return models, temp.Find(&models).Error

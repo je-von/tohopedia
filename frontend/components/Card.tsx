@@ -8,12 +8,12 @@ interface Product {
   productID: string
   image: string
   name: string
-  price: number
+  priceTag: any
   shop: string
   shopNameSlug: string
 }
 
-const Card = ({ productID, image, name, price, shop, shopNameSlug }: Product) => {
+const Card = ({ productID, image, name, priceTag, shop, shopNameSlug }: Product) => {
   return (
     <Link href={links.productDetail(productID)} passHref>
       <div className="card">
@@ -22,7 +22,8 @@ const Card = ({ productID, image, name, price, shop, shopNameSlug }: Product) =>
         </div>
         <div className="card-content">
           <p className="product-name">{name}</p>
-          <b>Rp.{price}</b>
+          {/* <b>Rp.{price}</b> */}
+          {priceTag}
           <Link href={links.shopDetail(shopNameSlug)} passHref>
             <p className="store-link">
               <i className="fas fa-store"></i>
