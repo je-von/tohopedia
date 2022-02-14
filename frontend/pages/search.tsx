@@ -12,6 +12,9 @@ import { removeCookies } from 'cookies-next'
 import { useRouter } from 'next/router'
 import ProductList from '../components/ProductList'
 import { LimitContext } from '../context/context'
+import Link from 'next/link'
+import { links } from '../util/route-links'
+import { convertPointsToBadge } from '../util/shop-badge'
 
 let str = ''
 let flag = false
@@ -32,6 +35,15 @@ const Search: NextPage = () => {
     query searchProducts($keyword: String!, $minPrice: Int!, $maxPrice: Int!, $orderBy: String!, $categoryID: String) {
       products(input: { keyword: $keyword, minPrice: $minPrice, maxPrice: $maxPrice, orderBy: $orderBy, categoryID: $categoryID }) {
         id
+        name
+        price
+        images {
+          image
+        }
+        shop {
+          name
+          nameSlug
+        }
       }
     }
   `
@@ -50,7 +62,38 @@ const Search: NextPage = () => {
     variables: variables,
   })
 
-  if (loading) {
+  const shopQuery = gql`
+    query shop($keyword: String!) {
+      shop(keyword: $keyword) {
+        id
+        name
+        nameSlug
+        profilePic
+        products(keyword: $keyword) {
+          id
+          name
+          price
+          images {
+            image
+          }
+          shop {
+            name
+            nameSlug
+          }
+        }
+      }
+    }
+  `
+
+  const {
+    loading: l,
+    error: e,
+    data: d,
+  } = useQuery(shopQuery, {
+    variables: { keyword: keyword ? keyword : '' },
+  })
+
+  if (loading || l) {
     return (
       <Layout>
         <main>Loading...</main>
@@ -58,9 +101,12 @@ const Search: NextPage = () => {
     )
   }
   let pages: any = []
+  // let topProducts: any = []
   if (data && data.products) {
     let totalPage = Math.ceil(data.products.length / 25)
     pages = Array.from(Array(totalPage), (_, i) => i + 1)
+
+    // topProducts = data.products.slice(0, 2)
   }
 
   const handleKeyDown = (e: any) => {
@@ -116,6 +162,47 @@ const Search: NextPage = () => {
               ></Card>
             ))}
           </div> */}
+            {d && d.shop ? (
+              <div className="top-result">
+                <Link href={links.shopDetail(d.shop.nameSlug)} passHref>
+                  <div className="shop-container">
+                    <div className="shop-image">
+                      <Image src={d.shop.profilePic} alt="" layout="fill" objectFit="cover"></Image>
+                    </div>
+                    <div className="shop-detail">
+                      <div className="shop-name">
+                        <h2>{d.shop.name}</h2>
+                        <div className="shop-badge">
+                          <Image
+                            src={`/asset/badge/${convertPointsToBadge(d.shop.reputationPoints)}.png`}
+                            alt=""
+                            layout="fill"
+                            objectFit="contain"
+                          ></Image>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="card-container">
+                      {d.shop.products.map((p: any) => (
+                        <Card
+                          key={p.id}
+                          image={p.images.length > 0 ? p.images[0].image : '/asset/no-image.png'}
+                          productID={p.id}
+                          priceTag={<b>Rp.{p.price}</b>}
+                          name={p.name}
+                          shop={p.shop.name}
+                          shopNameSlug={p.shop.nameSlug}
+                        ></Card>
+                      ))}
+                    </div>
+                  </div>
+                </Link>
+              </div>
+            ) : (
+              <i className="error">
+                No shop found for &quot;<b>{keyword}</b>&quot;
+              </i>
+            )}
 
             <ProductList variables={variables}></ProductList>
             <div className="page-links">
@@ -126,7 +213,7 @@ const Search: NextPage = () => {
                   onClick={() => {
                     setOffset((i - 1) * 25)
                     setProductsLimit(10)
-                    console.log('jalan')
+                    // console.log('jalan')
                   }}
                   key={i}
                 >

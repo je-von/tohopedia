@@ -129,7 +129,7 @@ type ComplexityRoot struct {
 		Product        func(childComplexity int, id string) int
 		Products       func(childComplexity int, shopID *string, limit *int, offset *int, input *model.SearchProduct) int
 		Protected      func(childComplexity int) int
-		Shop           func(childComplexity int, id *string, userID *string) int
+		Shop           func(childComplexity int, id *string, keyword *string) int
 		ShopBySlug     func(childComplexity int, nameSlug string) int
 		Shops          func(childComplexity int) int
 		User           func(childComplexity int, id string) int
@@ -145,7 +145,7 @@ type ComplexityRoot struct {
 		NameSlug          func(childComplexity int) int
 		OpenTime          func(childComplexity int) int
 		OperationalStatus func(childComplexity int) int
-		Products          func(childComplexity int) int
+		Products          func(childComplexity int, keyword *string) int
 		ProfilePic        func(childComplexity int) int
 		ReputationPoints  func(childComplexity int) int
 		Slogan            func(childComplexity int) int
@@ -222,13 +222,13 @@ type QueryResolver interface {
 	Categories(ctx context.Context, limit *int) ([]*model.Category, error)
 	Product(ctx context.Context, id string) (*model.Product, error)
 	Products(ctx context.Context, shopID *string, limit *int, offset *int, input *model.SearchProduct) ([]*model.Product, error)
-	Shop(ctx context.Context, id *string, userID *string) (*model.Shop, error)
+	Shop(ctx context.Context, id *string, keyword *string) (*model.Shop, error)
 	Shops(ctx context.Context) ([]*model.Shop, error)
 	ShopBySlug(ctx context.Context, nameSlug string) (*model.Shop, error)
 }
 type ShopResolver interface {
 	User(ctx context.Context, obj *model.Shop) (*model.User, error)
-	Products(ctx context.Context, obj *model.Shop) ([]*model.Product, error)
+	Products(ctx context.Context, obj *model.Shop, keyword *string) ([]*model.Product, error)
 }
 type UserResolver interface {
 	Shop(ctx context.Context, obj *model.User) (*model.Shop, error)
@@ -742,7 +742,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Shop(childComplexity, args["id"].(*string), args["userID"].(*string)), true
+		return e.complexity.Query.Shop(childComplexity, args["id"].(*string), args["keyword"].(*string)), true
 
 	case "Query.shopBySlug":
 		if e.complexity.Query.ShopBySlug == nil {
@@ -843,7 +843,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		return e.complexity.Shop.Products(childComplexity), true
+		args, err := ec.field_Shop_products_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Shop.Products(childComplexity, args["keyword"].(*string)), true
 
 	case "Shop.profilePic":
 		if e.complexity.Shop.ProfilePic == nil {
@@ -1142,11 +1147,13 @@ type Shop {
   operationalStatus: String! # open / closed
   reputationPoints: Int!
   user: User! @goField(forceResolver: true)
-  products: [Product!]! @goField(forceResolver: true)
+  products(keyword: String): [Product!]! @goField(forceResolver: true)
 }
 
 extend type Query {
-  shop(id: ID, userID: ID): Shop!
+  # shop(id: ID, userID: ID): Shop!
+  shop(id: ID, keyword: String): Shop!
+
   shops: [Shop!]!
   shopBySlug(nameSlug: String!): Shop!
 }
@@ -1732,14 +1739,14 @@ func (ec *executionContext) field_Query_shop_args(ctx context.Context, rawArgs m
 	}
 	args["id"] = arg0
 	var arg1 *string
-	if tmp, ok := rawArgs["userID"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userID"))
-		arg1, err = ec.unmarshalOID2ᚖstring(ctx, tmp)
+	if tmp, ok := rawArgs["keyword"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("keyword"))
+		arg1, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["userID"] = arg1
+	args["keyword"] = arg1
 	return args, nil
 }
 
@@ -1755,6 +1762,21 @@ func (ec *executionContext) field_Query_user_args(ctx context.Context, rawArgs m
 		}
 	}
 	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Shop_products_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *string
+	if tmp, ok := rawArgs["keyword"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("keyword"))
+		arg0, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["keyword"] = arg0
 	return args, nil
 }
 
@@ -4147,7 +4169,7 @@ func (ec *executionContext) _Query_shop(ctx context.Context, field graphql.Colle
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Shop(rctx, args["id"].(*string), args["userID"].(*string))
+		return ec.resolvers.Query().Shop(rctx, args["id"].(*string), args["keyword"].(*string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4748,9 +4770,16 @@ func (ec *executionContext) _Shop_products(ctx context.Context, field graphql.Co
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Shop_products_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Shop().Products(rctx, obj)
+		return ec.resolvers.Shop().Products(rctx, obj, args["keyword"].(*string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

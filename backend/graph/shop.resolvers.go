@@ -78,14 +78,15 @@ func (r *mutationResolver) UpdateShop(ctx context.Context, input model.NewShop) 
 	return shop, r.DB.Save(shop).Error
 }
 
-func (r *queryResolver) Shop(ctx context.Context, id *string, userID *string) (*model.Shop, error) {
+func (r *queryResolver) Shop(ctx context.Context, id *string, keyword *string) (*model.Shop, error) {
 	shop := new(model.Shop)
 
-	if id != nil {
-		return shop, r.DB.First(shop, "id = ?", id).Error
+	if keyword != nil {
+		// return shop, r.DB.FirstOrInit(shop, "(name LIKE ? OR description LIKE ?)", "%"+*keyword+"%", "%"+*keyword+"%").Error
+		return shop, r.DB.First(shop, "(name LIKE ? OR description LIKE ?)", "%"+*keyword+"%", "%"+*keyword+"%").Error
 	}
 
-	return shop, r.DB.First(shop, "user_id = ?", userID).Error
+	return shop, r.DB.First(shop, "id = ?", *id).Error
 }
 
 func (r *queryResolver) Shops(ctx context.Context) ([]*model.Shop, error) {
@@ -104,9 +105,14 @@ func (r *shopResolver) User(ctx context.Context, obj *model.Shop) (*model.User, 
 	return user, r.DB.First(user, "id = ?", obj.UserID).Error
 }
 
-func (r *shopResolver) Products(ctx context.Context, obj *model.Shop) ([]*model.Product, error) {
+func (r *shopResolver) Products(ctx context.Context, obj *model.Shop, keyword *string) ([]*model.Product, error) {
 	var models []*model.Product
-	return models, r.DB.Where("shop_id = ?", obj.ID).Find(&models).Error
+	temp := r.DB.Where("shop_id = ?", obj.ID)
+	if keyword != nil {
+		temp = temp.Where("(name LIKE ? OR description LIKE ?)", "%"+*keyword+"%", "%"+*keyword+"%").Limit(3)
+	}
+
+	return models, temp.Find(&models).Error
 }
 
 // Shop returns generated.ShopResolver implementation.

@@ -90,11 +90,11 @@ const ShopDetail: NextPage = () => {
       setShopID(shop.id)
       // setPageLinks(temp)
     }
-    console.log(totalPage, pages)
+    // console.log(totalPage, pages)
   }
 
   if (d) {
-    console.log(d)
+    // console.log(d)
   }
 
   return (

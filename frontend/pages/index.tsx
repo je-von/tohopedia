@@ -183,8 +183,8 @@ const Home: NextPage = () => {
   }
 
   if (!d) {
-    removeCookies('token')
-    router.reload()
+    // removeCookies('token')
+    // router.reload()
   } else {
     // console.log(d.categories)
     // let str = ''
@@ -203,7 +203,7 @@ const Home: NextPage = () => {
   //     // scrollTo(scrollX, scrollY)
   //   }
   // }
-  console.log('limit: ' + productsLimit)
+  // console.log('limit: ' + productsLimit)
 
   return (
     <LimitContext.Provider value={{ productsLimit, setProductsLimit }}>

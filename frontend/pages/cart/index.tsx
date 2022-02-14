@@ -48,8 +48,8 @@ const Cart: NextPage = () => {
   }
 
   if (!data || !data.carts) {
-    removeCookies('token')
-    router.reload()
+    // removeCookies('token')
+    // router.reload()
   } else {
   }
 

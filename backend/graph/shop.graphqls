@@ -15,11 +15,13 @@ type Shop {
   operationalStatus: String! # open / closed
   reputationPoints: Int!
   user: User! @goField(forceResolver: true)
-  products: [Product!]! @goField(forceResolver: true)
+  products(keyword: String): [Product!]! @goField(forceResolver: true)
 }
 
 extend type Query {
-  shop(id: ID, userID: ID): Shop!
+  # shop(id: ID, userID: ID): Shop!
+  shop(id: ID, keyword: String): Shop!
+
   shops: [Shop!]!
   shopBySlug(nameSlug: String!): Shop!
 }

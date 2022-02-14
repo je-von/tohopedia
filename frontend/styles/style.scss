@@ -295,6 +295,20 @@ main {
   justify-content: center;
   // align-items: center;
   // height: 100vh;
+  @media screen and (max-width: $iphone-screen) {
+    flex-direction: column;
+    padding: 10px 20px;
+    .filter-container {
+      width: 100%;
+      margin: 0;
+    }
+    .result-header {
+      text-align: center;
+    }
+    .card-container {
+      width: 100%;
+    }
+  }
 }
 
 a {
@@ -589,8 +603,8 @@ a {
   padding: 30px;
   margin: 5vh 0;
   .shop-image {
-    width: 5vw;
-    height: 5vw;
+    width: 80px;
+    height: 80px;
     position: relative;
     img {
       border-radius: 50%;
@@ -622,6 +636,22 @@ a {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+
+  @media screen and (max-width: $ipad-screen) {
+    flex-direction: column;
+    .list-card-container {
+      margin: 0;
+      width: 100%;
+      .card {
+        .card-content {
+          .card-image {
+            height: 50%;
+            width: 20%;
+          }
+        }
+      }
+    }
+  }
 }
 .action-container {
   height: fit-content;
@@ -695,6 +725,26 @@ a {
       }
     }
   }
+
+  @media screen and (max-width: $iphone-screen) {
+    flex-direction: column;
+    justify-content: center;
+    .product-image,
+    .product-detail {
+      width: 100%;
+      height: fit-content;
+      .carousel-container {
+        width: 100%;
+        .selected-image {
+          height: 20vh;
+        }
+        .carousel-image {
+          width: 20vw;
+          height: 5vh;
+        }
+      }
+    }
+  }
 }
 .product-image {
   display: flex;
@@ -754,12 +804,42 @@ a {
 
 .result-container {
   margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   .result-header {
+    width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
     label {
       margin-right: 10px;
+    }
+  }
+  .top-result {
+    cursor: pointer;
+    .shop-container {
+      justify-content: space-around;
+      padding: 5px 10px;
+      .card-container {
+        width: 60%;
+        .card {
+          margin: 0;
+          box-shadow: none;
+          border: 1px solid #c7c6c6;
+        }
+      }
+
+      @media screen and (max-width: $ipad-screen) {
+        flex-direction: column;
+        .card-container {
+          width: 100%;
+          .card {
+            min-width: none;
+            // width: 30px;
+          }
+        }
+      }
     }
   }
 }

@@ -1,4 +1,4 @@
-import { ReactNode, useState } from 'react'
+import { ReactElement, ReactNode, useState } from 'react'
 
 import Link from 'next/link'
 import Image from 'next/image'
@@ -17,7 +17,7 @@ const NavLink = ({ children, path, className }: { children: ReactNode; path: str
 )
 
 export default function Header() {
-  const [modal, setModal] = useState(<></>)
+  const [modal, setModal] = useState<ReactElement>()
   const [errorMsg, setErrorMsg] = useState('')
   const [currentLocation, setCurrentLocation] = useStateIfMounted('Address')
 
@@ -95,6 +95,32 @@ export default function Header() {
     return <>Loading...</>
   }
 
+  if (e3) {
+    if (!modal) {
+      // setModal(
+      //   <Modal
+      //     modalHeader={
+      //       <>
+      //         <h2 className="error">Error!</h2>
+      //         <i
+      //           className="fas fa-times"
+      //           onClick={() => {
+      //             setModal(<></>)
+      //           }}
+      //         ></i>
+      //       </>
+      //     }
+      //     modalContent={<>{e3.message}</>}
+      //     modalExtras={
+      //       <div className="text-button" onClick={() => router.reload()}>
+      //         Refresh
+      //       </div>
+      //     }
+      //   ></Modal>
+      // )
+    }
+  }
+
   let user: any = null
   let primaryAddress: any = null
   if (data && data.getCurrentUser) {
@@ -103,6 +129,10 @@ export default function Header() {
 
     primaryAddress = user.addresses.length > 0 ? user.addresses[0].id : null
     // console.log(user.shop)
+
+    // if (!modal) {
+    //   console.log('asd')
+    // }
   }
 
   // let categories: any = null
@@ -221,7 +251,7 @@ export default function Header() {
               <div className="category-dropdown">
                 <p>Category</p>
                 <div className="dropdown">
-                  {d3.categories
+                  {d3 && d3.categories
                     ? d3.categories.map((c: any) => (
                         <Link key={c.id} href={links.search('?category=' + c.id)} passHref>
                           <div className="category">{c.name}</div>
