@@ -10,6 +10,8 @@ import { useState } from 'react'
 import { convertToBase64 } from '../util/convert-base64'
 import { removeCookies } from 'cookies-next'
 import { useRouter } from 'next/router'
+import ProductList from '../components/ProductList'
+import { LimitContext } from '../context/context'
 
 let str = ''
 let flag = false
@@ -18,32 +20,34 @@ const Search: NextPage = () => {
   const { keyword, category } = router.query
   const [priceRange, setPriceRange] = useState({ min: 0, max: Number.MAX_SAFE_INTEGER })
   const [orderBy, setOrderBy] = useState('')
-
+  const [productsLimit, setProductsLimit] = useState(10)
+  // const [pageLinks, setPageLinks] = useState([])
+  const [offset, setOffset] = useState(0)
+  // if (offset == -1 && !isNaN(parseInt(page as string))) {
+  //   let pageNumber = parseInt(page as string) > 0 ? parseInt(page as string) - 1 : 0
+  //   setOffset(pageNumber * 25)
+  //   // console.log(offset)
+  // }
   const query = gql`
     query searchProducts($keyword: String!, $minPrice: Int!, $maxPrice: Int!, $orderBy: String!, $categoryID: String) {
       products(input: { keyword: $keyword, minPrice: $minPrice, maxPrice: $maxPrice, orderBy: $orderBy, categoryID: $categoryID }) {
         id
-        name
-        price
-        images {
-          image
-        }
-        shop {
-          name
-          nameSlug
-        }
       }
     }
   `
 
+  const variables = {
+    keyword: keyword ? keyword : '',
+    minPrice: priceRange.min,
+    maxPrice: priceRange.max,
+    orderBy: orderBy,
+    categoryID: category ? category : null,
+    limit: productsLimit,
+    offset: offset,
+  }
+
   const { loading, error, data } = useQuery(query, {
-    variables: {
-      keyword: keyword ? keyword : '',
-      minPrice: priceRange.min,
-      maxPrice: priceRange.max,
-      orderBy: orderBy,
-      categoryID: category ? category : null,
-    },
+    variables: variables,
   })
 
   if (loading) {
@@ -53,10 +57,10 @@ const Search: NextPage = () => {
       </Layout>
     )
   }
-
-  if (!data || !data.products) {
-    removeCookies('token')
-    router.reload()
+  let pages: any = []
+  if (data && data.products) {
+    let totalPage = Math.ceil(data.products.length / 25)
+    pages = Array.from(Array(totalPage), (_, i) => i + 1)
   }
 
   const handleKeyDown = (e: any) => {
@@ -69,35 +73,37 @@ const Search: NextPage = () => {
 
   const handleOrderByChange = (e: any) => {
     setOrderBy(e.target.value)
+    // console.log(productsLimit)
   }
 
   return (
-    <Layout>
-      <main>
-        <div className="filter-container">
-          <h3>Filter</h3>
-          <div className="price-filter">
-            <label>Price</label>
-            <input onKeyDown={handleKeyDown} type="number" id="min_price" name="min_price" placeholder="Minimum Price" />
-            <input onKeyDown={handleKeyDown} type="number" id="max_price" name="max_price" placeholder="Maximum Price" />
-          </div>
-        </div>
-        <div className="result-container">
-          <div className="result-header">
-            <p>
-              Showing products for &quot;<b>{keyword}</b>&quot;
-            </p>
-            <div>
-              <label>Order By</label>
-              <select name="order-by" id="order-by" onChange={handleOrderByChange}>
-                <option value="-">-</option>
-                <option value="newest">Newest</option>
-                <option value="highest-price">Highest Price</option>
-                <option value="lowest-price">Lowest Price</option>
-              </select>
+    <LimitContext.Provider value={{ productsLimit, setProductsLimit }}>
+      <Layout>
+        <main>
+          <div className="filter-container">
+            <h3>Filter</h3>
+            <div className="price-filter">
+              <label>Price</label>
+              <input onKeyDown={handleKeyDown} type="number" id="min_price" name="min_price" placeholder="Minimum Price" />
+              <input onKeyDown={handleKeyDown} type="number" id="max_price" name="max_price" placeholder="Maximum Price" />
             </div>
           </div>
-          <div className="card-container">
+          <div className="result-container">
+            <div className="result-header">
+              <p>
+                Showing products for &quot;<b>{keyword}</b>&quot;
+              </p>
+              <div>
+                <label>Order By</label>
+                <select name="order-by" id="order-by" onChange={handleOrderByChange}>
+                  <option value="-">-</option>
+                  <option value="newest">Newest</option>
+                  <option value="highest-price">Highest Price</option>
+                  <option value="lowest-price">Lowest Price</option>
+                </select>
+              </div>
+            </div>
+            {/* <div className="card-container">
             {data.products.map((p: any) => (
               <Card
                 key={p.id}
@@ -109,10 +115,29 @@ const Search: NextPage = () => {
                 shopNameSlug={p.shop.nameSlug}
               ></Card>
             ))}
+          </div> */}
+
+            <ProductList variables={variables}></ProductList>
+            <div className="page-links">
+              Page
+              {pages.map((i: any) => (
+                <div
+                  className={offset / 25 + 1 == i ? 'current' : ''}
+                  onClick={() => {
+                    setOffset((i - 1) * 25)
+                    setProductsLimit(10)
+                    console.log('jalan')
+                  }}
+                  key={i}
+                >
+                  <div>{i}</div>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      </main>
-    </Layout>
+        </main>
+      </Layout>
+    </LimitContext.Provider>
   )
 }
 

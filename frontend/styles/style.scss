@@ -653,9 +653,16 @@ a {
 }
 
 .page-links {
+  // width: 100%;
   display: flex;
-  a {
+  justify-content: center;
+  div {
+    cursor: pointer;
     margin-left: 10px;
+  }
+  .current {
+    color: $primary-color;
+    text-decoration: underline;
   }
 }
 

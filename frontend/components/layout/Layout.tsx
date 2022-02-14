@@ -1,5 +1,6 @@
 import Head from 'next/head'
-import React, { ReactNode } from 'react'
+import React, { ReactNode, useContext } from 'react'
+// import { UserContext } from '../../context/context'
 import Footer from './Footer'
 import Header from './Header'
 
@@ -8,7 +9,11 @@ interface Prop {
 }
 
 const Layout = ({ children }: Prop) => {
+  // const { currentUser, setCurrentUser } = useContext(UserContext)
+
   return (
+    // <UserContext.Provider value={{ currentUser, setCurrentUser }}>
+    // <b>{currentUser}</b>
     <>
       <Head>
         <title>tohopedia by JV</title>
@@ -23,6 +28,7 @@ const Layout = ({ children }: Prop) => {
       {children}
       <Footer />
     </>
+    // </UserContext.Provider>
   )
 }
 

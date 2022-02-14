@@ -9,6 +9,7 @@ import UserSession from '../../util/user-session'
 import { links } from '../../util/route-links'
 import Geocode from 'react-geocode'
 import Modal from '../Modal'
+import { useStateIfMounted } from 'use-state-if-mounted'
 const NavLink = ({ children, path, className }: { children: ReactNode; path: string; className: string }) => (
   <div className={className}>
     <Link href={path}>{children}</Link>
@@ -18,7 +19,7 @@ const NavLink = ({ children, path, className }: { children: ReactNode; path: str
 export default function Header() {
   const [modal, setModal] = useState(<></>)
   const [errorMsg, setErrorMsg] = useState('')
-  const [currentLocation, setCurrentLocation] = useState('Address')
+  const [currentLocation, setCurrentLocation] = useStateIfMounted('Address')
 
   const router = useRouter()
   const query = gql`
@@ -91,34 +92,36 @@ export default function Header() {
     // console.log(user.shop)
   }
 
-  Geocode.setLanguage('en')
-  Geocode.setRegion('id')
+  // Geocode.setLanguage('en')
+  // Geocode.setRegion('id')
 
-  navigator.geolocation.getCurrentPosition((p) => {
-    console.log(p.coords.latitude, p.coords.longitude)
-    let url = `https://api.opencagedata.com/geocode/v1/json?key=f8cab12dcfac4859bcc109baa56595ea&q=${encodeURIComponent(
-      p.coords.latitude + ',' + p.coords.longitude
-    )}&pretty=1&no_annotations=1`
-    let req = new XMLHttpRequest()
-    req.open('GET', url, true)
+  if (!primaryAddress) {
+    navigator.geolocation.getCurrentPosition((p) => {
+      console.log(p.coords.latitude, p.coords.longitude)
+      let url = `https://api.opencagedata.com/geocode/v1/json?key=f8cab12dcfac4859bcc109baa56595ea&q=${encodeURIComponent(
+        p.coords.latitude + ',' + p.coords.longitude
+      )}&pretty=1&no_annotations=1`
+      let req = new XMLHttpRequest()
+      req.open('GET', url, true)
 
-    req.onload = function () {
-      if (req.status === 200) {
-        var data = JSON.parse(req.responseText)
-        // console.log(data)
-        // console.log(data.results[0].formatted)
+      req.onload = function () {
+        if (req.status === 200) {
+          var data = JSON.parse(req.responseText)
+          // console.log(data)
+          // console.log(data.results[0].formatted)
 
-        setCurrentLocation(data.results[0].formatted)
-      } else {
+          setCurrentLocation(data.results[0].formatted)
+        } else {
+        }
       }
-    }
 
-    req.onerror = function () {
-      console.log('unable to connect to server')
-    }
+      req.onerror = function () {
+        console.log('unable to connect to server')
+      }
 
-    req.send()
-  })
+      req.send()
+    })
+  }
 
   const handleChooseAddress = async (e: any) => {
     // console.log(e.target.accessKey)

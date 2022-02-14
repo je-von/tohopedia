@@ -17,22 +17,22 @@ import { links } from '../../util/route-links'
 
 const ShopDetail: NextPage = () => {
   const router = useRouter()
-  const { slug, page } = router.query
+  const { slug } = router.query
 
-  const [pageLinks, setPageLinks] = useState([])
+  // const [pageLinks, setPageLinks] = useState([])
   // const [totalPage, setTotalPage] = useState(0)
   const [shopID, setShopID] = useState('')
   const limit = 10
   // console.log(page)
-  const [offset, setOffset] = useState(-1)
+  const [offset, setOffset] = useState(0)
   // console.log(offset)
 
   // console.log('page:' + parseInt(page as string))
-  if (offset == -1 && !isNaN(parseInt(page as string))) {
-    let pageNumber = parseInt(page as string) > 0 ? parseInt(page as string) - 1 : 0
-    setOffset(pageNumber * limit)
-    console.log(offset)
-  }
+  // if (offset == -1 && !isNaN(parseInt(page as string))) {
+  //   let pageNumber = parseInt(page as string) > 0 ? parseInt(page as string) - 1 : 0
+  //   setOffset(pageNumber * limit)
+  //   console.log(offset)
+  // }
 
   const query = gql`
     query getShopBySlug($nameSlug: String!) {
@@ -81,23 +81,16 @@ const ShopDetail: NextPage = () => {
   }
 
   let shop: any = null
+  let pages: any = []
   if (data && data.shopBySlug) {
     shop = data.shopBySlug
+    let totalPage = Math.ceil(shop.products.length / limit)
+    pages = Array.from(Array(totalPage), (_, i) => i + 1)
     if (!shopID) {
       setShopID(shop.id)
-      let totalPage = Math.ceil(shop.products.length / limit)
-      let temp: any = []
-      for (let i = 1; i <= totalPage; i++) {
-        temp.push(
-          <a href={links.shopDetail(slug as string) + '?page=' + i} key={i}>
-            <div>{i}</div>
-          </a>
-        )
-        console.log('masuk')
-      }
-      setPageLinks(temp)
-      console.log(totalPage, temp)
+      // setPageLinks(temp)
     }
+    console.log(totalPage, pages)
   }
 
   if (d) {
@@ -130,13 +123,27 @@ const ShopDetail: NextPage = () => {
               key={p.id}
               image={p.images.length > 0 ? p.images[0].image : '/asset/no-image.png'}
               productID={p.id}
-              price={p.price}
+              priceTag={<b>Rp.{p.price}</b>}
               name={p.name}
               shop={shop.name}
+              shopNameSlug={slug as string}
             ></Card>
           ))}
         </div>
-        <div className="page-links">Page {pageLinks}</div>
+        <div className="page-links">
+          Page
+          {pages.map((i: any) => (
+            <div
+              className={offset / limit + 1 == i ? 'current' : ''}
+              onClick={() => {
+                setOffset((i - 1) * limit)
+              }}
+              key={i}
+            >
+              <div>{i}</div>
+            </div>
+          ))}
+        </div>
       </div>
     </Layout>
   )

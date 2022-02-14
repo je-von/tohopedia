@@ -144,6 +144,11 @@ func (r *queryResolver) Products(ctx context.Context, shopID *string, limit *int
 		temp = temp.Limit(*limit)
 	}
 
+	if offset != nil {
+		temp = temp.Offset(*offset)
+
+	}
+
 	return models, temp.Find(&models).Error
 }
 

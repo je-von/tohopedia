@@ -1,17 +1,24 @@
 import { gql, useQuery } from '@apollo/client'
 import { removeCookies } from 'cookies-next'
 import { useRouter } from 'next/router'
-import { useState } from 'react'
+import React, { createContext, useContext, useState } from 'react'
+import { LimitContext } from '../context/context'
+import { links } from '../util/route-links'
 import Card from './Card'
 
-const ProductList = () => {
+const ProductList = ({ variables }: any) => {
   const router = useRouter()
+  const { productsLimit, setProductsLimit } = useContext(LimitContext)
 
-  const [limit, setLimit] = useState(5)
+  //   const [limit, setLimit] = useState(5)
 
-  const productQuery = gql`
-    query products($limit: Int) {
-      products(limit: $limit) {
+  const query = gql`
+    query products($limit: Int, $offset: Int, $keyword: String, $minPrice: Int, $maxPrice: Int, $orderBy: String, $categoryID: String) {
+      products(
+        limit: $limit
+        offset: $offset
+        input: { keyword: $keyword, minPrice: $minPrice, maxPrice: $maxPrice, orderBy: $orderBy, categoryID: $categoryID }
+      ) {
         id
         name
         price
@@ -26,41 +33,76 @@ const ProductList = () => {
     }
   `
 
-  const { loading, error, data } = useQuery(productQuery, { variables: { limit: limit } })
+  const { loading, error, data } = useQuery(query, { variables: variables })
 
   if (loading) {
     return <main>Loading...</main>
   }
 
-  if (!data || !data.products) {
-    removeCookies('token')
-    router.reload()
+  if (error) {
+    console.log(error)
+    return <>{error.message}</>
   }
+  //   if (!data || !data.products) {
+  //     removeCookies('token')
+  //     router.reload()
+  //   }
+
+  //   if(data && data.products && variables.offset){
+  //     let totalPage = Math.ceil(data.products.length / 25)
+  //     let temp: any = []
+  //     for (let i = 1; i <= totalPage; i++) {
+  //       temp.push(
+  //         <a href={links.shopDetail(slug as string) + '?page=' + i} key={i}>
+  //           <div>{i}</div>
+  //         </a>
+  //       )
+  //       console.log('masuk')
+  //     }
+  //     setPageLinks(temp)
+  //   }
 
   window.onscroll = function (ev) {
+    // console.log(window.scrollY, document.body.clientHeight, document.body.scrollHeight)
     if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
       // ev.preventDefault()
       // setCurrentScroll({ x: scrollX, y: scrollY })
-      if (data.products.length % 5 == 0) setLimit(limit + 5)
+      //   console.log(data.products.length, limit)
+      if (data.products.length >= productsLimit) {
+        if (variables.offset >= 0 && productsLimit >= 25) {
+          //   setProductsLimit(5)
+          return
+        } else {
+          setProductsLimit(productsLimit + 5)
+        }
+      }
+
+      //   else setLimit(data.products.length)
       // scrollTo(scrollX, scrollY)
     }
   }
 
   return (
-    <div className="card-container">
-      {data.products.map((p: any) => (
-        <Card
-          key={p.id}
-          image={p.images.length > 0 ? p.images[0].image : '/asset/no-image.png'}
-          productID={p.id}
-          priceTag={<b>Rp.{p.price}</b>}
-          name={p.name}
-          shop={p.shop.name}
-          shopNameSlug={p.shop.nameSlug}
-        ></Card>
-      ))}
-    </div>
+    // <LimitContext.Provider value={{ productsLimit: limit, setProductsLimit: setLimit }}>
+    <>
+      <div className="card-container">
+        {data.products.map((p: any) => (
+          <Card
+            key={p.id}
+            image={p.images.length > 0 ? p.images[0].image : '/asset/no-image.png'}
+            productID={p.id}
+            priceTag={<b>Rp.{p.price}</b>}
+            name={p.name}
+            shop={p.shop.name}
+            shopNameSlug={p.shop.nameSlug}
+          ></Card>
+        ))}
+      </div>
+      {/* {variables.offset ? productsLimit : ''} */}
+    </>
+    // </LimitContext.Provider>
   )
 }
 
 export default ProductList
+// export default ProductLimit

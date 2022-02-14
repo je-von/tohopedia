@@ -25,6 +25,7 @@
     "sass": "^1.49.0",
     "swr": "^1.2.0",
     "two-step-auth": "^1.1.2",
+    "use-state-if-mounted": "^1.0.4",
     "xhr2": "^0.2.1"
   },
   "devDependencies": {
