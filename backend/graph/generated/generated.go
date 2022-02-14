@@ -1122,6 +1122,7 @@ input SearchProduct {
   maxPrice: Int
   orderBy: String
   categoryID: String
+  isDiscount: Boolean
 }
 `, BuiltIn: false},
 	{Name: "graph/shop.graphqls", Input: `directive @goField(forceResolver: Boolean, name: String) on INPUT_FIELD_DEFINITION | FIELD_DEFINITION
@@ -6626,6 +6627,14 @@ func (ec *executionContext) unmarshalInputSearchProduct(ctx context.Context, obj
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("categoryID"))
 			it.CategoryID, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "isDiscount":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isDiscount"))
+			it.IsDiscount, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
 			if err != nil {
 				return it, err
 			}

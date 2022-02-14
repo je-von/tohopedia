@@ -115,27 +115,32 @@ func (r *queryResolver) Products(ctx context.Context, shopID *string, limit *int
 	temp := r.DB
 
 	if input != nil {
-		if input.MinPrice != nil {
-			temp = temp.Where("price >= ?", *input.MinPrice)
-		}
-		if input.MaxPrice != nil {
-			temp = temp.Where("price <= ?", *input.MaxPrice)
-		}
-		if input.Keyword != nil {
-			temp = temp.Where("(name LIKE ? OR description LIKE ?)", "%"+*input.Keyword+"%", "%"+*input.Keyword+"%")
-			// temp = temp.Where("name LIKE ?", "%"+*input.Keyword+"%")
+		if input.IsDiscount != nil && *input.IsDiscount {
+			temp = temp.Order("discount DESC").Limit(15)
+		} else {
 
-		}
-		if input.CategoryID != nil {
-			temp = temp.Where("category_id = ?", *input.CategoryID)
-		}
-		if input.OrderBy != nil {
-			if *input.OrderBy == "newest" {
-				temp = temp.Order("created_at DESC")
-			} else if *input.OrderBy == "highest-price" {
-				temp = temp.Order("price DESC")
-			} else if *input.OrderBy == "lowest-price" {
-				temp = temp.Order("price ASC")
+			if input.MinPrice != nil {
+				temp = temp.Where("price >= ?", *input.MinPrice)
+			}
+			if input.MaxPrice != nil {
+				temp = temp.Where("price <= ?", *input.MaxPrice)
+			}
+			if input.Keyword != nil {
+				temp = temp.Where("(name LIKE ? OR description LIKE ?)", "%"+*input.Keyword+"%", "%"+*input.Keyword+"%")
+				// temp = temp.Where("name LIKE ?", "%"+*input.Keyword+"%")
+
+			}
+			if input.CategoryID != nil {
+				temp = temp.Where("category_id = ?", *input.CategoryID)
+			}
+			if input.OrderBy != nil {
+				if *input.OrderBy == "newest" {
+					temp = temp.Order("created_at DESC")
+				} else if *input.OrderBy == "highest-price" {
+					temp = temp.Order("price DESC")
+				} else if *input.OrderBy == "lowest-price" {
+					temp = temp.Order("price ASC")
+				}
 			}
 		}
 	}

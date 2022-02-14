@@ -56,4 +56,5 @@ input SearchProduct {
   maxPrice: Int
   orderBy: String
   categoryID: String
+  isDiscount: Boolean
 }

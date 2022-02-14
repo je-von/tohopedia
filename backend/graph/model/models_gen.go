@@ -56,4 +56,5 @@ type SearchProduct struct {
 	MaxPrice   *int    `json:"maxPrice"`
 	OrderBy    *string `json:"orderBy"`
 	CategoryID *string `json:"categoryID"`
+	IsDiscount *bool   `json:"isDiscount"`
 }

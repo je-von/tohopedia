@@ -143,24 +143,25 @@ const Home: NextPage = () => {
   //   console.log(d)
   // }
 
-  // const productQuery = gql`
-  //   query products($limit: Int) {
-  //     products(limit: $limit) {
-  //       id
-  //       name
-  //       price
-  //       images {
-  //         image
-  //       }
-  //       shop {
-  //         name
-  //         nameSlug
-  //       }
-  //     }
-  //   }
-  // `
+  const discountedProductsQuery = gql`
+    query products {
+      products(input: { isDiscount: true }) {
+        id
+        name
+        price
+        discount
+        images {
+          image
+        }
+        shop {
+          name
+          nameSlug
+        }
+      }
+    }
+  `
 
-  // const { loading, error, data } = useQuery(productQuery, { variables: { limit: limit } })
+  const { loading, error, data } = useQuery(discountedProductsQuery)
 
   const categoryQuery = gql`
     query categories {
@@ -173,7 +174,7 @@ const Home: NextPage = () => {
 
   const { loading: l, error: e, data: d } = useQuery(categoryQuery)
 
-  if (l) {
+  if (loading || l) {
     return (
       <Layout>
         <main>Loading...</main>
@@ -210,16 +211,25 @@ const Home: NextPage = () => {
         <main>
           <div className="home">
             <h2 className="section-title">Top Discounted Items</h2>
-            <div className="card-container">
-              <Card
-                // key={p.id}
-                image={'/asset/no-image.png'}
-                productID={'p.id'}
-                priceTag={123}
-                name={'asd'}
-                shop={'asd'}
-                shopNameSlug={'asd'}
-              ></Card>
+            <div className="card-container discount">
+              {data.products.map((p: any) => (
+                <Card
+                  key={p.id}
+                  image={p.images.length > 0 ? p.images[0].image : '/asset/no-image.png'}
+                  productID={p.id}
+                  priceTag={
+                    <div className="product-price">
+                      <p className="product-discount">{Math.round(p.discount * 100)}%</p>
+                      <s className="original-price">Rp.{p.price}</s>
+
+                      <b>Rp.{Math.round(p.price * (1 - p.discount))}</b>
+                    </div>
+                  }
+                  name={p.name}
+                  shop={p.shop.name}
+                  shopNameSlug={p.shop.nameSlug}
+                ></Card>
+              ))}
             </div>
             <h2 className="section-title">Categories</h2>
             <div className="card-container category">
