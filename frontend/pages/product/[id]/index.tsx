@@ -43,6 +43,9 @@ const ProductDetail: NextPage = () => {
           reputationPoints
           profilePic
         }
+        category {
+          name
+        }
       }
     }
   `
@@ -172,6 +175,7 @@ const ProductDetail: NextPage = () => {
             <div className="product-description">
               <b>Detail</b>
               <div className="product-metadata">
+                <label className="metadata-key">Category</label> : {product.category.name}
                 {product.metadata ? JSON.parse(product.metadata).map((m: any) => handleMetadata(m)) : ''}
                 {/* {metadataList} */}
               </div>

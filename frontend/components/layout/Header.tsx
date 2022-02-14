@@ -204,7 +204,7 @@ export default function Header() {
           </NavLink>
         ))} */}
           <div>
-            <form action="/search">
+            <form action={links.search()}>
               <div className="search-container">
                 <input type="text" placeholder="Search.." id="keyword" name="keyword" />
                 <button type="submit">

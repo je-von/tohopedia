@@ -13,6 +13,11 @@ import (
 	"github.com/je-von/TPA-Web-JV/backend/graph/model"
 )
 
+func (r *categoryResolver) Products(ctx context.Context, obj *model.Category) ([]*model.Product, error) {
+	var models []*model.Product
+	return models, r.DB.Where("category_id = ?", obj.ID).Find(&models).Error
+}
+
 func (r *mutationResolver) CreateProduct(ctx context.Context, input model.NewProduct, shopID string) (*model.Product, error) {
 	model := &model.Product{
 		ID:          uuid.NewString(),
@@ -85,9 +90,13 @@ func (r *queryResolver) Category(ctx context.Context, id string) (*model.Categor
 	return category, r.DB.First(category, "id = ?", id).Error
 }
 
-func (r *queryResolver) Categories(ctx context.Context) ([]*model.Category, error) {
+func (r *queryResolver) Categories(ctx context.Context, limit *int) ([]*model.Category, error) {
 	var models []*model.Category
-	return models, r.DB.Find(&models).Error
+	q := r.DB
+	if limit != nil {
+		q = q.Limit(*limit)
+	}
+	return models, q.Find(&models).Error
 }
 
 func (r *queryResolver) Product(ctx context.Context, id string) (*model.Product, error) {
@@ -116,6 +125,9 @@ func (r *queryResolver) Products(ctx context.Context, shopID *string, limit *int
 			// temp = temp.Where("name LIKE ?", "%"+*input.Keyword+"%")
 
 		}
+		if input.CategoryID != nil {
+			temp = temp.Where("category_id = ?", *input.CategoryID)
+		}
 		if input.OrderBy != nil {
 			if *input.OrderBy == "newest" {
 				temp = temp.Order("created_at DESC")
@@ -130,11 +142,15 @@ func (r *queryResolver) Products(ctx context.Context, shopID *string, limit *int
 	return models, temp.Find(&models).Error
 }
 
+// Category returns generated.CategoryResolver implementation.
+func (r *Resolver) Category() generated.CategoryResolver { return &categoryResolver{r} }
+
 // Product returns generated.ProductResolver implementation.
 func (r *Resolver) Product() generated.ProductResolver { return &productResolver{r} }
 
 // ProductImage returns generated.ProductImageResolver implementation.
 func (r *Resolver) ProductImage() generated.ProductImageResolver { return &productImageResolver{r} }
 
+type categoryResolver struct{ *Resolver }
 type productResolver struct{ *Resolver }
 type productImageResolver struct{ *Resolver }

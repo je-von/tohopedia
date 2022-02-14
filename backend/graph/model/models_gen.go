@@ -12,8 +12,9 @@ type AuthOps struct {
 }
 
 type Category struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	ID       string     `json:"id"`
+	Name     string     `json:"name"`
+	Products []*Product `json:"products"`
 }
 
 type NewProduct struct {
@@ -50,8 +51,9 @@ type NewUser struct {
 }
 
 type SearchProduct struct {
-	Keyword  *string `json:"keyword"`
-	MinPrice *int    `json:"minPrice"`
-	MaxPrice *int    `json:"maxPrice"`
-	OrderBy  *string `json:"orderBy"`
+	Keyword    *string `json:"keyword"`
+	MinPrice   *int    `json:"minPrice"`
+	MaxPrice   *int    `json:"maxPrice"`
+	OrderBy    *string `json:"orderBy"`
+	CategoryID *string `json:"categoryID"`
 }

@@ -13,4 +13,7 @@ export const links = {
   },
   editProfile: '/user/edit',
   editShop: '/shop/edit',
+  search: (query: string = '') => {
+    return '/search' + query
+  },
 }

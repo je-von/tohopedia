@@ -15,13 +15,13 @@ let str = ''
 let flag = false
 const Search: NextPage = () => {
   const router = useRouter()
-  const { keyword } = router.query
+  const { keyword, category } = router.query
   const [priceRange, setPriceRange] = useState({ min: 0, max: Number.MAX_SAFE_INTEGER })
   const [orderBy, setOrderBy] = useState('')
 
   const query = gql`
-    query searchProducts($keyword: String!, $minPrice: Int!, $maxPrice: Int!, $orderBy: String!) {
-      products(input: { keyword: $keyword, minPrice: $minPrice, maxPrice: $maxPrice, orderBy: $orderBy }) {
+    query searchProducts($keyword: String!, $minPrice: Int!, $maxPrice: Int!, $orderBy: String!, $categoryID: String) {
+      products(input: { keyword: $keyword, minPrice: $minPrice, maxPrice: $maxPrice, orderBy: $orderBy, categoryID: $categoryID }) {
         id
         name
         price
@@ -38,10 +38,11 @@ const Search: NextPage = () => {
 
   const { loading, error, data } = useQuery(query, {
     variables: {
-      keyword: keyword,
+      keyword: keyword ? keyword : '',
       minPrice: priceRange.min,
       maxPrice: priceRange.max,
       orderBy: orderBy,
+      categoryID: category ? category : null,
     },
   })
 

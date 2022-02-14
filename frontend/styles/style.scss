@@ -192,8 +192,8 @@ textarea {
 .profile-pic {
   margin-right: 5px;
   position: relative;
-  width: 4vh;
-  height: 4vh;
+  width: 30px;
+  height: 30px;
   img {
     border-radius: 50%;
     z-index: 100;
@@ -451,6 +451,17 @@ a {
         }
       }
     }
+  }
+}
+
+.home {
+  .category {
+    .card {
+      height: fit-content;
+    }
+  }
+  .section-title {
+    padding: 20px 0 0 20px;
   }
 }
 

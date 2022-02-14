@@ -24,11 +24,12 @@ type ProductImage {
 type Category {
   id: ID!
   name: String!
+  products: [Product!]! @goField(forceResolver: true)
 }
 
 extend type Query {
   category(id: ID!): Category!
-  categories: [Category!]!
+  categories(limit: Int): [Category!]!
   product(id: ID!): Product!
   products(shopID: ID, limit: Int, offset: Int, input: SearchProduct): [Product!]!
 }
@@ -54,4 +55,5 @@ input SearchProduct {
   minPrice: Int
   maxPrice: Int
   orderBy: String
+  categoryID: String
 }
