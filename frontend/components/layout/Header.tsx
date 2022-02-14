@@ -18,6 +18,7 @@ const NavLink = ({ children, path, className }: { children: ReactNode; path: str
 export default function Header() {
   const [modal, setModal] = useState(<></>)
   const [errorMsg, setErrorMsg] = useState('')
+  const [currentLocation, setCurrentLocation] = useState('Address')
 
   const router = useRouter()
   const query = gql`
@@ -95,16 +96,28 @@ export default function Header() {
 
   navigator.geolocation.getCurrentPosition((p) => {
     console.log(p.coords.latitude, p.coords.longitude)
+    let url = `https://api.opencagedata.com/geocode/v1/json?key=f8cab12dcfac4859bcc109baa56595ea&q=${encodeURIComponent(
+      p.coords.latitude + ',' + p.coords.longitude
+    )}&pretty=1&no_annotations=1`
+    let req = new XMLHttpRequest()
+    req.open('GET', url, true)
 
-    // Geocode.fromLatLng(p.coords.latitude + '', p.coords.longitude + '').then(
-    //   (response) => {
-    //     const address = response.results[0].formatted_address
-    //     console.log(address)
-    //   },
-    //   (error) => {
-    //     console.error(error)
-    //   }
-    // )
+    req.onload = function () {
+      if (req.status === 200) {
+        var data = JSON.parse(req.responseText)
+        console.log(data)
+        console.log(data.results[0].formatted)
+
+        setCurrentLocation(data.results[0].formatted)
+      } else {
+      }
+    }
+
+    req.onerror = function () {
+      console.log('unable to connect to server')
+    }
+
+    req.send()
   })
 
   const handleChooseAddress = async (e: any) => {
@@ -336,7 +349,7 @@ export default function Header() {
           <div className="shipping-button">
             <>
               <i className="fas fa-map-marker-alt"></i>
-              Dikirim ke <b>{user && user.addresses.length > 0 ? <>{user.addresses[0].name}</> : 'Jakarta Barat'}</b>
+              Dikirim ke <b>{user && user.addresses.length > 0 ? <>{user.addresses[0].name}</> : currentLocation}</b>
               {user ? (
                 <i
                   className="fas fa-caret-down"
