@@ -57,6 +57,10 @@ const ListCard = (c: Cart) => {
     deleteCart({ variables: { productID: productID } })
   }
 
+  if (data && data.updateCart) {
+    router.reload()
+  }
+
   if (d && d.deleteCart) {
     router.reload()
   }

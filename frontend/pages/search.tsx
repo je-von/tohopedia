@@ -162,7 +162,7 @@ const Search: NextPage = () => {
               ></Card>
             ))}
           </div> */}
-            {d && d.shop ? (
+            {keyword && d && d.shop ? (
               <div className="top-result">
                 <Link href={links.shopDetail(d.shop.nameSlug)} passHref>
                   <div className="shop-container">
@@ -198,10 +198,12 @@ const Search: NextPage = () => {
                   </div>
                 </Link>
               </div>
-            ) : (
+            ) : keyword ? (
               <i className="error">
                 No shop found for &quot;<b>{keyword}</b>&quot;
               </i>
+            ) : (
+              ''
             )}
 
             <ProductList variables={variables}></ProductList>

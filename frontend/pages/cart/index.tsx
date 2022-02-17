@@ -47,10 +47,21 @@ const Cart: NextPage = () => {
     )
   }
 
+  let totalPrice = 0,
+    totalDiscount = 0
   if (!data || !data.carts) {
     // removeCookies('token')
     // router.reload()
   } else {
+    // let prices = data.carts.map((c: any) => Math.round(c.product.price * (1 - c.product.discount)))
+    // console.log(prices.reduce((a: any, b: any) => a + b, 0))
+
+    totalPrice = data.carts.map((c: any) => c.product.price * c.quantity).reduce((a: any, b: any) => a + b, 0)
+    totalDiscount = data.carts
+      .map((c: any) => Math.round(c.product.discount.toFixed(2) * c.product.price) * c.quantity)
+      .reduce((a: any, b: any) => a + b, 0)
+
+    console.log(totalPrice, totalDiscount)
   }
 
   return (
@@ -77,7 +88,20 @@ const Cart: NextPage = () => {
           <div className="action-container">
             <div className="product-button">
               <h4>Shopping Summary</h4>
-              <div></div>
+              <div className="multi-input subtotal">
+                <p className="multi-input-item">Total Price</p>
+                <b className="multi-input-item">Rp{totalPrice}</b>
+              </div>
+              <div className="multi-input subtotal">
+                <p className="multi-input-item">Total Discount</p>
+                <b className="multi-input-item">-Rp{totalDiscount}</b>
+              </div>
+              <hr />
+              <div className="multi-input subtotal">
+                <p className="multi-input-item">Grand Total</p>
+                <b className="multi-input-item">Rp{totalPrice - totalDiscount}</b>
+              </div>
+
               <button className="text-button">Buy</button>
             </div>
           </div>
