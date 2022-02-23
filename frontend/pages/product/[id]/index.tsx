@@ -23,6 +23,16 @@ const ProductDetail: NextPage = () => {
   const [errorMsg, setErrorMsg] = useState('')
   // const [metadata, ]
 
+  const userQuery = gql`
+    query getCurrentUser {
+      getCurrentUser {
+        id
+      }
+    }
+  `
+
+  const { loading: l2, data: d2, error: e2 } = useQuery(userQuery)
+
   const query = gql`
     query getProductByID($id: ID!) {
       product(id: $id) {
@@ -42,9 +52,22 @@ const ProductDetail: NextPage = () => {
           nameSlug
           reputationPoints
           profilePic
+          user {
+            id
+          }
         }
         category {
           name
+        }
+
+        updatedProducts {
+          id
+          name
+          description
+          price
+          discount
+          stock
+          discount
         }
       }
     }
@@ -68,7 +91,7 @@ const ProductDetail: NextPage = () => {
   `
   const [addToCart, { data: d, loading: l, error: e }] = useMutation(mutation)
 
-  if (loading || l) {
+  if (loading || l || l2) {
     return <>Loading...</>
   }
 
@@ -114,6 +137,14 @@ const ProductDetail: NextPage = () => {
     //     // console.log(metadataList)
     //   } catch (e) {}
     // }
+  }
+
+  let isSeller = false
+  if (d2 && d2.getCurrentUser && data && data.product) {
+    if (d2.getCurrentUser.id == data.product.shop.user.id) {
+      console.log('owner!')
+      isSeller = true
+    }
   }
 
   const handleMetadata = (m: any) => {
@@ -169,9 +200,9 @@ const ProductDetail: NextPage = () => {
             )}
           </div>
           <div className="product-detail">
-            <h3>{product.name}</h3>
+            <h3>{product.updatedProducts.length > 0 ? product.updatedProducts[0].name : product.name}</h3>
             <p>Sold Count: 0</p>
-            <h1 className="product-price">Rp{product.price}</h1>
+            <h1 className="product-price">Rp{product.updatedProducts.length > 0 ? product.updatedProducts[0].price : product.price}</h1>
             <div className="product-description">
               <b>Detail</b>
               <div className="product-metadata">
@@ -179,7 +210,7 @@ const ProductDetail: NextPage = () => {
                 {product.metadata ? JSON.parse(product.metadata).map((m: any) => handleMetadata(m)) : ''}
                 {/* {metadataList} */}
               </div>
-              <p>{product.description}</p>
+              <p>{product.updatedProducts.length > 0 ? product.updatedProducts[0].description : product.description}</p>
               <Link href={links.shopDetail(product.shop.nameSlug)} passHref>
                 <div className="shop-container">
                   <div className="shop-image">
@@ -202,58 +233,70 @@ const ProductDetail: NextPage = () => {
               </Link>
             </div>
           </div>
-          <div className="action-container">
-            <div className="multi-input">
-              <input
-                className="multi-input-item"
-                min={1}
-                max={product.stock}
-                placeholder="0"
-                type="number"
-                name="quantity"
-                id="quantity"
-                onChange={handleQuantity}
-              />
-              <p className="multi-input-item">
-                Stok <b>{product.stock}</b>
-              </p>
-            </div>
-            <div className="notes">
-              <input type="text" name="notes" id="notes" placeholder="Add Notes..." />
-            </div>
-            <div className="multi-input subtotal">
-              <p className="multi-input-item">Subtotal</p>
-              <b className="multi-input-item">Rp{subtotal}</b>
-            </div>
-            <div className="product-button">
-              <button className="text-button" onClick={handleAddToCart}>
-                + Add to Cart
-              </button>
-              <button className="text-button">Buy</button>
-              <p className="error">{errorMsg}</p>
-            </div>
+          <div>
+            <div className="action-container">
+              <div className="multi-input">
+                <input
+                  className="multi-input-item"
+                  min={1}
+                  max={product.stock}
+                  placeholder="0"
+                  type="number"
+                  name="quantity"
+                  id="quantity"
+                  onChange={handleQuantity}
+                />
+                <p className="multi-input-item">
+                  Stok <b>{product.stock}</b>
+                </p>
+              </div>
+              <div className="notes">
+                <input type="text" name="notes" id="notes" placeholder="Add Notes..." />
+              </div>
+              <div className="multi-input subtotal">
+                <p className="multi-input-item">Subtotal</p>
+                <b className="multi-input-item">Rp{subtotal}</b>
+              </div>
+              <div className="product-button">
+                <button className="text-button" onClick={handleAddToCart}>
+                  + Add to Cart
+                </button>
+                <button className="text-button">Buy</button>
+                <p className="error">{errorMsg}</p>
+              </div>
 
-            <div className="action-footer">
-              <Link href="#" passHref>
+              <div className="action-footer">
+                <Link href="#" passHref>
+                  <div className="footer-links">
+                    <i className="fas fa-comment-dots"></i>
+                    Chat
+                  </div>
+                </Link>
                 <div className="footer-links">
-                  <i className="fas fa-comment-dots"></i>
-                  Chat
+                  <i className="fas fa-heart"></i>
+                  Wishlist
                 </div>
-              </Link>
-              <div className="footer-links">
-                <i className="fas fa-heart"></i>
-                Wishlist
-              </div>
-              <div
-                className="footer-links"
-                onClick={() => {
-                  navigator.clipboard.writeText(window.location.href)
-                }}
-              >
-                <i className="fas fa-share-alt"></i>
-                Share
+                <div
+                  className="footer-links"
+                  onClick={() => {
+                    navigator.clipboard.writeText(window.location.href)
+                  }}
+                >
+                  <i className="fas fa-share-alt"></i>
+                  Share
+                </div>
               </div>
             </div>
+            {isSeller ? (
+              <div className="multi-input">
+                <Link href={links.editProduct(product.id)} passHref>
+                  <button className="text-button multi-input-item">Update</button>
+                </Link>
+                <button className="text-button multi-input-item danger-button">Delete</button>
+              </div>
+            ) : (
+              ''
+            )}
           </div>
         </div>
       </main>

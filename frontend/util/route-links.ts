@@ -12,6 +12,9 @@ export const links = {
   productDetail: (productID: string) => {
     return '/product/' + productID
   },
+  editProduct: (productID: string) => {
+    return '/product/' + productID + '/edit'
+  },
   editProfile: '/user/edit',
   editShop: '/shop/edit',
   search: (query: string = '') => {

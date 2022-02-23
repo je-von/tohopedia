@@ -4,6 +4,7 @@ $primary-color: rgb(62, 171, 0);
 $normal-font-size: 12px;
 $ipad-screen: 900px;
 $iphone-screen: 420px;
+$danger-color: rgb(197, 0, 0);
 * {
   padding: 0;
   margin: 0;
@@ -26,6 +27,7 @@ textarea {
     width: 48%;
   }
 }
+
 .text-button {
   border-radius: 8px;
   border: 2px solid $primary-color;
@@ -46,6 +48,10 @@ textarea {
   cursor: pointer;
   margin: 5px 0;
   // }
+}
+.danger-button {
+  color: $danger-color;
+  border: 2px solid $danger-color;
 }
 .text-button:hover {
   background-color: #f1f1f1;

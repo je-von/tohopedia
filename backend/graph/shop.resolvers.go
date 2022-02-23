@@ -107,7 +107,7 @@ func (r *shopResolver) User(ctx context.Context, obj *model.Shop) (*model.User, 
 
 func (r *shopResolver) Products(ctx context.Context, obj *model.Shop, keyword *string) ([]*model.Product, error) {
 	var models []*model.Product
-	temp := r.DB.Where("shop_id = ?", obj.ID)
+	temp := r.DB.Where("shop_id = ?", obj.ID).Where("(original_product_id IS NULL OR original_product_id = id)")
 	if keyword != nil {
 		temp = temp.Where("(name LIKE ? OR description LIKE ?)", "%"+*keyword+"%", "%"+*keyword+"%").Limit(3)
 	}

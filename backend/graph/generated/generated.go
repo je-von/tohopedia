@@ -94,6 +94,7 @@ type ComplexityRoot struct {
 		TogglePrimary       func(childComplexity int, id string) int
 		ToggleSuspend       func(childComplexity int, id string) int
 		UpdateCart          func(childComplexity int, productID string, quantity int, notes string) int
+		UpdateProduct       func(childComplexity int, input model.NewProduct, productID string) int
 		UpdateShop          func(childComplexity int, input model.NewShop) int
 		UpdateUser          func(childComplexity int, input model.NewUser) int
 	}
@@ -200,6 +201,7 @@ type MutationResolver interface {
 	CreateProduct(ctx context.Context, input model.NewProduct, shopID string) (*model.Product, error)
 	CreateProductImage(ctx context.Context, image string, productID string) (*model.ProductImage, error)
 	CreateProductImages(ctx context.Context, images []string, productID string) (bool, error)
+	UpdateProduct(ctx context.Context, input model.NewProduct, productID string) (*model.Product, error)
 	CreateShop(ctx context.Context, input model.NewShop) (*model.Shop, error)
 	UpdateShop(ctx context.Context, input model.NewShop) (*model.Shop, error)
 }
@@ -515,6 +517,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.UpdateCart(childComplexity, args["productID"].(string), args["quantity"].(int), args["notes"].(string)), true
+
+	case "Mutation.updateProduct":
+		if e.complexity.Mutation.UpdateProduct == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateProduct_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateProduct(childComplexity, args["input"].(model.NewProduct), args["productID"].(string)), true
 
 	case "Mutation.updateShop":
 		if e.complexity.Mutation.UpdateShop == nil {
@@ -1139,6 +1153,8 @@ extend type Mutation {
   createProduct(input: NewProduct!, shopID: ID!): Product!
   createProductImage(image: String!, productID: ID!): ProductImage!
   createProductImages(images: [String!]!, productID: ID!): Boolean!
+
+  updateProduct(input: NewProduct!, productID: ID!): Product!
 }
 
 input NewProduct {
@@ -1576,6 +1592,30 @@ func (ec *executionContext) field_Mutation_updateCart_args(ctx context.Context, 
 		}
 	}
 	args["notes"] = arg2
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateProduct_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.NewProduct
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNNewProduct2githubᚗcomᚋjeᚑvonᚋTPAᚑWebᚑJVᚋbackendᚋgraphᚋmodelᚐNewProduct(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["productID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("productID"))
+		arg1, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["productID"] = arg1
 	return args, nil
 }
 
@@ -3009,6 +3049,48 @@ func (ec *executionContext) _Mutation_createProductImages(ctx context.Context, f
 	res := resTmp.(bool)
 	fc.Result = res
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_updateProduct(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_updateProduct_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateProduct(rctx, args["input"].(model.NewProduct), args["productID"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Product)
+	fc.Result = res
+	return ec.marshalNProduct2ᚖgithubᚗcomᚋjeᚑvonᚋTPAᚑWebᚑJVᚋbackendᚋgraphᚋmodelᚐProduct(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_createShop(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -7099,6 +7181,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "createProductImages":
 			out.Values[i] = ec._Mutation_createProductImages(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updateProduct":
+			out.Values[i] = ec._Mutation_updateProduct(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}

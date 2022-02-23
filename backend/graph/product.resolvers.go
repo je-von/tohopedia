@@ -15,21 +15,23 @@ import (
 
 func (r *categoryResolver) Products(ctx context.Context, obj *model.Category) ([]*model.Product, error) {
 	var models []*model.Product
-	return models, r.DB.Where("category_id = ?", obj.ID).Find(&models).Error
+	return models, r.DB.Where("category_id = ?", obj.ID).Where("(original_product_id IS NULL OR original_product_id = id)").Find(&models).Error
 }
 
 func (r *mutationResolver) CreateProduct(ctx context.Context, input model.NewProduct, shopID string) (*model.Product, error) {
+	id := uuid.NewString()
 	model := &model.Product{
-		ID:          uuid.NewString(),
-		Name:        input.Name,
-		Description: input.Description,
-		Price:       input.Price,
-		Discount:    input.Discount,
-		Metadata:    input.Metadata,
-		CategoryID:  input.CategoryID,
-		ShopID:      shopID,
-		Stock:       input.Stock,
-		CreatedAt:   time.Now(),
+		ID:                id,
+		OriginalProductID: id,
+		Name:              input.Name,
+		Description:       input.Description,
+		Price:             input.Price,
+		Discount:          input.Discount,
+		Metadata:          input.Metadata,
+		CategoryID:        input.CategoryID,
+		ShopID:            shopID,
+		Stock:             input.Stock,
+		CreatedAt:         time.Now(),
 	}
 
 	return model, r.DB.Create(model).Error
@@ -59,6 +61,41 @@ func (r *mutationResolver) CreateProductImages(ctx context.Context, images []str
 		}
 	}
 	return true, nil
+}
+
+func (r *mutationResolver) UpdateProduct(ctx context.Context, input model.NewProduct, productID string) (*model.Product, error) {
+	product := new(model.Product)
+
+	err := r.DB.First(product, "id = ?", productID).Error
+	if err != nil {
+		return nil, err
+	}
+	now := time.Now()
+
+	// ! belom update yg udh updatean
+	product.OriginalProductID = productID
+	product.ValidTo = now
+
+	err = r.DB.Save(product).Error
+	if err != nil {
+		return nil, err
+	}
+
+	model := &model.Product{
+		ID:                uuid.NewString(),
+		Name:              input.Name,
+		OriginalProductID: productID,
+		Description:       input.Description,
+		Price:             input.Price,
+		Discount:          input.Discount,
+		Metadata:          "",
+		CategoryID:        product.CategoryID,
+		ShopID:            product.ShopID,
+		Stock:             input.Stock,
+		CreatedAt:         now,
+	}
+
+	return model, r.DB.Create(model).Error
 }
 
 func (r *productResolver) OriginalProduct(ctx context.Context, obj *model.Product) (*model.Product, error) {
@@ -120,10 +157,11 @@ func (r *queryResolver) Products(ctx context.Context, shopID *string, limit *int
 	var models []*model.Product
 	if shopID != nil && limit != nil && offset != nil {
 		fmt.Printf("limit: %d\n", *limit)
-		return models, r.DB.Where("shop_id = ?", shopID).Limit(*limit).Offset(*offset).Find(&models).Error
+		return models, r.DB.Where("shop_id = ?", shopID).Where("(original_product_id IS NULL OR original_product_id = id)").Limit(*limit).Offset(*offset).Find(&models).Error
 	}
 
-	temp := r.DB
+	// temp := r.DB.Where("valid_to IS NULL")
+	temp := r.DB.Where("(original_product_id IS NULL OR original_product_id = id)")
 
 	if input != nil {
 		if input.IsDiscount != nil && *input.IsDiscount {

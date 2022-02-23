@@ -157,12 +157,12 @@ const Home: NextPage = () => {
           name
           nameSlug
         }
-        updatedProducts {
-          id
-          name
-          price
-          discount
-        }
+        # updatedProducts {
+        #   id
+        #   name
+        #   price
+        #   discount
+        # }
       }
     }
   `
@@ -230,18 +230,21 @@ const Home: NextPage = () => {
                   priceTag={
                     <div className="product-price">
                       <p className="product-discount">
-                        {Math.round(p.updatedProducts.length > 0 ? p.updatedProducts[0].discount : p.discount * 100)}%
+                        {/* {Math.round(p.updatedProducts.length > 0 ? p.updatedProducts[0].discount : p.discount * 100)}% */}
+                        {Math.round(p.discount * 100)}%
                       </p>
-                      <s className="original-price">Rp.{p.updatedProducts.length > 0 ? p.updatedProducts[0].price : p.price}</s>
+                      {/* <s className="original-price">Rp.{p.updatedProducts.length > 0 ? p.updatedProducts[0].price : p.price}</s> */}
+                      <s className="original-price">Rp.{p.price}</s>
 
-                      {p.updatedProducts.length > 0 ? (
+                      {/* {p.updatedProducts.length > 0 ? (
                         <b>Rp.{Math.round(p.updatedProducts[0].price * (1 - p.updatedProducts[0].discount))}</b>
-                      ) : (
-                        <b>Rp.{Math.round(p.price * (1 - p.discount))}</b>
-                      )}
+                      ) : ( */}
+                      <b>Rp.{Math.round(p.price * (1 - p.discount))}</b>
+                      {/* )} */}
                     </div>
                   }
-                  name={p.updatedProducts.length > 0 ? p.updatedProducts[0].name : p.name}
+                  // name={p.updatedProducts.length > 0 ? p.updatedProducts[0].name : p.name}
+                  name={p.name}
                   shop={p.shop.name}
                   shopNameSlug={p.shop.nameSlug}
                 ></Card>

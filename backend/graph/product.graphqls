@@ -41,6 +41,8 @@ extend type Mutation {
   createProduct(input: NewProduct!, shopID: ID!): Product!
   createProductImage(image: String!, productID: ID!): ProductImage!
   createProductImages(images: [String!]!, productID: ID!): Boolean!
+
+  updateProduct(input: NewProduct!, productID: ID!): Product!
 }
 
 input NewProduct {
