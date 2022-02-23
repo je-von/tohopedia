@@ -293,7 +293,7 @@ textarea {
 main {
   display: flex;
   justify-content: center;
-  align-items: center;
+  // align-items: center;
   // align-items: center;
   // height: 100vh;
   @media screen and (max-width: $iphone-screen) {
@@ -793,6 +793,7 @@ a {
 
 .filter-container {
   width: 15vw;
+  height: 100%;
   margin: 20px;
 
   .price-filter {
@@ -890,6 +891,44 @@ a {
   }
 }
 
+.address-list {
+  width: 100%;
+  margin: 10px 0;
+  padding: 10px 15px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  // box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+
+  border-radius: 8px;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+
+  .address-content {
+    .address-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 5px;
+      .user-name {
+        margin-right: 5px;
+      }
+      .primary-tag {
+        // margin-left: 5px;
+        padding: 4px 8px;
+        background-color: #f3f4f5;
+        color: #9fa6b0;
+        border-radius: 6px;
+        font-size: 11px;
+      }
+    }
+    .address-detail {
+      color: grey;
+      white-space: pre-wrap;
+    }
+  }
+}
 .modal-overlay {
   background-color: rgba(0, 0, 0, 0.5);
   width: 100vw;
@@ -929,41 +968,9 @@ a {
       flex-grow: 1;
       overflow-y: scroll;
       padding: 0 10px;
-      .address-list {
-        width: 100%;
-        margin: 10px 0;
-        padding: 10px 15px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
-        border-radius: 8px;
-
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-      }
       .primary {
         background-color: rgb(237, 255, 238);
         border: 1px solid $primary-color;
-      }
-      .address-content {
-        .address-header {
-          display: flex;
-          align-items: center;
-          margin-bottom: 5px;
-          .primary-tag {
-            margin-left: 5px;
-            padding: 4px 8px;
-            background-color: #f3f4f5;
-            color: #9fa6b0;
-            border-radius: 6px;
-            font-size: 11px;
-          }
-        }
-        .address-detail {
-          color: grey;
-          white-space: pre-wrap;
-        }
       }
 
       .action {

@@ -6,7 +6,7 @@ import { useRouter } from 'next/router'
 import React, { ReactNode, useState } from 'react'
 import { links } from '../util/route-links'
 
-interface Cart {
+interface Props {
   productID: string
   image: string
   name: string
@@ -16,12 +16,14 @@ interface Cart {
   shopNameSlug: string
   quantity: number
   notes: string
+
+  isCheckout: boolean
 }
 
-const ListCard = (c: Cart) => {
+const ListCard = (p: Props) => {
   const router = useRouter()
 
-  const [quantity, setQuantity] = useState(c.quantity)
+  const [quantity, setQuantity] = useState(p.quantity)
 
   const updateMutation = gql`
     mutation updateCart($productID: ID!, $quantity: Int!, $notes: String!) {
@@ -69,24 +71,24 @@ const ListCard = (c: Cart) => {
     <>
       <div className="card">
         <div className="card-header">
-          <Link href={links.shopDetail(c.shopNameSlug)} passHref>
+          <Link href={links.shopDetail(p.shopNameSlug)} passHref>
             <b className="store-link">
               <i className="fas fa-store"></i>
-              {c.shop}
+              {p.shop}
             </b>
           </Link>
         </div>
-        <Link href={links.productDetail(c.productID)} passHref>
+        <Link href={links.productDetail(p.productID)} passHref>
           <div className="card-content">
             <div className="card-image">
-              <Image src={c.image} alt="image" layout="fill" objectFit="cover"></Image>
+              <Image src={p.image} alt="image" layout="fill" objectFit="cover"></Image>
             </div>
             <div className="product-info">
-              <p className="product-name">{c.name}</p>
+              <p className="product-name">{p.name}</p>
               <div className="product-price">
-                <p className="product-discount">{Math.round(c.discount * 100)}%</p>
-                <s className="original-price">Rp.{c.price}</s>
-                <b>Rp.{Math.round(c.price * (1 - c.discount))}</b>
+                <p className="product-discount">{Math.round(p.discount * 100)}%</p>
+                <s className="original-price">Rp.{p.price}</s>
+                <b>Rp.{Math.round(p.price * (1 - p.discount))}</b>
               </div>
             </div>
           </div>
@@ -94,29 +96,33 @@ const ListCard = (c: Cart) => {
         <div className="card-footer">
           <div>
             <p>
-              <b>Notes</b>: {c.notes}
+              <b>Notes</b>: {p.notes}
             </p>
           </div>
-          <div className="left-footer">
-            <div>
-              <i accessKey={c.productID} className="far fa-trash-alt" onClick={handleDeleteCart}></i>
+          {!p.isCheckout ? (
+            <div className="left-footer">
+              <div>
+                <i accessKey={p.productID} className="far fa-trash-alt" onClick={handleDeleteCart}></i>
+              </div>
+              <input
+                className="multi-input-item"
+                min={1}
+                // max={product.stock}
+                value={quantity}
+                placeholder="1"
+                type="number"
+                name="quantity"
+                id="quantity"
+                accessKey={p.productID}
+                onChange={handleQuantity}
+                // onChange={(e) => {
+                //   console.log(e.target.key)
+                // }}
+              />
             </div>
-            <input
-              className="multi-input-item"
-              min={1}
-              // max={product.stock}
-              value={quantity}
-              placeholder="1"
-              type="number"
-              name="quantity"
-              id="quantity"
-              accessKey={c.productID}
-              onChange={handleQuantity}
-              // onChange={(e) => {
-              //   console.log(e.target.key)
-              // }}
-            />
-          </div>
+          ) : (
+            ''
+          )}
         </div>
       </div>
     </>

@@ -2,6 +2,8 @@
 # scalar Time
 type Product {
   id: ID!
+  originalProduct: Product @goField(forceResolver: true)
+  updatedProducts: [Product!]! @goField(forceResolver: true)
   name: String!
   images: [ProductImage!]! @goField(forceResolver: true)
   description: String!
@@ -11,6 +13,7 @@ type Product {
   #   metadata: Map!
   metadata: String!
   createdAt: Time!
+  validTo: Time
   category: Category! @goField(forceResolver: true)
   shop: Shop! @goField(forceResolver: true)
 }

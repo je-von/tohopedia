@@ -11,6 +11,7 @@ import { removeCookies } from 'cookies-next'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import ListCard from '../../components/ListCard'
+import { links } from '../../util/route-links'
 
 const Cart: NextPage = () => {
   const router = useRouter()
@@ -82,27 +83,30 @@ const Cart: NextPage = () => {
                 shopNameSlug={c.product.shop.nameSlug}
                 quantity={c.quantity}
                 notes={c.notes}
+                isCheckout={false}
               ></ListCard>
             ))}
           </div>
           <div className="action-container">
-            <div className="product-button">
-              <h4>Shopping Summary</h4>
-              <div className="multi-input subtotal">
-                <p className="multi-input-item">Total Price</p>
-                <b className="multi-input-item">Rp{totalPrice}</b>
-              </div>
-              <div className="multi-input subtotal">
-                <p className="multi-input-item">Total Discount</p>
-                <b className="multi-input-item">-Rp{totalDiscount}</b>
-              </div>
-              <hr />
-              <div className="multi-input subtotal">
-                <p className="multi-input-item">Grand Total</p>
-                <b className="multi-input-item">Rp{totalPrice - totalDiscount}</b>
-              </div>
+            <h4>Shopping Summary</h4>
+            <div className="multi-input subtotal">
+              <p className="multi-input-item">Total Price</p>
+              <b className="multi-input-item">Rp{totalPrice}</b>
+            </div>
+            <div className="multi-input subtotal">
+              <p className="multi-input-item">Total Discount</p>
+              <b className="multi-input-item">-Rp{totalDiscount}</b>
+            </div>
+            <hr />
+            <div className="multi-input subtotal">
+              <p className="multi-input-item">Grand Total</p>
+              <b className="multi-input-item">Rp{totalPrice - totalDiscount}</b>
+            </div>
 
-              <button className="text-button">Buy</button>
+            <div className="product-button">
+              <Link href={links.checkout} passHref>
+                <button className="text-button">Buy</button>
+              </Link>
             </div>
           </div>
         </div>

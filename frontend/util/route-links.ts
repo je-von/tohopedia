@@ -5,6 +5,7 @@ export const links = {
   openShop: '/shop/open',
   sellProduct: '/product/sell',
   cart: '/cart',
+  checkout: '/cart/checkout',
   shopDetail: (slug: string) => {
     return '/shop/' + slug
   },

@@ -13,7 +13,7 @@ import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { links } from '../util/route-links'
 import ProductList from '../components/ProductList'
-import { LimitContext } from '../context/context'
+import { LimitContext } from '../util/context'
 
 let str = ''
 let flag = false
@@ -157,6 +157,12 @@ const Home: NextPage = () => {
           name
           nameSlug
         }
+        updatedProducts {
+          id
+          name
+          price
+          discount
+        }
       }
     }
   `
@@ -181,6 +187,10 @@ const Home: NextPage = () => {
       </Layout>
     )
   }
+
+  // if(data){
+
+  // }
 
   if (!d) {
     // removeCookies('token')
@@ -219,13 +229,19 @@ const Home: NextPage = () => {
                   productID={p.id}
                   priceTag={
                     <div className="product-price">
-                      <p className="product-discount">{Math.round(p.discount * 100)}%</p>
-                      <s className="original-price">Rp.{p.price}</s>
+                      <p className="product-discount">
+                        {Math.round(p.updatedProducts.length > 0 ? p.updatedProducts[0].discount : p.discount * 100)}%
+                      </p>
+                      <s className="original-price">Rp.{p.updatedProducts.length > 0 ? p.updatedProducts[0].price : p.price}</s>
 
-                      <b>Rp.{Math.round(p.price * (1 - p.discount))}</b>
+                      {p.updatedProducts.length > 0 ? (
+                        <b>Rp.{Math.round(p.updatedProducts[0].price * (1 - p.updatedProducts[0].discount))}</b>
+                      ) : (
+                        <b>Rp.{Math.round(p.price * (1 - p.discount))}</b>
+                      )}
                     </div>
                   }
-                  name={p.name}
+                  name={p.updatedProducts.length > 0 ? p.updatedProducts[0].name : p.name}
                   shop={p.shop.name}
                   shopNameSlug={p.shop.nameSlug}
                 ></Card>

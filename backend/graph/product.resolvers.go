@@ -61,6 +61,17 @@ func (r *mutationResolver) CreateProductImages(ctx context.Context, images []str
 	return true, nil
 }
 
+func (r *productResolver) OriginalProduct(ctx context.Context, obj *model.Product) (*model.Product, error) {
+	product := new(model.Product)
+
+	return product, r.DB.FirstOrInit(product, "id = ?", obj.OriginalProductID).Error
+}
+
+func (r *productResolver) UpdatedProducts(ctx context.Context, obj *model.Product) ([]*model.Product, error) {
+	var models []*model.Product
+	return models, r.DB.Where("original_product_id = ?", obj.ID).Order("valid_to ASC").Find(&models).Error
+}
+
 func (r *productResolver) Images(ctx context.Context, obj *model.Product) ([]*model.ProductImage, error) {
 	var models []*model.ProductImage
 	return models, r.DB.Where("product_id = ?", obj.ID).Find(&models).Error

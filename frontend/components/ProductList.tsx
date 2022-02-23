@@ -2,7 +2,7 @@ import { gql, useQuery } from '@apollo/client'
 import { removeCookies } from 'cookies-next'
 import { useRouter } from 'next/router'
 import React, { createContext, useContext, useState } from 'react'
-import { LimitContext } from '../context/context'
+import { LimitContext } from '../util/context'
 import { links } from '../util/route-links'
 import Card from './Card'
 
