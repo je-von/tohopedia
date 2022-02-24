@@ -42,7 +42,7 @@ extend type Mutation {
   createProductImage(image: String!, productID: ID!): ProductImage!
   createProductImages(images: [String!]!, productID: ID!): Boolean!
 
-  updateProduct(input: NewProduct!, productID: ID!): Product!
+  updateProduct(input: NewProduct!, originalID: ID, lastUpdateID: ID): Product!
 }
 
 input NewProduct {

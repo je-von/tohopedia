@@ -63,28 +63,42 @@ func (r *mutationResolver) CreateProductImages(ctx context.Context, images []str
 	return true, nil
 }
 
-func (r *mutationResolver) UpdateProduct(ctx context.Context, input model.NewProduct, productID string) (*model.Product, error) {
+func (r *mutationResolver) UpdateProduct(ctx context.Context, input model.NewProduct, originalID *string, lastUpdateID *string) (*model.Product, error) {
 	product := new(model.Product)
-
-	err := r.DB.First(product, "id = ?", productID).Error
-	if err != nil {
-		return nil, err
-	}
 	now := time.Now()
 
-	// ! belom update yg udh updatean
-	product.OriginalProductID = productID
-	product.ValidTo = now
+	if originalID != nil {
+		err := r.DB.First(product, "id = ?", *originalID).Error
+		if err != nil {
+			return nil, err
+		}
 
-	err = r.DB.Save(product).Error
-	if err != nil {
-		return nil, err
+		product.OriginalProductID = *originalID
+		product.ValidTo = now
+
+		err = r.DB.Save(product).Error
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		err := r.DB.First(product, "id = ?", *lastUpdateID).Error
+		if err != nil {
+			return nil, err
+		}
+		product.ValidTo = now
+
+		err = r.DB.Save(product).Error
+		if err != nil {
+			return nil, err
+		}
+
+		originalID = &product.OriginalProductID
 	}
 
 	model := &model.Product{
 		ID:                uuid.NewString(),
 		Name:              input.Name,
-		OriginalProductID: productID,
+		OriginalProductID: *originalID,
 		Description:       input.Description,
 		Price:             input.Price,
 		Discount:          input.Discount,

@@ -78,10 +78,11 @@ const EditProduct: NextPage = () => {
   const { loading: l, data: d, error: e } = useQuery(query, { variables: { id: id } })
 
   const mutation = gql`
-    mutation updateProduct($name: String!, $description: String!, $price: Int!, $stock: Int!, $discount: Float!, $productID: ID!) {
+    mutation updateProduct($name: String!, $description: String!, $price: Int!, $stock: Int!, $discount: Float!, $originalID: ID, $lastUpdateID: ID) {
       updateProduct(
         input: { name: $name, description: $description, price: $price, stock: $stock, discount: $discount, metadata: "", categoryID: "" }
-        productID: $productID
+        originalID: $originalID
+        lastUpdateID: $lastUpdateID
       ) {
         id
         originalProduct {
@@ -95,10 +96,12 @@ const EditProduct: NextPage = () => {
   const [updateProduct, { data: d2, loading: l2, error: e2 }] = useMutation(mutation)
 
   if (d && d2) {
-    router.push(links.productDetail(d.product.id))
+    router.push(links.productDetail(d.product.id)).then(() => {
+      router.reload()
+    })
   }
 
-  if (loading || l || l2) {
+  if (loading || l) {
     return <>Loading...</>
   }
 
@@ -136,15 +139,29 @@ const EditProduct: NextPage = () => {
       setErrorMsg('All field must be filled!')
     } else {
       //   console.log(name, description, category, price, discount, metadataStr)
-      updateProduct({
-        variables: {
-          productID: d.product.id,
+      let variables = {}
+      if (d.product.updatedProducts.length > 0 && d.product.updatedProducts[0].id) {
+        variables = {
+          lastUpdateID: d.product.updatedProducts[0].id,
           name: name,
           description: description,
           price: price,
           stock: stock,
           discount: discount,
-        },
+        }
+      } else {
+        variables = {
+          originalID: d.product.id,
+          name: name,
+          description: description,
+          price: price,
+          stock: stock,
+          discount: discount,
+        }
+      }
+
+      updateProduct({
+        variables: variables,
       })
     }
   }

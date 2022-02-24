@@ -20,6 +20,7 @@ const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) 
   }
 
   if (networkError) {
+    console.log(`[Network error]: ${networkError.name}`)
     if (networkError.name == 'ServerParseError') {
       removeCookies('token')
       operation.setContext({
@@ -27,13 +28,14 @@ const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) 
       })
       return forward(operation)
     }
-    // console.log(`[Network error]: ${networkError}`)
-    if (!getCookie('alert')) {
-      setCookies('alert', 'alert')
-      alert('Network Error: ' + networkError.message)
-      Router.reload()
-    } else {
-      removeCookies('alert')
+    if (networkError.name == 'TypeError') {
+      if (!getCookie('alert')) {
+        setCookies('alert', 'alert')
+        alert('Network Error: ' + networkError.message)
+        Router.reload()
+      } else {
+        removeCookies('alert')
+      }
     }
   }
 })
