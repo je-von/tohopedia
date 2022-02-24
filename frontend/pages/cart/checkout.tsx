@@ -17,6 +17,7 @@ import AddressModal from '../../components/AddressModal'
 const Checkout: NextPage = () => {
   const router = useRouter()
   const [modal, setModal] = useState<ReactElement>()
+  const [errorMsg, setErrorMsg] = useState('')
 
   const userQuery = gql`
     query getCurrentUser {
@@ -75,12 +76,32 @@ const Checkout: NextPage = () => {
 
   const { loading: l, error: e, data: d } = useQuery(shippingQuery)
 
+  const checkoutMutation = gql`
+    mutation checkout($shippingID: ID!, $paymentTypeID: ID!, $addressID: ID!) {
+      checkout(shippingID: $shippingID, paymentTypeID: $paymentTypeID, addressID: $addressID) {
+        id
+        transactionDate
+      }
+    }
+  `
+  const [checkout, { data: d3, loading: l3, error: e3 }] = useMutation(checkoutMutation)
+
   if (loading || l || l2) {
     return (
       <Layout>
         <main>Loading...</main>
       </Layout>
     )
+  }
+
+  if (e3) {
+    setErrorMsg('Checkout Error!')
+  }
+
+  if (d3 && d3.checkout) {
+    router.push(links.cart).then(() => {
+      router.reload()
+    })
   }
 
   let totalPrice = 0,
@@ -101,6 +122,28 @@ const Checkout: NextPage = () => {
     console.log(totalPrice, totalDiscount)
 
     // console.log(data.getCurrentUser)
+  }
+
+  const handleCheckout = () => {
+    let shipping = (document.getElementById('shipping') as HTMLInputElement).value
+    let payment = (document.getElementById('payment') as HTMLInputElement).value
+
+    if (data.getCurrentUser.carts.length < 1) {
+      setErrorMsg('Your cart is empty!')
+    } else if (!shipping || !payment) {
+      setErrorMsg('Shipping and Payment must be chosen!')
+    } else if (data.getCurrentUser.addresses.length < 1) {
+      setErrorMsg('Please create an address first!')
+    } else {
+      setErrorMsg('')
+      checkout({
+        variables: {
+          shippingID: shipping,
+          paymentTypeID: payment,
+          addressID: data.getCurrentUser.addresses[0].id,
+        },
+      })
+    }
   }
 
   return (
@@ -184,7 +227,10 @@ const Checkout: NextPage = () => {
                   </option>
                 ))}
               </select>
-              <button className="text-button">Buy</button>
+              <button className="text-button" onClick={handleCheckout}>
+                Buy
+              </button>
+              <p className="error">{errorMsg}</p>
             </div>
           </div>
           {/* </div> */}

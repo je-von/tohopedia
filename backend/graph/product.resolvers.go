@@ -120,7 +120,7 @@ func (r *productResolver) OriginalProduct(ctx context.Context, obj *model.Produc
 
 func (r *productResolver) UpdatedProducts(ctx context.Context, obj *model.Product) ([]*model.Product, error) {
 	var models []*model.Product
-	return models, r.DB.Where("original_product_id = ?", obj.ID).Order("valid_to ASC").Find(&models).Error
+	return models, r.DB.Where("original_product_id = ? AND id != ?", obj.ID, obj.ID).Order("valid_to ASC").Find(&models).Error
 }
 
 func (r *productResolver) Images(ctx context.Context, obj *model.Product) ([]*model.ProductImage, error) {

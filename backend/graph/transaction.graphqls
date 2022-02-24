@@ -9,9 +9,31 @@ type PaymentType {
   name: String!
 }
 
+type TransactionHeader {
+  id: ID!
+  transactionDate: Time!
+  user: User!
+  shipping: Shipping!
+  paymentType: PaymentType!
+  status: String!
+  address: Address!
+}
+
+type TransactionDetail {
+  transactionHeader: TransactionHeader!
+  product: Product!
+  quantity: Int!
+  notes: String!
+}
+
 extend type Query {
   shipping(id: ID!): Shipping!
   shippings: [Shipping!]!
+
   paymentType(id: ID!): PaymentType!
   paymentTypes: [PaymentType!]!
+}
+
+extend type Mutation {
+  checkout(shippingID: ID!, paymentTypeID: ID!, addressID: ID!): TransactionHeader! @auth
 }

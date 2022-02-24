@@ -58,6 +58,8 @@ func main() {
 	db.AutoMigrate(&model.Address{})
 	db.AutoMigrate(&model.PaymentType{})
 	db.AutoMigrate(&model.Shipping{})
+	db.AutoMigrate(&model.TransactionHeader{})
+	db.AutoMigrate(&model.TransactionDetail{})
 
 	c := generated.Config{
 		Resolvers: &graph.Resolver{
