@@ -5,18 +5,20 @@ import styles from '../styles/Home.module.css'
 import Layout from '../../components/layout/Layout'
 
 import { gql, useMutation, useQuery } from '@apollo/client'
-import { useState } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { removeCookies } from 'cookies-next'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import ListCard from '../../components/ListCard'
 import { links } from '../../util/route-links'
+import AddressModal from '../../components/AddressModal'
 
 const Checkout: NextPage = () => {
   const router = useRouter()
+  const [modal, setModal] = useState<ReactElement>()
 
-  const query = gql`
+  const userQuery = gql`
     query getCurrentUser {
       getCurrentUser {
         id
@@ -48,9 +50,32 @@ const Checkout: NextPage = () => {
     }
   `
 
-  const { loading, error, data } = useQuery(query)
+  const { loading, error, data } = useQuery(userQuery)
 
-  if (loading) {
+  const paymentQuery = gql`
+    query payments {
+      paymentTypes {
+        id
+        name
+      }
+    }
+  `
+
+  const { loading: l2, error: e2, data: d2 } = useQuery(paymentQuery)
+
+  const shippingQuery = gql`
+    query shippings {
+      shippings {
+        id
+        name
+        price
+      }
+    }
+  `
+
+  const { loading: l, error: e, data: d } = useQuery(shippingQuery)
+
+  if (loading || l || l2) {
     return (
       <Layout>
         <main>Loading...</main>
@@ -85,7 +110,17 @@ const Checkout: NextPage = () => {
           <div className="list-card-container">
             <h2>Checkout</h2>
             <div>
-              <h4>Shipping Address</h4>
+              <div className="multi-input">
+                <h4>Shipping Address</h4>
+                <button
+                  className="text-button"
+                  onClick={() => {
+                    setModal(<AddressModal></AddressModal>)
+                  }}
+                >
+                  Change Address
+                </button>
+              </div>
               {data.getCurrentUser.addresses ? (
                 <div className="address-list">
                   <div className="address-content">
@@ -117,27 +152,45 @@ const Checkout: NextPage = () => {
             ))}
           </div>
           <div className="action-container">
+            {/* <div className="product-button"> */}
+            <h4>Shopping Summary</h4>
+            <div className="multi-input subtotal">
+              <p className="multi-input-item">Total Price</p>
+              <b className="multi-input-item">Rp{totalPrice}</b>
+            </div>
+            <div className="multi-input subtotal">
+              <p className="multi-input-item">Total Discount</p>
+              <b className="multi-input-item">-Rp{totalDiscount}</b>
+            </div>
+            <hr />
+            <div className="multi-input subtotal">
+              <p className="multi-input-item">Grand Total</p>
+              <b className="multi-input-item">Rp{totalPrice - totalDiscount}</b>
+            </div>
             <div className="product-button">
-              <h4>Shopping Summary</h4>
-              <div className="multi-input subtotal">
-                <p className="multi-input-item">Total Price</p>
-                <b className="multi-input-item">Rp{totalPrice}</b>
-              </div>
-              <div className="multi-input subtotal">
-                <p className="multi-input-item">Total Discount</p>
-                <b className="multi-input-item">-Rp{totalDiscount}</b>
-              </div>
-              <hr />
-              <div className="multi-input subtotal">
-                <p className="multi-input-item">Grand Total</p>
-                <b className="multi-input-item">Rp{totalPrice - totalDiscount}</b>
-              </div>
-
+              <select name="shipping" id="shipping">
+                <option value="">Choose Shipping</option>
+                {d.shippings.map((s: any) => (
+                  <option value={s.id} key={s.id}>
+                    {s.name}
+                  </option>
+                ))}
+              </select>
+              <select name="payment" id="payment">
+                <option value="">Choose Payment</option>
+                {d2.paymentTypes.map((p: any) => (
+                  <option value={p.id} key={p.id}>
+                    {p.name}
+                  </option>
+                ))}
+              </select>
               <button className="text-button">Buy</button>
             </div>
           </div>
+          {/* </div> */}
         </div>
       </main>
+      {modal}
     </Layout>
   )
 }

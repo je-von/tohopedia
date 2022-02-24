@@ -667,7 +667,7 @@ a {
   padding: 10px;
   min-width: max-content;
   .product-button {
-    button {
+    * {
       width: 100%;
       margin: 10px 0;
     }

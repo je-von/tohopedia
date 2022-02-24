@@ -1,0 +1,12 @@
+
+2022/02/24 16:45:31 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[2.117ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '08ab008d-ca45-42b1-b7eb-897a345f568d' LIMIT 1
+
+2022/02/24 16:45:31 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[1.608ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '08ab008d-ca45-42b1-b7eb-897a345f568d' LIMIT 1
+
+2022/02/24 16:45:31 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[1.051ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '08ab008d-ca45-42b1-b7eb-897a345f568d' LIMIT 1
+
+2022/02/24 16:46:00 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[1.010ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '08ab008d-ca45-42b1-b7eb-897a345f568d' LIMIT 1

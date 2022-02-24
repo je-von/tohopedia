@@ -1,0 +1,17 @@
+type Shipping {
+  id: ID!
+  name: String!
+  price: Int!
+}
+
+type PaymentType {
+  id: ID!
+  name: String!
+}
+
+extend type Query {
+  shipping(id: ID!): Shipping!
+  shippings: [Shipping!]!
+  paymentType(id: ID!): PaymentType!
+  paymentTypes: [PaymentType!]!
+}

@@ -50,6 +50,11 @@ type NewUser struct {
 	Role       string `json:"role"`
 }
 
+type PaymentType struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
 type SearchProduct struct {
 	Keyword    *string `json:"keyword"`
 	MinPrice   *int    `json:"minPrice"`
@@ -57,4 +62,10 @@ type SearchProduct struct {
 	OrderBy    *string `json:"orderBy"`
 	CategoryID *string `json:"categoryID"`
 	IsDiscount *bool   `json:"isDiscount"`
+}
+
+type Shipping struct {
+	ID    string `json:"id"`
+	Name  string `json:"name"`
+	Price int    `json:"price"`
 }
