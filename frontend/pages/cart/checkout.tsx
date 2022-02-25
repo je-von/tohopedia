@@ -94,6 +94,10 @@ const Checkout: NextPage = () => {
     )
   }
 
+  if (error) {
+    console.log(error.message)
+  }
+
   if (e3) {
     setErrorMsg('Checkout Error!')
   }
@@ -113,6 +117,8 @@ const Checkout: NextPage = () => {
   } else {
     // let prices = data.carts.map((c: any) => Math.round(c.product.price * (1 - c.product.discount)))
     // console.log(prices.reduce((a: any, b: any) => a + b, 0))
+
+    console.log(data.getCurrentUser)
 
     totalPrice = data.getCurrentUser.carts.map((c: any) => c.product.price * c.quantity).reduce((a: any, b: any) => a + b, 0)
     totalDiscount = data.getCurrentUser.carts
@@ -164,7 +170,7 @@ const Checkout: NextPage = () => {
                   Change Address
                 </button>
               </div>
-              {data.getCurrentUser.addresses ? (
+              {data.getCurrentUser.addresses.length > 0 ? (
                 <div className="address-list">
                   <div className="address-content">
                     <p className="address-header">

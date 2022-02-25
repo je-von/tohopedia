@@ -46,6 +46,8 @@ type ResolverRoot interface {
 	ProductImage() ProductImageResolver
 	Query() QueryResolver
 	Shop() ShopResolver
+	TransactionDetail() TransactionDetailResolver
+	TransactionHeader() TransactionHeaderResolver
 	User() UserResolver
 }
 
@@ -129,25 +131,26 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Address        func(childComplexity int, id string) int
-		Addresses      func(childComplexity int) int
-		Cart           func(childComplexity int, productID string) int
-		Carts          func(childComplexity int) int
-		Categories     func(childComplexity int, limit *int) int
-		Category       func(childComplexity int, id string) int
-		GetCurrentUser func(childComplexity int) int
-		PaymentType    func(childComplexity int, id string) int
-		PaymentTypes   func(childComplexity int) int
-		Product        func(childComplexity int, id string) int
-		Products       func(childComplexity int, shopID *string, limit *int, offset *int, input *model.SearchProduct) int
-		Protected      func(childComplexity int) int
-		Shipping       func(childComplexity int, id string) int
-		Shippings      func(childComplexity int) int
-		Shop           func(childComplexity int, id *string, keyword *string) int
-		ShopBySlug     func(childComplexity int, nameSlug string) int
-		Shops          func(childComplexity int) int
-		User           func(childComplexity int, id string) int
-		Users          func(childComplexity int) int
+		Address            func(childComplexity int, id string) int
+		Addresses          func(childComplexity int) int
+		Cart               func(childComplexity int, productID string) int
+		Carts              func(childComplexity int) int
+		Categories         func(childComplexity int, limit *int) int
+		Category           func(childComplexity int, id string) int
+		GetCurrentUser     func(childComplexity int) int
+		PaymentType        func(childComplexity int, id string) int
+		PaymentTypes       func(childComplexity int) int
+		Product            func(childComplexity int, id string) int
+		Products           func(childComplexity int, shopID *string, limit *int, offset *int, input *model.SearchProduct) int
+		Protected          func(childComplexity int) int
+		Shipping           func(childComplexity int, id string) int
+		Shippings          func(childComplexity int) int
+		Shop               func(childComplexity int, id *string, keyword *string) int
+		ShopBySlug         func(childComplexity int, nameSlug string) int
+		Shops              func(childComplexity int) int
+		TransactionHeaders func(childComplexity int) int
+		User               func(childComplexity int, id string) int
+		Users              func(childComplexity int) int
 	}
 
 	Shipping struct {
@@ -180,29 +183,31 @@ type ComplexityRoot struct {
 	}
 
 	TransactionHeader struct {
-		Address         func(childComplexity int) int
-		ID              func(childComplexity int) int
-		PaymentType     func(childComplexity int) int
-		Shipping        func(childComplexity int) int
-		Status          func(childComplexity int) int
-		TransactionDate func(childComplexity int) int
-		User            func(childComplexity int) int
+		Address            func(childComplexity int) int
+		ID                 func(childComplexity int) int
+		PaymentType        func(childComplexity int) int
+		Shipping           func(childComplexity int) int
+		Status             func(childComplexity int) int
+		TransactionDate    func(childComplexity int) int
+		TransactionDetails func(childComplexity int) int
+		User               func(childComplexity int) int
 	}
 
 	User struct {
-		Addresses   func(childComplexity int) int
-		Carts       func(childComplexity int) int
-		Dob         func(childComplexity int) int
-		Email       func(childComplexity int) int
-		Gender      func(childComplexity int) int
-		ID          func(childComplexity int) int
-		IsSuspended func(childComplexity int) int
-		Name        func(childComplexity int) int
-		Password    func(childComplexity int) int
-		Phone       func(childComplexity int) int
-		ProfilePic  func(childComplexity int) int
-		Role        func(childComplexity int) int
-		Shop        func(childComplexity int) int
+		Addresses          func(childComplexity int) int
+		Carts              func(childComplexity int) int
+		Dob                func(childComplexity int) int
+		Email              func(childComplexity int) int
+		Gender             func(childComplexity int) int
+		ID                 func(childComplexity int) int
+		IsSuspended        func(childComplexity int) int
+		Name               func(childComplexity int) int
+		Password           func(childComplexity int) int
+		Phone              func(childComplexity int) int
+		ProfilePic         func(childComplexity int) int
+		Role               func(childComplexity int) int
+		Shop               func(childComplexity int) int
+		TransactionHeaders func(childComplexity int) int
 	}
 }
 
@@ -271,15 +276,29 @@ type QueryResolver interface {
 	Shippings(ctx context.Context) ([]*model.Shipping, error)
 	PaymentType(ctx context.Context, id string) (*model.PaymentType, error)
 	PaymentTypes(ctx context.Context) ([]*model.PaymentType, error)
+	TransactionHeaders(ctx context.Context) ([]*model.TransactionHeader, error)
 }
 type ShopResolver interface {
 	User(ctx context.Context, obj *model.Shop) (*model.User, error)
 	Products(ctx context.Context, obj *model.Shop, keyword *string) ([]*model.Product, error)
 }
+type TransactionDetailResolver interface {
+	TransactionHeader(ctx context.Context, obj *model.TransactionDetail) (*model.TransactionHeader, error)
+	Product(ctx context.Context, obj *model.TransactionDetail) (*model.Product, error)
+}
+type TransactionHeaderResolver interface {
+	User(ctx context.Context, obj *model.TransactionHeader) (*model.User, error)
+	Shipping(ctx context.Context, obj *model.TransactionHeader) (*model.Shipping, error)
+	PaymentType(ctx context.Context, obj *model.TransactionHeader) (*model.PaymentType, error)
+
+	Address(ctx context.Context, obj *model.TransactionHeader) (*model.Address, error)
+	TransactionDetails(ctx context.Context, obj *model.TransactionHeader) ([]*model.TransactionDetail, error)
+}
 type UserResolver interface {
 	Shop(ctx context.Context, obj *model.User) (*model.Shop, error)
 	Carts(ctx context.Context, obj *model.User) ([]*model.Cart, error)
 	Addresses(ctx context.Context, obj *model.User) ([]*model.Address, error)
+	TransactionHeaders(ctx context.Context, obj *model.User) ([]*model.TransactionHeader, error)
 }
 
 type executableSchema struct {
@@ -906,6 +925,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Shops(childComplexity), true
 
+	case "Query.transactionHeaders":
+		if e.complexity.Query.TransactionHeaders == nil {
+			break
+		}
+
+		return e.complexity.Query.TransactionHeaders(childComplexity), true
+
 	case "Query.user":
 		if e.complexity.Query.User == nil {
 			break
@@ -1112,6 +1138,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.TransactionHeader.TransactionDate(childComplexity), true
 
+	case "TransactionHeader.transactionDetails":
+		if e.complexity.TransactionHeader.TransactionDetails == nil {
+			break
+		}
+
+		return e.complexity.TransactionHeader.TransactionDetails(childComplexity), true
+
 	case "TransactionHeader.user":
 		if e.complexity.TransactionHeader.User == nil {
 			break
@@ -1209,6 +1242,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.User.Shop(childComplexity), true
+
+	case "User.transactionHeaders":
+		if e.complexity.User.TransactionHeaders == nil {
+			break
+		}
+
+		return e.complexity.User.TransactionHeaders(childComplexity), true
 
 	}
 	return 0, false
@@ -1436,16 +1476,18 @@ type PaymentType {
 type TransactionHeader {
   id: ID!
   transactionDate: Time!
-  user: User!
-  shipping: Shipping!
-  paymentType: PaymentType!
+  user: User! @goField(forceResolver: true)
+  shipping: Shipping! @goField(forceResolver: true)
+  paymentType: PaymentType! @goField(forceResolver: true)
   status: String!
-  address: Address!
+  address: Address! @goField(forceResolver: true)
+
+  transactionDetails: [TransactionDetail!]! @goField(forceResolver: true)
 }
 
 type TransactionDetail {
-  transactionHeader: TransactionHeader!
-  product: Product!
+  transactionHeader: TransactionHeader! @goField(forceResolver: true)
+  product: Product! @goField(forceResolver: true)
   quantity: Int!
   notes: String!
 }
@@ -1456,6 +1498,8 @@ extend type Query {
 
   paymentType(id: ID!): PaymentType!
   paymentTypes: [PaymentType!]!
+
+  transactionHeaders: [TransactionHeader!]!
 }
 
 extend type Mutation {
@@ -1481,6 +1525,7 @@ type User {
   shop: Shop! @goField(forceResolver: true)
   carts: [Cart!]! @goField(forceResolver: true)
   addresses: [Address!]! @goField(forceResolver: true)
+  transactionHeaders: [TransactionHeader!]! @goField(forceResolver: true)
 }
 
 type AuthOps {
@@ -5072,6 +5117,41 @@ func (ec *executionContext) _Query_paymentTypes(ctx context.Context, field graph
 	return ec.marshalNPaymentType2ᚕᚖgithubᚗcomᚋjeᚑvonᚋTPAᚑWebᚑJVᚋbackendᚋgraphᚋmodelᚐPaymentTypeᚄ(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Query_transactionHeaders(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().TransactionHeaders(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.TransactionHeader)
+	fc.Result = res
+	return ec.marshalNTransactionHeader2ᚕᚖgithubᚗcomᚋjeᚑvonᚋTPAᚑWebᚑJVᚋbackendᚋgraphᚋmodelᚐTransactionHeaderᚄ(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -5721,14 +5801,14 @@ func (ec *executionContext) _TransactionDetail_transactionHeader(ctx context.Con
 		Object:     "TransactionDetail",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.TransactionHeader, nil
+		return ec.resolvers.TransactionDetail().TransactionHeader(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5756,14 +5836,14 @@ func (ec *executionContext) _TransactionDetail_product(ctx context.Context, fiel
 		Object:     "TransactionDetail",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Product, nil
+		return ec.resolvers.TransactionDetail().Product(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5931,14 +6011,14 @@ func (ec *executionContext) _TransactionHeader_user(ctx context.Context, field g
 		Object:     "TransactionHeader",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.User, nil
+		return ec.resolvers.TransactionHeader().User(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5966,14 +6046,14 @@ func (ec *executionContext) _TransactionHeader_shipping(ctx context.Context, fie
 		Object:     "TransactionHeader",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Shipping, nil
+		return ec.resolvers.TransactionHeader().Shipping(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -6001,14 +6081,14 @@ func (ec *executionContext) _TransactionHeader_paymentType(ctx context.Context, 
 		Object:     "TransactionHeader",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.PaymentType, nil
+		return ec.resolvers.TransactionHeader().PaymentType(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -6071,14 +6151,14 @@ func (ec *executionContext) _TransactionHeader_address(ctx context.Context, fiel
 		Object:     "TransactionHeader",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Address, nil
+		return ec.resolvers.TransactionHeader().Address(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -6093,6 +6173,41 @@ func (ec *executionContext) _TransactionHeader_address(ctx context.Context, fiel
 	res := resTmp.(*model.Address)
 	fc.Result = res
 	return ec.marshalNAddress2ᚖgithubᚗcomᚋjeᚑvonᚋTPAᚑWebᚑJVᚋbackendᚋgraphᚋmodelᚐAddress(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TransactionHeader_transactionDetails(ctx context.Context, field graphql.CollectedField, obj *model.TransactionHeader) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TransactionHeader",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.TransactionHeader().TransactionDetails(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.TransactionDetail)
+	fc.Result = res
+	return ec.marshalNTransactionDetail2ᚕᚖgithubᚗcomᚋjeᚑvonᚋTPAᚑWebᚑJVᚋbackendᚋgraphᚋmodelᚐTransactionDetailᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _User_id(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
@@ -6548,6 +6663,41 @@ func (ec *executionContext) _User_addresses(ctx context.Context, field graphql.C
 	res := resTmp.([]*model.Address)
 	fc.Result = res
 	return ec.marshalNAddress2ᚕᚖgithubᚗcomᚋjeᚑvonᚋTPAᚑWebᚑJVᚋbackendᚋgraphᚋmodelᚐAddressᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _User_transactionHeaders(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.User().TransactionHeaders(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.TransactionHeader)
+	fc.Result = res
+	return ec.marshalNTransactionHeader2ᚕᚖgithubᚗcomᚋjeᚑvonᚋTPAᚑWebᚑJVᚋbackendᚋgraphᚋmodelᚐTransactionHeaderᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) ___Directive_name(ctx context.Context, field graphql.CollectedField, obj *introspection.Directive) (ret graphql.Marshaler) {
@@ -8793,6 +8943,20 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				}
 				return res
 			})
+		case "transactionHeaders":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_transactionHeaders(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "__type":
 			out.Values[i] = ec._Query___type(ctx, field)
 		case "__schema":
@@ -8962,24 +9126,42 @@ func (ec *executionContext) _TransactionDetail(ctx context.Context, sel ast.Sele
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("TransactionDetail")
 		case "transactionHeader":
-			out.Values[i] = ec._TransactionDetail_transactionHeader(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._TransactionDetail_transactionHeader(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "product":
-			out.Values[i] = ec._TransactionDetail_product(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._TransactionDetail_product(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "quantity":
 			out.Values[i] = ec._TransactionDetail_quantity(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "notes":
 			out.Values[i] = ec._TransactionDetail_notes(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
@@ -9006,38 +9188,88 @@ func (ec *executionContext) _TransactionHeader(ctx context.Context, sel ast.Sele
 		case "id":
 			out.Values[i] = ec._TransactionHeader_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "transactionDate":
 			out.Values[i] = ec._TransactionHeader_transactionDate(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "user":
-			out.Values[i] = ec._TransactionHeader_user(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._TransactionHeader_user(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "shipping":
-			out.Values[i] = ec._TransactionHeader_shipping(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._TransactionHeader_shipping(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "paymentType":
-			out.Values[i] = ec._TransactionHeader_paymentType(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._TransactionHeader_paymentType(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "status":
 			out.Values[i] = ec._TransactionHeader_status(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "address":
-			out.Values[i] = ec._TransactionHeader_address(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._TransactionHeader_address(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "transactionDetails":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._TransactionHeader_transactionDetails(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -9147,6 +9379,20 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 					}
 				}()
 				res = ec._User_addresses(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "transactionHeaders":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._User_transactionHeaders(ctx, field, obj)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -10068,8 +10314,106 @@ func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel as
 	return res
 }
 
+func (ec *executionContext) marshalNTransactionDetail2ᚕᚖgithubᚗcomᚋjeᚑvonᚋTPAᚑWebᚑJVᚋbackendᚋgraphᚋmodelᚐTransactionDetailᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.TransactionDetail) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNTransactionDetail2ᚖgithubᚗcomᚋjeᚑvonᚋTPAᚑWebᚑJVᚋbackendᚋgraphᚋmodelᚐTransactionDetail(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNTransactionDetail2ᚖgithubᚗcomᚋjeᚑvonᚋTPAᚑWebᚑJVᚋbackendᚋgraphᚋmodelᚐTransactionDetail(ctx context.Context, sel ast.SelectionSet, v *model.TransactionDetail) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._TransactionDetail(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNTransactionHeader2githubᚗcomᚋjeᚑvonᚋTPAᚑWebᚑJVᚋbackendᚋgraphᚋmodelᚐTransactionHeader(ctx context.Context, sel ast.SelectionSet, v model.TransactionHeader) graphql.Marshaler {
 	return ec._TransactionHeader(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNTransactionHeader2ᚕᚖgithubᚗcomᚋjeᚑvonᚋTPAᚑWebᚑJVᚋbackendᚋgraphᚋmodelᚐTransactionHeaderᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.TransactionHeader) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNTransactionHeader2ᚖgithubᚗcomᚋjeᚑvonᚋTPAᚑWebᚑJVᚋbackendᚋgraphᚋmodelᚐTransactionHeader(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) marshalNTransactionHeader2ᚖgithubᚗcomᚋjeᚑvonᚋTPAᚑWebᚑJVᚋbackendᚋgraphᚋmodelᚐTransactionHeader(ctx context.Context, sel ast.SelectionSet, v *model.TransactionHeader) graphql.Marshaler {

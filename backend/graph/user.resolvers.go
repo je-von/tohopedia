@@ -150,6 +150,11 @@ func (r *userResolver) Addresses(ctx context.Context, obj *model.User) ([]*model
 	return models, r.DB.Where("user_id = ?", obj.ID).Order("is_primary DESC").Find(&models).Error
 }
 
+func (r *userResolver) TransactionHeaders(ctx context.Context, obj *model.User) ([]*model.TransactionHeader, error) {
+	var models []*model.TransactionHeader
+	return models, r.DB.Where("user_id = ?", obj.ID).Order("transaction_date DESC").Find(&models).Error
+}
+
 // AuthOps returns generated.AuthOpsResolver implementation.
 func (r *Resolver) AuthOps() generated.AuthOpsResolver { return &authOpsResolver{r} }
 

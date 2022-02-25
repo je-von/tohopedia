@@ -299,6 +299,9 @@ export default function Header() {
                       </div>
                       <p>{user.name}</p>
                       <div className="dropdown">
+                        <Link href={links.transaction} passHref>
+                          <div className="text-button">Transactions</div>
+                        </Link>
                         <Link href={links.editProfile} passHref>
                           <div className="text-button">Edit Profile</div>
                         </Link>

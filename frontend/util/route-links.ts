@@ -20,4 +20,5 @@ export const links = {
   search: (query: string = '') => {
     return '/search' + query
   },
+  transaction: '/transaction',
 }

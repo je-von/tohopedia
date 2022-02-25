@@ -17,6 +17,7 @@ type User {
   shop: Shop! @goField(forceResolver: true)
   carts: [Cart!]! @goField(forceResolver: true)
   addresses: [Address!]! @goField(forceResolver: true)
+  transactionHeaders: [TransactionHeader!]! @goField(forceResolver: true)
 }
 
 type AuthOps {

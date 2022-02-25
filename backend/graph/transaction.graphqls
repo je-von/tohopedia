@@ -12,16 +12,18 @@ type PaymentType {
 type TransactionHeader {
   id: ID!
   transactionDate: Time!
-  user: User!
-  shipping: Shipping!
-  paymentType: PaymentType!
+  user: User! @goField(forceResolver: true)
+  shipping: Shipping! @goField(forceResolver: true)
+  paymentType: PaymentType! @goField(forceResolver: true)
   status: String!
-  address: Address!
+  address: Address! @goField(forceResolver: true)
+
+  transactionDetails: [TransactionDetail!]! @goField(forceResolver: true)
 }
 
 type TransactionDetail {
-  transactionHeader: TransactionHeader!
-  product: Product!
+  transactionHeader: TransactionHeader! @goField(forceResolver: true)
+  product: Product! @goField(forceResolver: true)
   quantity: Int!
   notes: String!
 }
@@ -32,6 +34,8 @@ extend type Query {
 
   paymentType(id: ID!): PaymentType!
   paymentTypes: [PaymentType!]!
+
+  transactionHeaders: [TransactionHeader!]!
 }
 
 extend type Mutation {
