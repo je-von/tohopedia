@@ -207,7 +207,7 @@ type ComplexityRoot struct {
 		ProfilePic         func(childComplexity int) int
 		Role               func(childComplexity int) int
 		Shop               func(childComplexity int) int
-		TransactionHeaders func(childComplexity int) int
+		TransactionHeaders func(childComplexity int, id *string) int
 	}
 }
 
@@ -298,7 +298,7 @@ type UserResolver interface {
 	Shop(ctx context.Context, obj *model.User) (*model.Shop, error)
 	Carts(ctx context.Context, obj *model.User) ([]*model.Cart, error)
 	Addresses(ctx context.Context, obj *model.User) ([]*model.Address, error)
-	TransactionHeaders(ctx context.Context, obj *model.User) ([]*model.TransactionHeader, error)
+	TransactionHeaders(ctx context.Context, obj *model.User, id *string) ([]*model.TransactionHeader, error)
 }
 
 type executableSchema struct {
@@ -1248,7 +1248,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		return e.complexity.User.TransactionHeaders(childComplexity), true
+		args, err := ec.field_User_transactionHeaders_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.User.TransactionHeaders(childComplexity, args["id"].(*string)), true
 
 	}
 	return 0, false
@@ -1525,7 +1530,7 @@ type User {
   shop: Shop! @goField(forceResolver: true)
   carts: [Cart!]! @goField(forceResolver: true)
   addresses: [Address!]! @goField(forceResolver: true)
-  transactionHeaders: [TransactionHeader!]! @goField(forceResolver: true)
+  transactionHeaders(id: ID): [TransactionHeader!]! @goField(forceResolver: true)
 }
 
 type AuthOps {
@@ -2195,6 +2200,21 @@ func (ec *executionContext) field_Shop_products_args(ctx context.Context, rawArg
 		}
 	}
 	args["keyword"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_User_transactionHeaders_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalOID2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
 	return args, nil
 }
 
@@ -6672,9 +6692,16 @@ func (ec *executionContext) _User_transactionHeaders(ctx context.Context, field 
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_User_transactionHeaders_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.User().TransactionHeaders(rctx, obj)
+		return ec.resolvers.User().TransactionHeaders(rctx, obj, args["id"].(*string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

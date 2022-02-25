@@ -21,4 +21,7 @@ export const links = {
     return '/search' + query
   },
   transaction: '/transaction',
+  transactionDetail: (transactionID: string) => {
+    return '/transaction/' + transactionID
+  },
 }

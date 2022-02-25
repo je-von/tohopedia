@@ -12,6 +12,7 @@ import { useRouter } from 'next/router'
 import Link from 'next/link'
 import ListCard from '../../components/ListCard'
 import { links } from '../../util/route-links'
+import { convertPointsToBadge } from '../../util/shop-badge'
 
 const Transaction: NextPage = () => {
   const router = useRouter()
@@ -93,8 +94,15 @@ const Transaction: NextPage = () => {
                 </div>
                 <div className="card-header">
                   <Link href={links.shopDetail(h.transactionDetails[0].product.shop.nameSlug)} passHref>
-                    <b className="store-link">
-                      <i className="fas fa-store"></i>
+                    <b className="store-link multi-input">
+                      <div className="shop-badge">
+                        <Image
+                          src={`/asset/badge/${convertPointsToBadge(h.transactionDetails[0].product.shop.reputationPoints)}.png`}
+                          alt=""
+                          layout="fill"
+                          objectFit="contain"
+                        ></Image>
+                      </div>
                       {h.transactionDetails[0].product.shop.name}
                     </b>
                   </Link>
@@ -131,7 +139,9 @@ const Transaction: NextPage = () => {
                     </p>
                   </div>
                   <div className="left-footer">
-                    <button className="text-button">Detail</button>
+                    <Link href={links.transactionDetail(h.id)} passHref>
+                      <button className="text-button">Detail</button>
+                    </Link>
                   </div>
                 </div>
               </div>

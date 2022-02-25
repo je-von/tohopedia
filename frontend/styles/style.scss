@@ -597,7 +597,11 @@ a {
     }
   }
 }
-
+.shop-badge {
+  position: relative;
+  width: 2vw;
+  height: 2vw;
+}
 .shop-container {
   display: flex;
   justify-content: flex-start;
@@ -622,11 +626,6 @@ a {
 
     .shop-name {
       display: flex;
-      .shop-badge {
-        position: relative;
-        width: 2vw;
-        height: 2vw;
-      }
     }
 
     .shop-desc {

@@ -150,9 +150,17 @@ func (r *userResolver) Addresses(ctx context.Context, obj *model.User) ([]*model
 	return models, r.DB.Where("user_id = ?", obj.ID).Order("is_primary DESC").Find(&models).Error
 }
 
-func (r *userResolver) TransactionHeaders(ctx context.Context, obj *model.User) ([]*model.TransactionHeader, error) {
+func (r *userResolver) TransactionHeaders(ctx context.Context, obj *model.User, id *string) ([]*model.TransactionHeader, error) {
 	var models []*model.TransactionHeader
-	return models, r.DB.Where("user_id = ?", obj.ID).Order("transaction_date DESC").Find(&models).Error
+	query := r.DB
+	if id != nil {
+		fmt.Printf("id: %s\n", *id)
+		query = query.Where("user_id = ? AND id = ?", obj.ID, *id).Limit(1)
+	} else {
+		query = query.Where("user_id = ?", obj.ID)
+	}
+
+	return models, query.Order("transaction_date DESC").Find(&models).Error
 }
 
 // AuthOps returns generated.AuthOpsResolver implementation.
