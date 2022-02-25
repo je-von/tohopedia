@@ -59,7 +59,7 @@ func (r *mutationResolver) Checkout(ctx context.Context, shippingID string, paym
 		}
 
 		product := new(model.Product)
-		if err := r.DB.First(product, "id = ?", c.ProductID).Error; err != nil {
+		if err := r.DB.First(product, "original_product_id = ? AND (valid_to IS NULL OR valid_to = '0')", c.ProductID).Error; err != nil {
 			return nil, err
 		}
 		product.Stock -= c.Quantity

@@ -60,11 +60,19 @@ const ShopDetail: NextPage = () => {
   const paginateQuery = gql`
     query paginateProducts($shopID: ID!, $limit: Int!, $offset: Int!) {
       products(shopID: $shopID, limit: $limit, offset: $offset) {
-        id
+        # id
         price
         name
-        images {
-          image
+        # images {
+        #   image
+        # }
+        originalProduct {
+          id
+          metadata
+          images {
+            id
+            image
+          }
         }
       }
     }
@@ -93,8 +101,8 @@ const ShopDetail: NextPage = () => {
     // console.log(totalPage, pages)
   }
 
-  if (d) {
-    // console.log(d)
+  if (d && d.products) {
+    console.log(d.products)
   }
 
   return (
@@ -120,9 +128,9 @@ const ShopDetail: NextPage = () => {
         <div className="card-container">
           {d.products.map((p: any) => (
             <Card
-              key={p.id}
-              image={p.images.length > 0 ? p.images[0].image : '/asset/no-image.png'}
-              productID={p.id}
+              key={p.originalProduct.id}
+              image={p.originalProduct.images.length > 0 ? p.originalProduct.images[0].image : '/asset/no-image.png'}
+              productID={p.originalProduct.id}
               priceTag={<b>Rp.{p.price}</b>}
               name={p.name}
               shop={shop.name}

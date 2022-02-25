@@ -97,7 +97,7 @@ type ComplexityRoot struct {
 		TogglePrimary       func(childComplexity int, id string) int
 		ToggleSuspend       func(childComplexity int, id string) int
 		UpdateCart          func(childComplexity int, productID string, quantity int, notes string) int
-		UpdateProduct       func(childComplexity int, input model.NewProduct, originalID *string, lastUpdateID *string) int
+		UpdateProduct       func(childComplexity int, input model.NewProduct, lastUpdateID *string) int
 		UpdateShop          func(childComplexity int, input model.NewShop) int
 		UpdateUser          func(childComplexity int, input model.NewUser) int
 	}
@@ -239,7 +239,7 @@ type MutationResolver interface {
 	CreateProduct(ctx context.Context, input model.NewProduct, shopID string) (*model.Product, error)
 	CreateProductImage(ctx context.Context, image string, productID string) (*model.ProductImage, error)
 	CreateProductImages(ctx context.Context, images []string, productID string) (bool, error)
-	UpdateProduct(ctx context.Context, input model.NewProduct, originalID *string, lastUpdateID *string) (*model.Product, error)
+	UpdateProduct(ctx context.Context, input model.NewProduct, lastUpdateID *string) (*model.Product, error)
 	CreateShop(ctx context.Context, input model.NewShop) (*model.Shop, error)
 	UpdateShop(ctx context.Context, input model.NewShop) (*model.Shop, error)
 	Checkout(ctx context.Context, shippingID string, paymentTypeID string, addressID string) (*model.TransactionHeader, error)
@@ -597,7 +597,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateProduct(childComplexity, args["input"].(model.NewProduct), args["originalID"].(*string), args["lastUpdateID"].(*string)), true
+		return e.complexity.Mutation.UpdateProduct(childComplexity, args["input"].(model.NewProduct), args["lastUpdateID"].(*string)), true
 
 	case "Mutation.updateShop":
 		if e.complexity.Mutation.UpdateShop == nil {
@@ -1394,7 +1394,7 @@ extend type Mutation {
   createProductImage(image: String!, productID: ID!): ProductImage!
   createProductImages(images: [String!]!, productID: ID!): Boolean!
 
-  updateProduct(input: NewProduct!, originalID: ID, lastUpdateID: ID): Product!
+  updateProduct(input: NewProduct!, lastUpdateID: ID): Product!
 }
 
 input NewProduct {
@@ -1926,23 +1926,14 @@ func (ec *executionContext) field_Mutation_updateProduct_args(ctx context.Contex
 	}
 	args["input"] = arg0
 	var arg1 *string
-	if tmp, ok := rawArgs["originalID"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("originalID"))
+	if tmp, ok := rawArgs["lastUpdateID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastUpdateID"))
 		arg1, err = ec.unmarshalOID2ᚖstring(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["originalID"] = arg1
-	var arg2 *string
-	if tmp, ok := rawArgs["lastUpdateID"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastUpdateID"))
-		arg2, err = ec.unmarshalOID2ᚖstring(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["lastUpdateID"] = arg2
+	args["lastUpdateID"] = arg1
 	return args, nil
 }
 
@@ -3433,7 +3424,7 @@ func (ec *executionContext) _Mutation_updateProduct(ctx context.Context, field g
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateProduct(rctx, args["input"].(model.NewProduct), args["originalID"].(*string), args["lastUpdateID"].(*string))
+		return ec.resolvers.Mutation().UpdateProduct(rctx, args["input"].(model.NewProduct), args["lastUpdateID"].(*string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

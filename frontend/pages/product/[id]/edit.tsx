@@ -44,11 +44,7 @@ const EditProduct: NextPage = () => {
         price
         discount
         stock
-        metadata
-        images {
-          id
-          image
-        }
+
         shop {
           name
           nameSlug
@@ -61,15 +57,13 @@ const EditProduct: NextPage = () => {
         category {
           name
         }
-
-        updatedProducts {
+        originalProduct {
           id
-          name
-          description
-          price
-          discount
-          stock
-          discount
+          metadata
+          images {
+            id
+            image
+          }
         }
       }
     }
@@ -78,10 +72,9 @@ const EditProduct: NextPage = () => {
   const { loading: l, data: d, error: e } = useQuery(query, { variables: { id: id } })
 
   const mutation = gql`
-    mutation updateProduct($name: String!, $description: String!, $price: Int!, $stock: Int!, $discount: Float!, $originalID: ID, $lastUpdateID: ID) {
+    mutation updateProduct($name: String!, $description: String!, $price: Int!, $stock: Int!, $discount: Float!, $lastUpdateID: ID) {
       updateProduct(
         input: { name: $name, description: $description, price: $price, stock: $stock, discount: $discount, metadata: "", categoryID: "" }
-        originalID: $originalID
         lastUpdateID: $lastUpdateID
       ) {
         id
@@ -96,7 +89,7 @@ const EditProduct: NextPage = () => {
   const [updateProduct, { data: d2, loading: l2, error: e2 }] = useMutation(mutation)
 
   if (d && d2) {
-    router.push(links.productDetail(d.product.id)).then(() => {
+    router.push(links.productDetail(d.product.originalProduct.id)).then(() => {
       router.reload()
     })
   }
@@ -140,25 +133,25 @@ const EditProduct: NextPage = () => {
     } else {
       //   console.log(name, description, category, price, discount, metadataStr)
       let variables = {}
-      if (d.product.updatedProducts.length > 0 && d.product.updatedProducts[0].id) {
-        variables = {
-          lastUpdateID: d.product.updatedProducts[0].id,
-          name: name,
-          description: description,
-          price: price,
-          stock: stock,
-          discount: discount,
-        }
-      } else {
-        variables = {
-          originalID: d.product.id,
-          name: name,
-          description: description,
-          price: price,
-          stock: stock,
-          discount: discount,
-        }
+      // if (d.product.updatedProducts.length > 0 && d.product.updatedProducts[0].id) {
+      variables = {
+        lastUpdateID: d.product.id,
+        name: name,
+        description: description,
+        price: price,
+        stock: stock,
+        discount: discount,
       }
+      // } else {
+      //   variables = {
+      //     originalID: d.product.id,
+      //     name: name,
+      //     description: description,
+      //     price: price,
+      //     stock: stock,
+      //     discount: discount,
+      //   }
+      // }
 
       updateProduct({
         variables: variables,
@@ -177,7 +170,7 @@ const EditProduct: NextPage = () => {
             <div className="form-input">
               <label htmlFor="name">Product Name</label>
               <input
-                defaultValue={d.product.updatedProducts.length > 0 ? d.product.updatedProducts[0].name : d.product.name}
+                defaultValue={d.product.name}
                 type="text"
                 className="multi-input-item"
                 id="name"
@@ -189,42 +182,20 @@ const EditProduct: NextPage = () => {
             <div className="form-input">
               <label htmlFor="description">Description</label>
               {/* <input type="text" id="description" name="description" placeholder="Description" required /> */}
-              <textarea
-                defaultValue={d.product.updatedProducts.length > 0 ? d.product.updatedProducts[0].description : d.product.description}
-                id="description"
-                name="description"
-                placeholder="Description"
-                required
-              ></textarea>
+              <textarea defaultValue={d.product.description} id="description" name="description" placeholder="Description" required></textarea>
             </div>
             <div className="form-input">
               <label htmlFor="stock">Stock</label>
-              <input
-                defaultValue={d.product.updatedProducts.length > 0 ? d.product.updatedProducts[0].stock : d.product.stock}
-                type="number"
-                id="stock"
-                name="stock"
-                placeholder="0"
-                min={1}
-                required
-              />
+              <input defaultValue={d.product.stock} type="number" id="stock" name="stock" placeholder="0" min={1} required />
             </div>
             <div className="form-input">
               <label htmlFor="price">Price</label>
-              <input
-                defaultValue={d.product.updatedProducts.length > 0 ? d.product.updatedProducts[0].price : d.product.price}
-                type="number"
-                id="price"
-                name="price"
-                placeholder="0"
-                min={0}
-                required
-              />
+              <input defaultValue={d.product.price} type="number" id="price" name="price" placeholder="0" min={0} required />
             </div>
             <div className="form-input">
               <label htmlFor="discount">Discount</label>
               <input
-                defaultValue={d.product.updatedProducts.length > 0 ? d.product.updatedProducts[0].discount : d.product.discount}
+                defaultValue={d.product.discount}
                 type="number"
                 id="discount"
                 name="discount"

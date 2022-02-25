@@ -20,16 +20,24 @@ const Cart: NextPage = () => {
     query carts {
       carts {
         product {
-          id
+          # id
           name
-          images {
-            image
-          }
+          # images {
+          #   image
+          # }
           price
           discount
           shop {
             name
             nameSlug
+          }
+          originalProduct {
+            id
+            metadata
+            images {
+              id
+              image
+            }
           }
         }
         quantity
@@ -73,9 +81,9 @@ const Cart: NextPage = () => {
             <h2>Cart</h2>
             {data.carts.map((c: any) => (
               <ListCard
-                key={c.product.id}
-                productID={c.product.id}
-                image={c.product.images.length > 0 ? c.product.images[0].image : '/asset/no-image.png'}
+                key={c.product.originalProduct.id}
+                productID={c.product.originalProduct.id}
+                image={c.product.originalProduct.images.length > 0 ? c.product.originalProduct.images[0].image : '/asset/no-image.png'}
                 name={c.product.name}
                 price={c.product.price}
                 discount={c.product.discount}

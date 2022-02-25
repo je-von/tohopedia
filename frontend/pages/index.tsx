@@ -146,16 +146,23 @@ const Home: NextPage = () => {
   const discountedProductsQuery = gql`
     query products {
       products(input: { isDiscount: true }) {
-        id
+        # id
         name
         price
         discount
-        images {
-          image
-        }
+        # images {
+        #   image
+        # }
         shop {
           name
           nameSlug
+        }
+        originalProduct {
+          id
+          images {
+            id
+            image
+          }
         }
         # updatedProducts {
         #   id
@@ -224,9 +231,9 @@ const Home: NextPage = () => {
             <div className="card-container discount">
               {data.products.map((p: any) => (
                 <Card
-                  key={p.id}
-                  image={p.images.length > 0 ? p.images[0].image : '/asset/no-image.png'}
-                  productID={p.id}
+                  key={p.originalProduct.id}
+                  image={p.originalProduct.images.length > 0 ? p.originalProduct.images[0].image : '/asset/no-image.png'}
+                  productID={p.originalProduct.id}
                   priceTag={
                     <div className="product-price">
                       <p className="product-discount">

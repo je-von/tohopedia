@@ -19,15 +19,22 @@ const ProductList = ({ variables }: any) => {
         offset: $offset
         input: { keyword: $keyword, minPrice: $minPrice, maxPrice: $maxPrice, orderBy: $orderBy, categoryID: $categoryID }
       ) {
-        id
+        # id
         name
         price
-        images {
-          image
-        }
+        # images {
+        #   image
+        # }
         shop {
           name
           nameSlug
+        }
+        originalProduct {
+          id
+          images {
+            id
+            image
+          }
         }
       }
     }
@@ -62,6 +69,10 @@ const ProductList = ({ variables }: any) => {
   //     setPageLinks(temp)
   //   }
 
+  if (data && data.products) {
+    console.log(data.products)
+  }
+
   window.onscroll = function (ev) {
     // console.log(window.scrollY, document.body.clientHeight, document.body.scrollHeight)
     if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
@@ -88,9 +99,9 @@ const ProductList = ({ variables }: any) => {
       <div className="card-container">
         {data.products.map((p: any) => (
           <Card
-            key={p.id}
-            image={p.images.length > 0 ? p.images[0].image : '/asset/no-image.png'}
-            productID={p.id}
+            key={p.originalProduct.id}
+            image={p.originalProduct.images.length > 0 ? p.originalProduct.images[0].image : '/asset/no-image.png'}
+            productID={p.originalProduct.id}
             priceTag={<b>Rp.{p.price}</b>}
             name={p.name}
             shop={p.shop.name}

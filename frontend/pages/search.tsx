@@ -34,15 +34,22 @@ const Search: NextPage = () => {
   const query = gql`
     query searchProducts($keyword: String!, $minPrice: Int!, $maxPrice: Int!, $orderBy: String!, $categoryID: String) {
       products(input: { keyword: $keyword, minPrice: $minPrice, maxPrice: $maxPrice, orderBy: $orderBy, categoryID: $categoryID }) {
-        id
+        # id
         name
         price
-        images {
-          image
-        }
+        # images {
+        #   image
+        # }
         shop {
           name
           nameSlug
+        }
+        originalProduct {
+          id
+          images {
+            id
+            image
+          }
         }
       }
     }
@@ -186,7 +193,7 @@ const Search: NextPage = () => {
                       {d.shop.products.map((p: any) => (
                         <Card
                           key={p.id}
-                          image={p.images.length > 0 ? p.images[0].image : '/asset/no-image.png'}
+                          image={p.originalProduct.images.length > 0 ? p.originalProduct.images[0].image : '/asset/no-image.png'}
                           productID={p.id}
                           priceTag={<b>Rp.{p.price}</b>}
                           name={p.name}

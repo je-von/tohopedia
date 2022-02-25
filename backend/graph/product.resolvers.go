@@ -63,37 +63,38 @@ func (r *mutationResolver) CreateProductImages(ctx context.Context, images []str
 	return true, nil
 }
 
-func (r *mutationResolver) UpdateProduct(ctx context.Context, input model.NewProduct, originalID *string, lastUpdateID *string) (*model.Product, error) {
+func (r *mutationResolver) UpdateProduct(ctx context.Context, input model.NewProduct, lastUpdateID *string) (*model.Product, error) {
 	product := new(model.Product)
 	now := time.Now()
 
-	if originalID != nil {
-		err := r.DB.First(product, "id = ?", *originalID).Error
-		if err != nil {
-			return nil, err
-		}
+	// if originalID != nil {
+	// 	err := r.DB.First(product, "id = ?", *originalID).Error
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
 
-		product.OriginalProductID = *originalID
-		product.ValidTo = now
+	// 	// product.OriginalProductID = *originalID
+	// 	product.ValidTo = now
 
-		err = r.DB.Save(product).Error
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		err := r.DB.First(product, "id = ?", *lastUpdateID).Error
-		if err != nil {
-			return nil, err
-		}
-		product.ValidTo = now
-
-		err = r.DB.Save(product).Error
-		if err != nil {
-			return nil, err
-		}
-
-		originalID = &product.OriginalProductID
+	// 	err = r.DB.Save(product).Error
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
+	// }
+	// } else {
+	err := r.DB.First(product, "id = ?", *lastUpdateID).Error
+	if err != nil {
+		return nil, err
 	}
+	product.ValidTo = now
+
+	err = r.DB.Save(product).Error
+	if err != nil {
+		return nil, err
+	}
+
+	originalID := &product.OriginalProductID
+	// }
 
 	model := &model.Product{
 		ID:                uuid.NewString(),
@@ -164,18 +165,18 @@ func (r *queryResolver) Categories(ctx context.Context, limit *int) ([]*model.Ca
 func (r *queryResolver) Product(ctx context.Context, id string) (*model.Product, error) {
 	product := new(model.Product)
 
-	return product, r.DB.First(product, "id = ?", id).Error
+	return product, r.DB.First(product, "original_product_id = ? AND (valid_to = 0 OR valid_to IS NULL)", id).Error
 }
 
 func (r *queryResolver) Products(ctx context.Context, shopID *string, limit *int, offset *int, input *model.SearchProduct) ([]*model.Product, error) {
 	var models []*model.Product
 	if shopID != nil && limit != nil && offset != nil {
 		fmt.Printf("limit: %d\n", *limit)
-		return models, r.DB.Where("shop_id = ?", shopID).Where("(original_product_id IS NULL OR original_product_id = id)").Limit(*limit).Offset(*offset).Find(&models).Error
+		return models, r.DB.Where("shop_id = ?", shopID).Where("(valid_to IS NULL OR valid_to = '0')").Limit(*limit).Offset(*offset).Find(&models).Error
 	}
 
 	// temp := r.DB.Where("valid_to IS NULL")
-	temp := r.DB.Where("(original_product_id IS NULL OR original_product_id = id)")
+	temp := r.DB.Where("(valid_to IS NULL OR valid_to = '0')")
 
 	if input != nil {
 		if input.IsDiscount != nil && *input.IsDiscount {

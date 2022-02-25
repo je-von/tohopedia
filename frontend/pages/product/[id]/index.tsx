@@ -42,11 +42,7 @@ const ProductDetail: NextPage = () => {
         price
         discount
         stock
-        metadata
-        images {
-          id
-          image
-        }
+
         shop {
           name
           nameSlug
@@ -59,15 +55,13 @@ const ProductDetail: NextPage = () => {
         category {
           name
         }
-
-        updatedProducts {
+        originalProduct {
           id
-          name
-          description
-          price
-          discount
-          stock
-          discount
+          metadata
+          images {
+            id
+            image
+          }
         }
       }
     }
@@ -175,7 +169,7 @@ const ProductDetail: NextPage = () => {
       try {
         await addToCart({
           variables: {
-            productID: product.id,
+            productID: product.originalProduct.id,
             quantity: quantity,
             notes: notes,
           },
@@ -191,8 +185,8 @@ const ProductDetail: NextPage = () => {
       <main>
         <div className="product-container">
           <div className="product-image">
-            {product.images.length > 0 ? (
-              <Carousel images={product.images}></Carousel>
+            {product.originalProduct.images.length > 0 ? (
+              <Carousel images={product.originalProduct.images}></Carousel>
             ) : (
               <>
                 <Image src="/asset/no-image.png" alt="" layout="fill" objectFit="contain"></Image>
@@ -200,17 +194,17 @@ const ProductDetail: NextPage = () => {
             )}
           </div>
           <div className="product-detail">
-            <h3>{product.updatedProducts.length > 0 ? product.updatedProducts[0].name : product.name}</h3>
+            <h3>{product.name}</h3>
             <p>Sold Count: 0</p>
-            <h1 className="product-price">Rp{product.updatedProducts.length > 0 ? product.updatedProducts[0].price : product.price}</h1>
+            <h1 className="product-price">Rp{product.price}</h1>
             <div className="product-description">
               <b>Detail</b>
               <div className="product-metadata">
                 <label className="metadata-key">Category</label> : {product.category.name}
-                {product.metadata ? JSON.parse(product.metadata).map((m: any) => handleMetadata(m)) : ''}
+                {product.originalProduct.metadata ? JSON.parse(product.originalProduct.metadata).map((m: any) => handleMetadata(m)) : ''}
                 {/* {metadataList} */}
               </div>
-              <p>{product.updatedProducts.length > 0 ? product.updatedProducts[0].description : product.description}</p>
+              <p>{product.description}</p>
               <Link href={links.shopDetail(product.shop.nameSlug)} passHref>
                 <div className="shop-container">
                   <div className="shop-image">
@@ -289,7 +283,7 @@ const ProductDetail: NextPage = () => {
             </div>
             {isSeller ? (
               <div className="multi-input">
-                <Link href={links.editProduct(product.id)} passHref>
+                <Link href={links.editProduct(product.originalProduct.id)} passHref>
                   <button className="text-button multi-input-item">Update</button>
                 </Link>
                 <button className="text-button multi-input-item danger-button">Delete</button>

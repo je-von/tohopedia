@@ -22,7 +22,7 @@ func (r *cartResolver) User(ctx context.Context, obj *model.Cart) (*model.User, 
 func (r *cartResolver) Product(ctx context.Context, obj *model.Cart) (*model.Product, error) {
 	product := new(model.Product)
 
-	return product, r.DB.First(product, "id = ?", obj.ProductID).Error
+	return product, r.DB.First(product, "original_product_id = ? AND (valid_to = 0 OR valid_to IS NULL)", obj.ProductID).Error
 }
 
 func (r *mutationResolver) CreateCart(ctx context.Context, productID string, quantity int, notes string) (*model.Cart, error) {
