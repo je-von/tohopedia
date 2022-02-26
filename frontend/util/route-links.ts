@@ -24,4 +24,5 @@ export const links = {
   transactionDetail: (transactionID: string) => {
     return '/transaction/' + transactionID
   },
+  manageUsers: '/user/manage',
 }

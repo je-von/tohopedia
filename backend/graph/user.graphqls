@@ -17,7 +17,7 @@ type User {
   shop: Shop! @goField(forceResolver: true)
   carts: [Cart!]! @goField(forceResolver: true)
   addresses: [Address!]! @goField(forceResolver: true)
-  transactionHeaders(id: ID): [TransactionHeader!]! @goField(forceResolver: true)
+  transactionHeaders(id: ID, limit: Int, offset: Int): [TransactionHeader!]! @goField(forceResolver: true)
 }
 
 type AuthOps {
@@ -28,7 +28,7 @@ type AuthOps {
 type Query {
   user(id: ID!): User! @goField(forceResolver: true)
   # user(id: ID, email: String, password: String): User!
-  users: [User!]!
+  users(limit: Int, offset: Int): [User!]!
   # userGetByID(id: ID!): User!
   # userGetByEmail(email: String!): User!
 

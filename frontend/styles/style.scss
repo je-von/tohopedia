@@ -421,7 +421,7 @@ a {
 
   .card {
     cursor: pointer;
-    flex: 1 1 150px;
+    // flex: 1 1 150px;
     border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
@@ -642,6 +642,7 @@ a {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  // justify-content: center;
 
   @media screen and (max-width: $ipad-screen) {
     flex-direction: column;
@@ -657,6 +658,9 @@ a {
         }
       }
     }
+  }
+  @media screen and (max-width: $iphone-screen) {
+    width: 100%;
   }
 }
 .action-container {
@@ -895,7 +899,14 @@ a {
     }
   }
 }
-
+.primary-tag {
+  // margin-left: 5px;
+  padding: 4px 8px;
+  background-color: #f3f4f5;
+  color: #9fa6b0;
+  border-radius: 6px;
+  font-size: 11px;
+}
 .address-list {
   width: 100%;
   margin: 10px 0;
@@ -918,14 +929,6 @@ a {
       margin-bottom: 5px;
       .user-name {
         margin-right: 5px;
-      }
-      .primary-tag {
-        // margin-left: 5px;
-        padding: 4px 8px;
-        background-color: #f3f4f5;
-        color: #9fa6b0;
-        border-radius: 6px;
-        font-size: 11px;
       }
     }
     .address-detail {

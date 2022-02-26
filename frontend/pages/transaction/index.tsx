@@ -16,13 +16,17 @@ import { convertPointsToBadge } from '../../util/shop-badge'
 
 const Transaction: NextPage = () => {
   const router = useRouter()
+  const [offset, setOffset] = useState(0)
+  const [limit, setLimit] = useState(0)
+  const [pages, setPages] = useState([0])
+  // const limit = 10
 
   const query = gql`
-    query getCurrentUser {
+    query getCurrentUser($limit: Int, $offset: Int) {
       getCurrentUser {
         id
         name
-        transactionHeaders {
+        transactionHeaders(limit: $limit, offset: $offset) {
           id
           transactionDate
           status
@@ -52,7 +56,7 @@ const Transaction: NextPage = () => {
     }
   `
 
-  const { loading, data, error } = useQuery(query)
+  const { loading, data, error } = useQuery(query, { variables: { limit: limit == 0 ? null : limit, offset: offset } })
 
   if (loading) {
     return (
@@ -63,19 +67,29 @@ const Transaction: NextPage = () => {
   }
 
   let user: any = null
+  // let pages: any = []
   if (data && data.getCurrentUser) {
     user = data.getCurrentUser
     console.log(user.transactionHeaders)
+
+    if (limit == 0) {
+      let totalPage = Math.ceil(user.transactionHeaders.length / 10)
+      setPages(Array.from(Array(totalPage), (_, i) => i + 1))
+      console.log('length: ' + user.transactionHeaders.length + ', page: ' + totalPage)
+      console.log(pages)
+
+      setLimit(10)
+    }
   }
 
   const calculatePrice = (details: any) => {
-    console.log(details)
+    // console.log(details)
     let totalPrice = details.map((d: any) => d.product.price * d.quantity).reduce((a: any, b: any) => a + b, 0)
     let totalDiscount = details
       .map((d: any) => Math.round(d.product.discount.toFixed(2) * d.product.price) * d.quantity)
       .reduce((a: any, b: any) => a + b, 0)
 
-    console.log(totalPrice, totalDiscount)
+    // console.log(totalPrice, totalDiscount)
     return totalPrice - totalDiscount
   }
 
@@ -133,7 +147,7 @@ const Transaction: NextPage = () => {
                 </Link>
                 <div className="card-footer">
                   <div>
-                    <p>+{h.transactionDetails.length - 1} other products</p>
+                    <p>+{h.transactionDetails.length - 1} other product(s)</p>
                     <p>
                       Total transaction price: <b>Rp.{calculatePrice(h.transactionDetails)}</b>
                     </p>
@@ -149,6 +163,20 @@ const Transaction: NextPage = () => {
           </div>
         </div>
       </main>
+      <div className="page-links">
+        Page
+        {pages.map((i: any) => (
+          <div
+            className={offset / limit + 1 == i ? 'current' : ''}
+            onClick={() => {
+              setOffset((i - 1) * limit)
+            }}
+            key={i}
+          >
+            <div>{i}</div>
+          </div>
+        ))}
+      </div>
     </Layout>
   )
 }

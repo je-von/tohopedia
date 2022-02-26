@@ -77,15 +77,22 @@ const Search: NextPage = () => {
         nameSlug
         profilePic
         products(keyword: $keyword) {
-          id
+          # id
           name
           price
-          images {
-            image
-          }
+          # images {
+          #   image
+          # }
           shop {
             name
             nameSlug
+          }
+          originalProduct {
+            id
+            images {
+              id
+              image
+            }
           }
         }
       }
@@ -192,9 +199,9 @@ const Search: NextPage = () => {
                     <div className="card-container">
                       {d.shop.products.map((p: any) => (
                         <Card
-                          key={p.id}
+                          key={p.originalProduct.id}
                           image={p.originalProduct.images.length > 0 ? p.originalProduct.images[0].image : '/asset/no-image.png'}
-                          productID={p.id}
+                          productID={p.originalProduct.id}
                           priceTag={<b>Rp.{p.price}</b>}
                           name={p.name}
                           shop={p.shop.name}

@@ -30,6 +30,8 @@ export default function Header() {
         name
         email
         profilePic
+        role
+        isSuspended
         shop {
           id
           name
@@ -38,11 +40,18 @@ export default function Header() {
         }
         carts {
           product {
-            id
+            # id
             name
             price
-            images {
-              image
+            # images {
+            #   image
+            # }
+            originalProduct {
+              id
+              images {
+                id
+                image
+              }
             }
           }
           quantity
@@ -106,7 +115,7 @@ export default function Header() {
   let primaryAddress: any = null
   if (data && data.getCurrentUser) {
     user = data.getCurrentUser
-    UserSession.setCurrentUser(user)
+    // UserSession.setCurrentUser(user)
 
     primaryAddress = user.addresses.length > 0 ? user.addresses[0].id : null
     // console.log(user.shop)
@@ -114,6 +123,16 @@ export default function Header() {
     // if (!modal) {
     //   console.log('asd')
     // }
+
+    if (user.isSuspended) {
+      if (confirm('Your account is suspended! Do you want to request admin to unblock your account?')) {
+        console.log('yes')
+      } else {
+        console.log('no')
+      }
+      removeCookies('token')
+      router.reload()
+    }
   }
 
   // let categories: any = null
@@ -201,10 +220,10 @@ export default function Header() {
                     {user && user.carts.length > 0 ? <b>Cart ({user.carts.length})</b> : ''}
                     {user && user.carts.length > 0 ? (
                       user.carts.map((c: any) => (
-                        <div className="cart-item" key={c.product.id}>
+                        <div className="cart-item" key={c.product.originalProduct.id}>
                           <div className="product-image">
                             <Image
-                              src={c.product.images.length > 0 ? c.product.images[0].image : '/asset/no-image.png'}
+                              src={c.product.originalProduct.images.length > 0 ? c.product.originalProduct.images[0].image : '/asset/no-image.png'}
                               alt="image"
                               layout="fill"
                               objectFit="cover"
@@ -299,6 +318,13 @@ export default function Header() {
                       </div>
                       <p>{user.name}</p>
                       <div className="dropdown">
+                        {user.role == 'Admin' ? (
+                          <Link href={links.manageUsers} passHref>
+                            <div className="text-button danger-button">Manage Users</div>
+                          </Link>
+                        ) : (
+                          ''
+                        )}
                         <Link href={links.transaction} passHref>
                           <div className="text-button">Transactions</div>
                         </Link>

@@ -73,7 +73,17 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, input model.NewUser) 
 }
 
 func (r *mutationResolver) ToggleSuspend(ctx context.Context, id string) (*model.User, error) {
-	panic(fmt.Errorf("not implemented"))
+	user, _ := service.UserGetByID(ctx, id)
+
+	if user == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, user gaada",
+		}
+	}
+
+	user.IsSuspended = !user.IsSuspended
+
+	return user, r.DB.Save(user).Error
 }
 
 func (r *mutationResolver) Login(ctx context.Context, email string, password string) (*model.User, error) {
@@ -112,9 +122,13 @@ func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error
 	return service.UserGetByID(ctx, id)
 }
 
-func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
+func (r *queryResolver) Users(ctx context.Context, limit *int, offset *int) ([]*model.User, error) {
 	var models []*model.User
-	return models, r.DB.Find(&models).Error
+	query := r.DB.Where("role != 'Admin'")
+	if limit != nil && offset != nil {
+		query = query.Limit(*limit).Offset(*offset).Find(&models)
+	}
+	return models, query.Find(&models).Error
 }
 
 func (r *queryResolver) GetCurrentUser(ctx context.Context) (*model.User, error) {
@@ -150,8 +164,12 @@ func (r *userResolver) Addresses(ctx context.Context, obj *model.User) ([]*model
 	return models, r.DB.Where("user_id = ?", obj.ID).Order("is_primary DESC").Find(&models).Error
 }
 
-func (r *userResolver) TransactionHeaders(ctx context.Context, obj *model.User, id *string) ([]*model.TransactionHeader, error) {
+func (r *userResolver) TransactionHeaders(ctx context.Context, obj *model.User, id *string, limit *int, offset *int) ([]*model.TransactionHeader, error) {
 	var models []*model.TransactionHeader
+	if limit != nil && offset != nil {
+		return models, r.DB.Where("user_id = ?", obj.ID).Limit(*limit).Offset(*offset).Find(&models).Error
+	}
+
 	query := r.DB
 	if id != nil {
 		fmt.Printf("id: %s\n", *id)
