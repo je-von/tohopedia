@@ -25,4 +25,5 @@ export const links = {
     return '/transaction/' + transactionID
   },
   manageUsers: '/user/manage',
+  wishlist: '/cart/wishlist',
 }

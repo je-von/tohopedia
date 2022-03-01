@@ -325,6 +325,9 @@ export default function Header() {
                         ) : (
                           ''
                         )}
+                        <Link href={links.wishlist} passHref>
+                          <div className="text-button">Wishlist</div>
+                        </Link>
                         <Link href={links.transaction} passHref>
                           <div className="text-button">Transactions</div>
                         </Link>

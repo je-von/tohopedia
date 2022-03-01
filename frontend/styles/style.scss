@@ -992,3 +992,10 @@ a {
     }
   }
 }
+
+.check-wishlist {
+  position: absolute;
+  z-index: 100;
+  display: flex;
+  // width: 100%;
+}

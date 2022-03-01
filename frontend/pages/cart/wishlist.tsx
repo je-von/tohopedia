@@ -17,7 +17,7 @@ import { links } from '../../util/route-links'
 
 const Wishlist: NextPage = () => {
   const router = useRouter()
-
+  const [isEdit, setIsEdit] = useState(false)
   const query = gql`
     query wishlists {
       wishlists {
@@ -63,17 +63,60 @@ const Wishlist: NextPage = () => {
     <Layout>
       <div className="main-container">
         <h2>Wishlist</h2>
+        {isEdit ? (
+          <>
+            <button className="text-button danger-button">Delete Wishlist</button>
+            <button
+              className="text-button"
+              onClick={() => {
+                setIsEdit(false)
+              }}
+            >
+              Cancel
+            </button>
+          </>
+        ) : (
+          <button
+            className="text-button"
+            onClick={() => {
+              setIsEdit(true)
+            }}
+          >
+            Change Wishlist
+          </button>
+        )}
         <div className="card-container">
           {wishlists.map((w: any) => (
-            <Card
-              key={w.product.originalProduct.id}
-              image={w.product.originalProduct.images.length > 0 ? w.product.originalProduct.images[0].image : '/asset/no-image.png'}
-              productID={w.product.originalProduct.id}
-              priceTag={<b>Rp.{w.product.price}</b>}
-              name={w.product.name}
-              shop={w.product.shop.name}
-              shopNameSlug={w.product.shop.nameSlug as string}
-            ></Card>
+            <div className="card" key={w.product.originalProduct.id}>
+              {isEdit ? (
+                <div className="check-wishlist">
+                  <input type="checkbox"></input>
+                </div>
+              ) : (
+                ''
+              )}
+              <Link href={links.productDetail(w.product.originalProduct.id)} passHref>
+                <div className="card-image">
+                  <Image
+                    src={w.product.originalProduct.images.length > 0 ? w.product.originalProduct.images[0].image : '/asset/no-image.png'}
+                    alt="image"
+                    layout="fill"
+                    objectFit="cover"
+                  ></Image>
+                </div>
+              </Link>
+              <div className="card-content">
+                <p className="product-name">{w.product.name}</p>
+                <b>Rp.{w.product.price}</b>
+                <Link href={links.shopDetail(w.product.shop.nameSlug)} passHref>
+                  <p className="store-link">
+                    <i className="fas fa-store"></i>
+                    {w.product.shop.name}
+                  </p>
+                </Link>
+                <button className="text-button">Buy</button>
+              </div>
+            </div>
           ))}
         </div>
       </div>
