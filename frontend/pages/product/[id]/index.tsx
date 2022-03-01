@@ -62,6 +62,9 @@ const ProductDetail: NextPage = () => {
             id
             image
           }
+          transactionDetails {
+            quantity
+          }
         }
       }
     }
@@ -85,6 +88,20 @@ const ProductDetail: NextPage = () => {
   `
   const [addToCart, { data: d, loading: l, error: e }] = useMutation(mutation)
 
+  const wishlistMutation = gql`
+    mutation createWishlist($productID: ID!) {
+      createWishlist(productID: $productID) {
+        user {
+          name
+        }
+        product {
+          name
+        }
+      }
+    }
+  `
+  const [createWishlist, { data: d3, loading: l3, error: e3 }] = useMutation(wishlistMutation)
+
   if (loading || l || l2) {
     return <>Loading...</>
   }
@@ -101,6 +118,10 @@ const ProductDetail: NextPage = () => {
 
   if (e) {
     console.log(e.message)
+  }
+
+  if (e3) {
+    console.log(e3.message)
   }
 
   let product: any = null
@@ -175,8 +196,28 @@ const ProductDetail: NextPage = () => {
           },
         })
       } catch (e) {
-        setErrorMsg('Please login first!')
+        // setErrorMsg('Please login first!')
+        console.log(e)
       }
+    }
+  }
+
+  const calculateSoldCount = (transactionDetail: any) => {
+    if (transactionDetail.length <= 0) return 0
+
+    let soldCount = transactionDetail.map((d: any) => d.quantity).reduce((a: any, b: any) => a + b, 0)
+    return soldCount
+  }
+
+  const handleWishlist = async () => {
+    try {
+      await createWishlist({
+        variables: {
+          productID: product.originalProduct.id,
+        },
+      })
+    } catch (e) {
+      setErrorMsg('Error!')
     }
   }
 
@@ -195,7 +236,7 @@ const ProductDetail: NextPage = () => {
           </div>
           <div className="product-detail">
             <h3>{product.name}</h3>
-            <p>Sold Count: 0</p>
+            <p>Sold Count: {calculateSoldCount(product.originalProduct.transactionDetails)}</p>
             <h1 className="product-price">Rp{product.price}</h1>
             <div className="product-description">
               <b>Detail</b>
@@ -266,7 +307,7 @@ const ProductDetail: NextPage = () => {
                     Chat
                   </div>
                 </Link>
-                <div className="footer-links">
+                <div className="footer-links" onClick={handleWishlist}>
                   <i className="fas fa-heart"></i>
                   Wishlist
                 </div>

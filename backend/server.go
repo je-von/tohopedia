@@ -55,6 +55,8 @@ func main() {
 	db.AutoMigrate(&model.Product{})
 	db.AutoMigrate(&model.ProductImage{})
 	db.AutoMigrate(&model.Cart{})
+	db.AutoMigrate(&model.Wishlist{})
+
 	db.AutoMigrate(&model.Address{})
 	db.AutoMigrate(&model.PaymentType{})
 	db.AutoMigrate(&model.Shipping{})

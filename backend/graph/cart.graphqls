@@ -5,13 +5,23 @@ type Cart {
   notes: String!
 }
 
+type Wishlist {
+  user: User! @goField(forceResolver: true)
+  product: Product! @goField(forceResolver: true)
+}
+
 extend type Query {
   cart(productID: ID!): Cart! @auth
   carts: [Cart!]!
+
+  wishlists: [Wishlist!]!
 }
 
 extend type Mutation {
   createCart(productID: ID!, quantity: Int!, notes: String!): Cart! @auth
   updateCart(productID: ID!, quantity: Int!, notes: String!): Cart! @auth
   deleteCart(productID: ID!): Boolean! @auth
+
+  createWishlist(productID: ID!): Wishlist! @auth
+  deleteWishlist(productID: ID!): Wishlist! @auth
 }

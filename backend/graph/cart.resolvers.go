@@ -87,6 +87,35 @@ func (r *mutationResolver) DeleteCart(ctx context.Context, productID string) (bo
 	return true, r.DB.Delete(model).Error
 }
 
+func (r *mutationResolver) CreateWishlist(ctx context.Context, productID string) (*model.Wishlist, error) {
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustom).ID
+
+	wishlist := new(model.Wishlist)
+
+	if err := r.DB.First(wishlist, "user_id = ? AND product_id = ?", userID, productID); err == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, wishlist udah ada",
+		}
+	}
+
+	wishlist = &model.Wishlist{
+		UserID:    userID,
+		ProductID: productID,
+	}
+
+	return wishlist, r.DB.Create(wishlist).Error
+}
+
+func (r *mutationResolver) DeleteWishlist(ctx context.Context, productID string) (*model.Wishlist, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
 func (r *queryResolver) Cart(ctx context.Context, productID string) (*model.Cart, error) {
 	panic(fmt.Errorf("not implemented"))
 }
@@ -104,7 +133,36 @@ func (r *queryResolver) Carts(ctx context.Context) ([]*model.Cart, error) {
 	return models, r.DB.Where("user_id = ?", id).Find(&models).Error
 }
 
+func (r *queryResolver) Wishlists(ctx context.Context) ([]*model.Wishlist, error) {
+	if ctx.Value("auth") == nil {
+		return nil, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	id := ctx.Value("auth").(*service.JwtCustom).ID
+
+	var models []*model.Wishlist
+	return models, r.DB.Where("user_id = ?", id).Find(&models).Error
+}
+
+func (r *wishlistResolver) User(ctx context.Context, obj *model.Wishlist) (*model.User, error) {
+	user := new(model.User)
+
+	return user, r.DB.First(user, "id = ?", obj.UserID).Error
+}
+
+func (r *wishlistResolver) Product(ctx context.Context, obj *model.Wishlist) (*model.Product, error) {
+	product := new(model.Product)
+
+	return product, r.DB.First(product, "original_product_id = ? AND (valid_to = 0 OR valid_to IS NULL)", obj.ProductID).Error
+}
+
 // Cart returns generated.CartResolver implementation.
 func (r *Resolver) Cart() generated.CartResolver { return &cartResolver{r} }
 
+// Wishlist returns generated.WishlistResolver implementation.
+func (r *Resolver) Wishlist() generated.WishlistResolver { return &wishlistResolver{r} }
+
 type cartResolver struct{ *Resolver }
+type wishlistResolver struct{ *Resolver }

@@ -16,6 +16,8 @@ type Product {
   validTo: Time
   category: Category! @goField(forceResolver: true)
   shop: Shop! @goField(forceResolver: true)
+
+  transactionDetails: [TransactionDetail!]! @goField(forceResolver: true)
 }
 
 type ProductImage {
