@@ -124,6 +124,12 @@ const ProductDetail: NextPage = () => {
     console.log(e3.message)
   }
 
+  if (d3 && d3.createWishlist) {
+    router.push(links.wishlist).then(() => {
+      router.reload()
+    })
+  }
+
   let product: any = null
   if (data && data.product) {
     product = data.product

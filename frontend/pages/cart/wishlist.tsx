@@ -54,6 +54,22 @@ const Wishlist: NextPage = () => {
 
   const [deleteWishlist, { data: d, loading: l, error: e }] = useMutation(deleteMutation)
 
+  const cartMutation = gql`
+    mutation addToCart($productID: ID!, $quantity: Int!, $notes: String!) {
+      createCart(productID: $productID, quantity: $quantity, notes: $notes) {
+        product {
+          name
+        }
+        user {
+          name
+        }
+        quantity
+        notes
+      }
+    }
+  `
+  const [addToCart, { data: d2, loading: l2, error: e2 }] = useMutation(cartMutation)
+
   if (loading) {
     return <>Loading...</>
   }
@@ -65,6 +81,12 @@ const Wishlist: NextPage = () => {
   let wishlists: any = null
   if (data && data.wishlists) {
     wishlists = data.wishlists
+  }
+
+  if (d2 && d2.createCart) {
+    router.push(links.cart).then(() => {
+      router.reload()
+    })
   }
 
   const handleDelete = async () => {
@@ -79,6 +101,22 @@ const Wishlist: NextPage = () => {
     }
 
     router.reload()
+  }
+
+  const handleAddToCart = async (id: any) => {
+    try {
+      await addToCart({
+        variables: {
+          productID: id,
+          quantity: 1,
+          notes: '',
+        },
+      })
+
+      await deleteWishlist({ variables: { productID: id } })
+    } catch (e) {
+      console.log(e)
+    }
   }
 
   return (
@@ -138,7 +176,14 @@ const Wishlist: NextPage = () => {
                     {w.product.shop.name}
                   </p>
                 </Link>
-                <button className="text-button">Buy</button>
+                <button
+                  className="text-button"
+                  onClick={() => {
+                    handleAddToCart(w.product.originalProduct.id)
+                  }}
+                >
+                  Buy
+                </button>
               </div>
             </div>
           ))}
