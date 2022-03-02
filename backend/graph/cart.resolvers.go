@@ -112,8 +112,21 @@ func (r *mutationResolver) CreateWishlist(ctx context.Context, productID string)
 	return wishlist, r.DB.Create(wishlist).Error
 }
 
-func (r *mutationResolver) DeleteWishlist(ctx context.Context, productID string) (*model.Wishlist, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *mutationResolver) DeleteWishlist(ctx context.Context, productID string) (bool, error) {
+	if ctx.Value("auth") == nil {
+		return false, &gqlerror.Error{
+			Message: "Error, token gaada",
+		}
+	}
+
+	userID := ctx.Value("auth").(*service.JwtCustom).ID
+
+	model := new(model.Wishlist)
+	if err := r.DB.First(model, "user_id = ? AND product_id = ?", userID, productID).Error; err != nil {
+		return false, err
+	}
+
+	return true, r.DB.Delete(model).Error
 }
 
 func (r *queryResolver) Cart(ctx context.Context, productID string) (*model.Cart, error) {

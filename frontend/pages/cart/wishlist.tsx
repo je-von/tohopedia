@@ -46,6 +46,14 @@ const Wishlist: NextPage = () => {
 
   const { loading, data, error } = useQuery(query)
 
+  const deleteMutation = gql`
+    mutation deleteWishlist($productID: ID!) {
+      deleteWishlist(productID: $productID)
+    }
+  `
+
+  const [deleteWishlist, { data: d, loading: l, error: e }] = useMutation(deleteMutation)
+
   if (loading) {
     return <>Loading...</>
   }
@@ -59,13 +67,29 @@ const Wishlist: NextPage = () => {
     wishlists = data.wishlists
   }
 
+  const handleDelete = async () => {
+    for (const w of wishlists) {
+      // console.log(w.product.originalProduct.id)
+      let productID = w.product.originalProduct.id
+      let isChecked = (document.getElementById(productID) as HTMLInputElement).checked
+      if (!isChecked) continue
+      try {
+        await deleteWishlist({ variables: { productID: productID } })
+      } catch (e) {}
+    }
+
+    router.reload()
+  }
+
   return (
     <Layout>
       <div className="main-container">
         <h2>Wishlist</h2>
         {isEdit ? (
           <>
-            <button className="text-button danger-button">Delete Wishlist</button>
+            <button className="text-button danger-button" onClick={handleDelete}>
+              Delete Wishlist
+            </button>
             <button
               className="text-button"
               onClick={() => {
@@ -90,7 +114,7 @@ const Wishlist: NextPage = () => {
             <div className="card" key={w.product.originalProduct.id}>
               {isEdit ? (
                 <div className="check-wishlist">
-                  <input type="checkbox"></input>
+                  <input type="checkbox" id={w.product.originalProduct.id}></input>
                 </div>
               ) : (
                 ''

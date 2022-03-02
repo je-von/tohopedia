@@ -247,7 +247,7 @@ type MutationResolver interface {
 	UpdateCart(ctx context.Context, productID string, quantity int, notes string) (*model.Cart, error)
 	DeleteCart(ctx context.Context, productID string) (bool, error)
 	CreateWishlist(ctx context.Context, productID string) (*model.Wishlist, error)
-	DeleteWishlist(ctx context.Context, productID string) (*model.Wishlist, error)
+	DeleteWishlist(ctx context.Context, productID string) (bool, error)
 	CreateProduct(ctx context.Context, input model.NewProduct, shopID string) (*model.Product, error)
 	CreateProductImage(ctx context.Context, image string, productID string) (*model.ProductImage, error)
 	CreateProductImages(ctx context.Context, images []string, productID string) (bool, error)
@@ -1437,7 +1437,7 @@ extend type Mutation {
   deleteCart(productID: ID!): Boolean! @auth
 
   createWishlist(productID: ID!): Wishlist! @auth
-  deleteWishlist(productID: ID!): Wishlist! @auth
+  deleteWishlist(productID: ID!): Boolean! @auth
 }
 `, BuiltIn: false},
 	{Name: "graph/product.graphqls", Input: `# scalar Map
@@ -3556,10 +3556,10 @@ func (ec *executionContext) _Mutation_deleteWishlist(ctx context.Context, field 
 		if tmp == nil {
 			return nil, nil
 		}
-		if data, ok := tmp.(*model.Wishlist); ok {
+		if data, ok := tmp.(bool); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/je-von/TPA-Web-JV/backend/graph/model.Wishlist`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be bool`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3571,9 +3571,9 @@ func (ec *executionContext) _Mutation_deleteWishlist(ctx context.Context, field 
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Wishlist)
+	res := resTmp.(bool)
 	fc.Result = res
-	return ec.marshalNWishlist2ᚖgithubᚗcomᚋjeᚑvonᚋTPAᚑWebᚑJVᚋbackendᚋgraphᚋmodelᚐWishlist(ctx, field.Selections, res)
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_createProduct(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
