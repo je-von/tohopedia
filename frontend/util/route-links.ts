@@ -28,4 +28,5 @@ export const links = {
   wishlist: '/cart/wishlist',
   about: '/about',
   terms: '/terms',
+  chat: '/chat',
 }

@@ -21,6 +21,8 @@ let flag = false
 const Search: NextPage = () => {
   const router = useRouter()
   const { keyword, category } = router.query
+  const [createdAtRange, setCreatedAtRange] = useState(0)
+  const [highRating, setHighRating] = useState(false)
   const [priceRange, setPriceRange] = useState({ min: 0, max: Number.MAX_SAFE_INTEGER })
   const [orderBy, setOrderBy] = useState('')
   const [productsLimit, setProductsLimit] = useState(10)
@@ -32,8 +34,26 @@ const Search: NextPage = () => {
   //   // console.log(offset)
   // }
   const query = gql`
-    query searchProducts($keyword: String!, $minPrice: Int!, $maxPrice: Int!, $orderBy: String!, $categoryID: String) {
-      products(input: { keyword: $keyword, minPrice: $minPrice, maxPrice: $maxPrice, orderBy: $orderBy, categoryID: $categoryID }) {
+    query searchProducts(
+      $keyword: String!
+      $minPrice: Int!
+      $maxPrice: Int!
+      $orderBy: String!
+      $categoryID: String
+      $createdAtRange: Int
+      $highRating: Boolean
+    ) {
+      products(
+        input: {
+          keyword: $keyword
+          minPrice: $minPrice
+          maxPrice: $maxPrice
+          orderBy: $orderBy
+          categoryID: $categoryID
+          createdAtRange: $createdAtRange
+          highRating: $highRating
+        }
+      ) {
         # id
         name
         price
@@ -63,6 +83,8 @@ const Search: NextPage = () => {
     categoryID: category ? category : null,
     limit: productsLimit,
     offset: offset,
+    createdAtRange: createdAtRange > 0 ? createdAtRange : null,
+    highRating: highRating,
   }
 
   const { loading, error, data } = useQuery(query, {
@@ -144,8 +166,70 @@ const Search: NextPage = () => {
             <h3>Filter</h3>
             <div className="price-filter">
               <label>Price</label>
-              <input onKeyDown={handleKeyDown} type="number" id="min_price" name="min_price" placeholder="Minimum Price" />
-              <input onKeyDown={handleKeyDown} type="number" id="max_price" name="max_price" placeholder="Maximum Price" />
+              <input
+                onKeyDown={handleKeyDown}
+                defaultValue={priceRange.min > 0 ? priceRange.min : ''}
+                type="number"
+                id="min_price"
+                name="min_price"
+                placeholder="Minimum Price"
+              />
+              <input
+                onKeyDown={handleKeyDown}
+                defaultValue={priceRange.max < Number.MAX_SAFE_INTEGER ? priceRange.max : ''}
+                type="number"
+                id="max_price"
+                name="max_price"
+                placeholder="Maximum Price"
+              />
+            </div>
+            <div>
+              <label>Rating</label>
+              <div>
+                <input
+                  type="checkbox"
+                  checked={highRating}
+                  onChange={(e) => {
+                    setHighRating(e.target.checked)
+                  }}
+                />{' '}
+                &ge; 4 <i className="fas fa-star"></i>
+              </div>
+            </div>
+            <div>
+              <label>Created At</label>
+              <button
+                className={'text-button ' + (createdAtRange != 7 && 'unselected-button')}
+                onClick={() => {
+                  setCreatedAtRange(7)
+                }}
+              >
+                7 days ago
+              </button>
+              <button
+                className={'text-button ' + (createdAtRange != 14 && 'unselected-button')}
+                onClick={() => {
+                  setCreatedAtRange(14)
+                }}
+              >
+                14 days ago
+              </button>
+              <button
+                className={'text-button ' + (createdAtRange != 30 && 'unselected-button')}
+                onClick={() => {
+                  setCreatedAtRange(30)
+                }}
+              >
+                1 month ago
+              </button>
+              <button
+                className={'text-button ' + (createdAtRange != 90 && 'unselected-button')}
+                onClick={() => {
+                  setCreatedAtRange(90)
+                }}
+              >
+                3 months ago
+              </button>
             </div>
           </div>
           <div className="result-container">
@@ -155,7 +239,7 @@ const Search: NextPage = () => {
               </p>
               <div>
                 <label>Order By</label>
-                <select name="order-by" id="order-by" onChange={handleOrderByChange}>
+                <select name="order-by" id="order-by" onChange={handleOrderByChange} defaultValue={orderBy}>
                   <option value="-">-</option>
                   <option value="newest">Newest</option>
                   <option value="highest-price">Highest Price</option>

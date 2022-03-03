@@ -196,7 +196,10 @@ func (r *queryResolver) Products(ctx context.Context, shopID *string, limit *int
 		if input.IsDiscount != nil && *input.IsDiscount {
 			temp = temp.Order("discount DESC").Limit(15)
 		} else {
-
+			if input.HighRating != nil && *input.HighRating {
+				temp = temp.Select("products.id, name, products.description, price, discount, metadata, category_id, shop_id, products.created_at, stock, original_product_id, valid_to").Joins("JOIN reviews ON products.id = reviews.product_id").Group("products.id").Having("AVG(reviews.rating) >= 4")
+				// temp = temp.Raw("SELECT p.id, name, p.description, price, discount, metadata, category_id, shop_id, p.created_at, stock, original_product_id, valid_to FROM `products` p JOIN reviews r ON p.id = r.product_id GROUP BY p.id HAVING AVG(r.rating) >= 4")
+			}
 			if input.MinPrice != nil {
 				temp = temp.Where("price >= ?", *input.MinPrice)
 			}
@@ -204,7 +207,7 @@ func (r *queryResolver) Products(ctx context.Context, shopID *string, limit *int
 				temp = temp.Where("price <= ?", *input.MaxPrice)
 			}
 			if input.Keyword != nil {
-				temp = temp.Where("(name LIKE ? OR description LIKE ?)", "%"+*input.Keyword+"%", "%"+*input.Keyword+"%")
+				temp = temp.Where("(name LIKE ? OR products.description LIKE ?)", "%"+*input.Keyword+"%", "%"+*input.Keyword+"%")
 				// temp = temp.Where("name LIKE ?", "%"+*input.Keyword+"%")
 
 			}
@@ -213,13 +216,18 @@ func (r *queryResolver) Products(ctx context.Context, shopID *string, limit *int
 			}
 			if input.OrderBy != nil {
 				if *input.OrderBy == "newest" {
-					temp = temp.Order("created_at DESC")
+					temp = temp.Order("products.created_at DESC")
 				} else if *input.OrderBy == "highest-price" {
 					temp = temp.Order("price DESC")
 				} else if *input.OrderBy == "lowest-price" {
 					temp = temp.Order("price ASC")
 				}
 			}
+
+			if input.CreatedAtRange != nil {
+				temp = temp.Where("DATEDIFF(NOW(), products.created_at) <= ?", *input.CreatedAtRange)
+			}
+
 		}
 	}
 

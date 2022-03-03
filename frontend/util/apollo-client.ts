@@ -31,7 +31,7 @@ const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) 
     if (networkError.name == 'TypeError') {
       if (!getCookie('alert')) {
         setCookies('alert', 'alert')
-        alert('Network Error: ' + networkError.message)
+        alert('Backend is down\n' + 'Network Error: ' + networkError.message)
         Router.reload()
       } else {
         removeCookies('alert')

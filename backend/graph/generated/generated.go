@@ -1664,6 +1664,8 @@ input SearchProduct {
   orderBy: String
   categoryID: String
   isDiscount: Boolean
+  createdAtRange: Int
+  highRating: Boolean
 }
 `, BuiltIn: false},
 	{Name: "graph/review.graphqls", Input: `type Review {
@@ -9410,6 +9412,22 @@ func (ec *executionContext) unmarshalInputSearchProduct(ctx context.Context, obj
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isDiscount"))
 			it.IsDiscount, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtRange":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtRange"))
+			it.CreatedAtRange, err = ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "highRating":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("highRating"))
+			it.HighRating, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
 			if err != nil {
 				return it, err
 			}

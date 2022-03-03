@@ -13,11 +13,29 @@ const ProductList = ({ variables }: any) => {
   //   const [limit, setLimit] = useState(5)
 
   const query = gql`
-    query products($limit: Int, $offset: Int, $keyword: String, $minPrice: Int, $maxPrice: Int, $orderBy: String, $categoryID: String) {
+    query products(
+      $limit: Int
+      $offset: Int
+      $keyword: String
+      $minPrice: Int
+      $maxPrice: Int
+      $orderBy: String
+      $categoryID: String
+      $createdAtRange: Int
+      $highRating: Boolean
+    ) {
       products(
         limit: $limit
         offset: $offset
-        input: { keyword: $keyword, minPrice: $minPrice, maxPrice: $maxPrice, orderBy: $orderBy, categoryID: $categoryID }
+        input: {
+          keyword: $keyword
+          minPrice: $minPrice
+          maxPrice: $maxPrice
+          orderBy: $orderBy
+          categoryID: $categoryID
+          createdAtRange: $createdAtRange
+          highRating: $highRating
+        }
       ) {
         # id
         name

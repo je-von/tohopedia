@@ -19,10 +19,14 @@ const NavLink = ({ children, path, className }: { children: ReactNode; path: str
 
 export default function Header() {
   const [modal, setModal] = useState<ReactElement>()
+
+  const router = useRouter()
+
+  const { keyword } = router.query
+
   // const [errorMsg, setErrorMsg] = useState('')
   const [currentLocation, setCurrentLocation] = useStateIfMounted('Address')
 
-  const router = useRouter()
   const query = gql`
     query getCurrentUser {
       getCurrentUser {
@@ -204,7 +208,7 @@ export default function Header() {
           <div className="middle-content">
             <form action={links.search()}>
               <div className="search-container">
-                <input type="text" placeholder="Search.." id="keyword" name="keyword" />
+                <input type="text" defaultValue={keyword ? keyword : ''} placeholder="Search.." id="keyword" name="keyword" />
                 <button type="submit">
                   <i className="fa fa-search"></i>
                 </button>
@@ -249,7 +253,7 @@ export default function Header() {
                       </div>
                     </div>
                   </NavLink>
-                  <NavLink path="#" className="icon-button">
+                  <NavLink path={links.chat} className="icon-button">
                     <div>
                       <i className="fas fa-envelope"></i>
                       <div className="dropdown">

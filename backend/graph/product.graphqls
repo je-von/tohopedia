@@ -66,4 +66,6 @@ input SearchProduct {
   orderBy: String
   categoryID: String
   isDiscount: Boolean
+  createdAtRange: Int
+  highRating: Boolean
 }
