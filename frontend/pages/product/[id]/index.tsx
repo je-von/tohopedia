@@ -65,6 +65,22 @@ const ProductDetail: NextPage = () => {
           transactionDetails {
             quantity
           }
+          reviews {
+            createdAt
+            isAnonymous
+            id
+            rating
+            description
+            images {
+              id
+              image
+            }
+            user {
+              id
+              name
+              profilePic
+            }
+          }
         }
       }
     }
@@ -272,6 +288,45 @@ const ProductDetail: NextPage = () => {
                   </div>
                 </div>
               </Link>
+            </div>
+            <h3>REVIEWS ({product.originalProduct.reviews.length})</h3>
+            <div>
+              {product.originalProduct.reviews.map((r: any) => (
+                <div className="review-card" key={r.id}>
+                  <div className="user">
+                    <div className="profile-button">
+                      <div className="profile-pic">
+                        <Image
+                          src={r.user.profilePic && !r.isAnonymous ? r.user.profilePic : '/asset/default_toped.jpg'}
+                          alt=""
+                          layout="fill"
+                          objectFit="cover"
+                        ></Image>
+                      </div>
+                      <p>{!r.isAnonymous ? r.user.name : r.user.name[0] + '***'}</p>
+                      <p className="date">{r.createdAt.split('T')[0]}</p>
+                    </div>
+                  </div>
+                  <div className="content">
+                    <div className="card-header">
+                      <p>
+                        {Array.from(Array(r.rating), (_, i) => i).map((star: any) => (
+                          <i key={star} className="fas fa-star"></i>
+                        ))}
+                      </p>
+                      <button className="text-button">Reply</button>
+                    </div>
+                    <div className="description">{r.description}</div>
+                    <div className="images">
+                      {r.images.map((img: any) => (
+                        <div className="card-image" key={img.id}>
+                          <Image src={img.image} alt="image" layout="fill" objectFit="cover"></Image>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
           <div>

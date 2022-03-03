@@ -411,6 +411,12 @@ a {
     margin: 0 5px;
   }
 }
+.card-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 .list-card-container {
   display: flex;
   flex-wrap: wrap;
@@ -468,12 +474,7 @@ a {
         }
       }
     }
-    .card-header {
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+
     .card-footer {
       width: 100%;
       display: flex;
@@ -1009,4 +1010,57 @@ a {
   z-index: 100;
   display: flex;
   // width: 100%;
+}
+
+.review-card {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 0;
+  border-top: 1px solid #c7c6c6;
+  padding: 20px 0;
+  .profile-pic {
+    z-index: -100;
+  }
+  .user {
+    width: 15%;
+    p {
+      width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .date {
+      font-size: 11px;
+      color: grey;
+    }
+  }
+  .content {
+    width: 100%;
+    padding-left: 20px;
+    .card-header {
+      i {
+        color: rgb(250, 194, 0);
+      }
+    }
+    .description {
+      text-align: justify;
+      white-space: pre-wrap;
+    }
+  }
+  .images {
+    display: flex;
+    flex-wrap: wrap;
+
+    // width: 100%;
+    // height: 10vh;
+    .card-image {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      margin-right: 10px;
+      img {
+        border-radius: 10px;
+      }
+    }
+  }
 }
