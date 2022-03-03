@@ -42,6 +42,6 @@ func init() {
 	})
 
 	if err != nil {
-		panic("Error Connect Database")
+		panic("Error Connect Database:" + err.Error())
 	}
 }
