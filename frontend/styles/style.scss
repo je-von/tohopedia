@@ -883,12 +883,15 @@ a {
 
 .footer-container {
   border-top: 1px solid #c7c6c6;
-  height: 400px;
+  min-height: 400px;
   display: flex;
   justify-content: space-around;
   margin-top: 80px;
   padding: 40px 0;
-
+  .footer-links {
+    display: flex;
+    flex-direction: column;
+  }
   .right-content {
     width: 30vw;
     display: flex;

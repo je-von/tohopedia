@@ -26,4 +26,6 @@ export const links = {
   },
   manageUsers: '/user/manage',
   wishlist: '/cart/wishlist',
+  about: '/about',
+  terms: '/terms',
 }
