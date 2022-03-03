@@ -166,11 +166,11 @@ func (r *userResolver) Addresses(ctx context.Context, obj *model.User) ([]*model
 
 func (r *userResolver) TransactionHeaders(ctx context.Context, obj *model.User, id *string, limit *int, offset *int) ([]*model.TransactionHeader, error) {
 	var models []*model.TransactionHeader
+	query := r.DB
 	if limit != nil && offset != nil {
-		return models, r.DB.Where("user_id = ?", obj.ID).Limit(*limit).Offset(*offset).Find(&models).Error
+		query = query.Where("user_id = ?", obj.ID).Limit(*limit).Offset(*offset)
 	}
 
-	query := r.DB
 	if id != nil {
 		fmt.Printf("id: %s\n", *id)
 		query = query.Where("user_id = ? AND id = ?", obj.ID, *id).Limit(1)

@@ -97,7 +97,7 @@ const Transaction: NextPage = () => {
     <Layout>
       <main>
         <div className="cart-container">
-          <div className="list-card-container">
+          <div className="list-card-container cart-inner">
             <h2>Transaction</h2>
             {user.transactionHeaders.map((h: any) => (
               <div className="card" key={h.id}>

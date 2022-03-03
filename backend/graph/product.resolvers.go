@@ -146,6 +146,11 @@ func (r *productResolver) TransactionDetails(ctx context.Context, obj *model.Pro
 	return models, r.DB.Where("product_id = ?", obj.ID).Find(&models).Error
 }
 
+func (r *productResolver) Reviews(ctx context.Context, obj *model.Product) ([]*model.Review, error) {
+	var models []*model.Review
+	return models, r.DB.Where("product_id = ?", obj.ID).Find(&models).Error
+}
+
 func (r *productImageResolver) Product(ctx context.Context, obj *model.ProductImage) (*model.Product, error) {
 	product := new(model.Product)
 

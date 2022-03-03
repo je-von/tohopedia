@@ -1,0 +1,25 @@
+type Review {
+  id: ID!
+  user: User! @goField(forceResolver: true)
+  product: Product! @goField(forceResolver: true)
+  createdAt: Time!
+  rating: Int!
+  description: String!
+  isAnonymous: Boolean!
+  images: [ReviewImage!]! @goField(forceResolver: true)
+}
+
+type ReviewImage {
+  id: ID!
+  image: String!
+  review: Review! @goField(forceResolver: true)
+}
+
+extend type Query {
+  reviews(productID: ID!): [Review!]!
+}
+
+extend type Mutation {
+  createReview(productID: ID!, rating: Int!, description: String!, isAnonymous: Boolean!): Review! @auth
+  createReviewImages(images: [String!]!, reviewID: ID!): Boolean!
+}

@@ -63,6 +63,9 @@ func main() {
 	db.AutoMigrate(&model.TransactionHeader{})
 	db.AutoMigrate(&model.TransactionDetail{})
 
+	db.AutoMigrate(&model.Review{})
+	db.AutoMigrate(&model.ReviewImage{})
+
 	c := generated.Config{
 		Resolvers: &graph.Resolver{
 			DB: db,

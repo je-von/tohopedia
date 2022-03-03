@@ -5,7 +5,7 @@ import styles from '../styles/Home.module.css'
 import Layout from '../../components/layout/Layout'
 
 import { gql, useMutation, useQuery } from '@apollo/client'
-import { useState } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { removeCookies } from 'cookies-next'
 import { useRouter } from 'next/router'
@@ -13,10 +13,16 @@ import Link from 'next/link'
 import ListCard from '../../components/ListCard'
 import { links } from '../../util/route-links'
 import { convertPointsToBadge } from '../../util/shop-badge'
+import Modal from '../../components/Modal'
+import { convertToBase64 } from '../../util/convert-base64'
 
+let images: any[] = []
+let flag = false
 const TransactionDetail: NextPage = () => {
   const router = useRouter()
   const { id } = router.query
+  const [modal, setModal] = useState<ReactElement>()
+  const [errorMsg, setErrorMsg] = useState('')
 
   const query = gql`
     query getCurrentUser($transactionID: ID) {
@@ -65,6 +71,22 @@ const TransactionDetail: NextPage = () => {
 
   const { loading, data, error } = useQuery(query, { variables: { transactionID: id ? id : null } })
 
+  const mutation = gql`
+    mutation createReview($productID: ID!, $description: String!, $rating: Int!, $isAnonymous: Boolean!) {
+      createReview(productID: $productID, description: $description, rating: $rating, isAnonymous: $isAnonymous) {
+        id
+      }
+    }
+  `
+  const [createReview, { data: d2, loading: l2, error: e2 }] = useMutation(mutation)
+
+  const imageMutation = gql`
+    mutation insertReviewImages($reviewID: ID!, $images: [String!]!) {
+      createReviewImages(reviewID: $reviewID, images: $images)
+    }
+  `
+  const [insertImages, { data: d3, loading: l3, error: e3 }] = useMutation(imageMutation)
+
   if (loading) {
     return (
       <Layout>
@@ -85,8 +107,8 @@ const TransactionDetail: NextPage = () => {
   let transactionHeader: any = null
   if (data && data.getCurrentUser && data.getCurrentUser.transactionHeaders && data.getCurrentUser.transactionHeaders.length > 0) {
     transactionHeader = data.getCurrentUser.transactionHeaders[0]
-    console.log(data.getCurrentUser)
-    console.log(transactionHeader.transactionDetails)
+    // console.log(data.getCurrentUser)
+    // console.log(transactionHeader.transactionDetails)
     // console.log(user.transactionHeaders)
   } else {
     return (
@@ -97,7 +119,7 @@ const TransactionDetail: NextPage = () => {
   }
 
   const calculateDiscount = (details: any) => {
-    console.log(details)
+    // console.log(details)
     // let totalPrice = details.map((d: any) => d.product.price * d.quantity).reduce((a: any, b: any) => a + b, 0)
     let totalDiscount = details
       .map((d: any) => Math.round(d.product.discount.toFixed(2) * d.product.price) * d.quantity)
@@ -115,11 +137,43 @@ const TransactionDetail: NextPage = () => {
     return totalPrice - totalDiscount
   }
 
+  const handleSubmit = async (productID: any) => {
+    // console.log('masuk:' + productID)
+    let description = (document.getElementById('description') as HTMLInputElement).value
+    let rating = (document.getElementById('rating') as HTMLInputElement).value
+    let anonymous = (document.getElementById('anonymous') as HTMLInputElement).checked
+
+    let imagesInput = (document.getElementById('review-images') as HTMLInputElement).files
+    if (imagesInput) {
+      for (let idx = 0; idx < imagesInput?.length; idx++) {
+        let image = (await convertToBase64(imagesInput[idx])) as string
+        images.push(image)
+      }
+    }
+
+    if (!description || !rating) {
+      setErrorMsg('All field must be filled!')
+      alert('All field must be filled!')
+    } else {
+      setErrorMsg('')
+      createReview({ variables: { productID: productID, description: description, rating: rating, isAnonymous: anonymous } })
+    }
+  }
+  if (!flag && d2 && images) {
+    console.log('masukkkk')
+    insertImages({ variables: { reviewID: d2.createReview.id, images: images } })
+    flag = true
+  }
+
+  if (d3) {
+    router.reload()
+  }
+
   return (
     <Layout>
       <main>
         <div className="cart-container">
-          <div className="list-card-container">
+          <div className="list-card-container cart-inner">
             <h2>Transaction</h2>
             <p className="text-button">{transactionHeader.status}</p>
             <div className="multi-input">
@@ -136,17 +190,17 @@ const TransactionDetail: NextPage = () => {
             </div>
             <div className="multi-input">
               <b className="multi-input-item">Shipping Address</b>
-              <p className="multi-input-item">
+              <div className="multi-input-item">
                 <b>{transactionHeader.address.name}</b>
-                <p>{transactionHeader.address.detail}</p>
-              </p>
+                <div>{transactionHeader.address.detail}</div>
+              </div>
             </div>
             <div className="multi-input">
               <b className="multi-input-item">Payment Type</b>
               <p className="multi-input-item">{transactionHeader.paymentType.name}</p>
             </div>
             {transactionHeader.transactionDetails.map((d: any) => (
-              <div className="card" key={transactionHeader.transactionID + d.productID}>
+              <div className="card" key={d.product.originalProduct.id}>
                 <div className="card-header">
                   <Link href={links.shopDetail(d.product.shop.nameSlug)} passHref>
                     <b className="store-link multi-input">
@@ -161,6 +215,69 @@ const TransactionDetail: NextPage = () => {
                       {d.product.shop.name}
                     </b>
                   </Link>
+                  <button
+                    className="text-button"
+                    onClick={() => {
+                      setModal(
+                        <Modal
+                          modalHeader={
+                            <>
+                              <h2>Review &quot;{d.product.name}&quot;</h2>
+                              <i
+                                className="fas fa-times"
+                                onClick={() => {
+                                  setModal(<></>)
+                                }}
+                              ></i>
+                            </>
+                          }
+                          modalContent={
+                            <div className="form-content">
+                              <div className="form-input">
+                                <label htmlFor="rating">Rating</label>
+                                <input type="number" id="rating" name="rating" placeholder="1" defaultValue={1} min={1} max={5} required />
+                              </div>
+
+                              <div className="form-input">
+                                <label htmlFor="description">Review Description</label>
+                                <textarea
+                                  id="description"
+                                  name="description"
+                                  placeholder="Give your honest review about this product"
+                                  required
+                                ></textarea>
+                              </div>
+                              <div className="form-input">
+                                <label>Review Images</label>
+                                <input type="file" id="review-images" name="review-images" multiple />
+                              </div>
+                              <div className="container-header">
+                                <div>
+                                  <input type="checkbox" name="anonymous" id="anonymous" /> Review Anonymously
+                                </div>
+                                <p>(Your name and profile will be hidden if you check this)</p>
+                              </div>
+                            </div>
+                          }
+                          modalExtras={
+                            <>
+                              <div
+                                className="text-button"
+                                onClick={() => {
+                                  handleSubmit(d.product.originalProduct.id)
+                                }}
+                              >
+                                Submit
+                              </div>
+                              <p className="error">{errorMsg}</p>
+                            </>
+                          }
+                        ></Modal>
+                      )
+                    }}
+                  >
+                    Review
+                  </button>
                 </div>
                 <Link href={links.productDetail(d.product.originalProduct.id)} passHref>
                   <div className="card-content">
@@ -198,6 +315,7 @@ const TransactionDetail: NextPage = () => {
           </div>
         </div>
       </main>
+      {modal}
     </Layout>
   )
 }

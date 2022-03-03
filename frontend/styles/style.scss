@@ -471,6 +471,8 @@ a {
     .card-header {
       width: 100%;
       display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
     .card-footer {
       width: 100%;

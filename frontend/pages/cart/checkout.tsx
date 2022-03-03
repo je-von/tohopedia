@@ -164,7 +164,7 @@ const Checkout: NextPage = () => {
     <Layout>
       <main>
         <div className="cart-container">
-          <div className="list-card-container">
+          <div className="list-card-container cart-inner">
             <h2>Checkout</h2>
             <div>
               <div className="multi-input">

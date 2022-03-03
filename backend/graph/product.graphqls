@@ -18,6 +18,8 @@ type Product {
   shop: Shop! @goField(forceResolver: true)
 
   transactionDetails: [TransactionDetail!]! @goField(forceResolver: true)
+
+  reviews: [Review!]! @goField(forceResolver: true)
 }
 
 type ProductImage {
