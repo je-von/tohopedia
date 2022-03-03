@@ -51,6 +51,18 @@ const ShopDetail: NextPage = () => {
             image
           }
         }
+        bestSelling: products(topSold: true) {
+          price
+          name
+          originalProduct {
+            id
+            metadata
+            images {
+              id
+              image
+            }
+          }
+        }
       }
     }
   `
@@ -125,6 +137,23 @@ const ShopDetail: NextPage = () => {
             <p className="shop-desc">{shop.description}</p>
           </div>
         </div>
+        <h2 className="section-title">Best Selling Products</h2>
+        <div className="card-container discount">
+          {shop.bestSelling.map((p: any) => (
+            <Card
+              key={p.originalProduct.id}
+              image={p.originalProduct.images.length > 0 ? p.originalProduct.images[0].image : '/asset/no-image.png'}
+              productID={p.originalProduct.id}
+              priceTag={<b>Rp.{p.price}</b>}
+              // name={p.updatedProducts.length > 0 ? p.updatedProducts[0].name : p.name}
+              name={p.name}
+              shop={shop.name}
+              shopNameSlug={slug as string}
+            ></Card>
+          ))}
+        </div>
+        <h2 className="section-title">All Products</h2>
+
         <div className="card-container">
           {d.products.map((p: any) => (
             <Card

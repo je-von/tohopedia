@@ -105,8 +105,12 @@ func (r *shopResolver) User(ctx context.Context, obj *model.Shop) (*model.User, 
 	return user, r.DB.First(user, "id = ?", obj.UserID).Error
 }
 
-func (r *shopResolver) Products(ctx context.Context, obj *model.Shop, keyword *string) ([]*model.Product, error) {
+func (r *shopResolver) Products(ctx context.Context, obj *model.Shop, keyword *string, topSold *bool) ([]*model.Product, error) {
 	var models []*model.Product
+	if topSold != nil && *topSold {
+		return models, r.DB.Raw("SELECT p.id, name, description, price, discount, metadata, category_id, shop_id, created_at, stock, original_product_id, valid_to FROM transaction_details td JOIN products p ON p.id = td.product_id WHERE shop_id = ? GROUP BY product_id ORDER BY SUM(quantity) DESC LIMIT 10", obj.ID).Scan(&models).Error
+	}
+
 	temp := r.DB.Where("shop_id = ?", obj.ID).Where("(valid_to IS NULL OR valid_to = '0')")
 	if keyword != nil {
 		temp = temp.Where("(name LIKE ? OR description LIKE ?)", "%"+*keyword+"%", "%"+*keyword+"%").Limit(3)

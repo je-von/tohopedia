@@ -196,7 +196,7 @@ type ComplexityRoot struct {
 		NameSlug          func(childComplexity int) int
 		OpenTime          func(childComplexity int) int
 		OperationalStatus func(childComplexity int) int
-		Products          func(childComplexity int, keyword *string) int
+		Products          func(childComplexity int, keyword *string, topSold *bool) int
 		ProfilePic        func(childComplexity int) int
 		ReputationPoints  func(childComplexity int) int
 		Slogan            func(childComplexity int) int
@@ -330,7 +330,7 @@ type ReviewImageResolver interface {
 }
 type ShopResolver interface {
 	User(ctx context.Context, obj *model.Shop) (*model.User, error)
-	Products(ctx context.Context, obj *model.Shop, keyword *string) ([]*model.Product, error)
+	Products(ctx context.Context, obj *model.Shop, keyword *string, topSold *bool) ([]*model.Product, error)
 }
 type TransactionDetailResolver interface {
 	TransactionHeader(ctx context.Context, obj *model.TransactionDetail) (*model.TransactionHeader, error)
@@ -1255,7 +1255,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Shop.Products(childComplexity, args["keyword"].(*string)), true
+		return e.complexity.Shop.Products(childComplexity, args["keyword"].(*string), args["topSold"].(*bool)), true
 
 	case "Shop.profilePic":
 		if e.complexity.Shop.ProfilePic == nil {
@@ -1709,7 +1709,7 @@ type Shop {
   operationalStatus: String! # open / closed
   reputationPoints: Int!
   user: User! @goField(forceResolver: true)
-  products(keyword: String): [Product!]! @goField(forceResolver: true)
+  products(keyword: String, topSold: Boolean): [Product!]! @goField(forceResolver: true)
 }
 
 extend type Query {
@@ -2615,6 +2615,15 @@ func (ec *executionContext) field_Shop_products_args(ctx context.Context, rawArg
 		}
 	}
 	args["keyword"] = arg0
+	var arg1 *bool
+	if tmp, ok := rawArgs["topSold"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("topSold"))
+		arg1, err = ec.unmarshalOBoolean2ᚖbool(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["topSold"] = arg1
 	return args, nil
 }
 
@@ -6984,7 +6993,7 @@ func (ec *executionContext) _Shop_products(ctx context.Context, field graphql.Co
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Shop().Products(rctx, obj, args["keyword"].(*string))
+		return ec.resolvers.Shop().Products(rctx, obj, args["keyword"].(*string), args["topSold"].(*bool))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
