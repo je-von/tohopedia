@@ -62,6 +62,12 @@ const ShopDetail: NextPage = () => {
               image
             }
           }
+          updatedProducts {
+            id
+            name
+            price
+            discount
+          }
         }
       }
     }
@@ -144,9 +150,9 @@ const ShopDetail: NextPage = () => {
               key={p.originalProduct.id}
               image={p.originalProduct.images.length > 0 ? p.originalProduct.images[0].image : '/asset/no-image.png'}
               productID={p.originalProduct.id}
-              priceTag={<b>Rp.{p.price}</b>}
+              priceTag={<b>Rp.{p.updatedProducts.length > 0 ? p.updatedProducts[0].price : p.price}</b>}
               // name={p.updatedProducts.length > 0 ? p.updatedProducts[0].name : p.name}
-              name={p.name}
+              name={p.updatedProducts.length > 0 ? p.updatedProducts[0].name : p.name}
               shop={shop.name}
               shopNameSlug={slug as string}
             ></Card>
