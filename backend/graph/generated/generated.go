@@ -150,7 +150,7 @@ type ComplexityRoot struct {
 		PaymentType        func(childComplexity int, id string) int
 		PaymentTypes       func(childComplexity int) int
 		Product            func(childComplexity int, id string) int
-		Products           func(childComplexity int, shopID *string, limit *int, offset *int, input *model.SearchProduct) int
+		Products           func(childComplexity int, shopID *string, limit *int, offset *int, input *model.SearchProduct, topSold *bool) int
 		Protected          func(childComplexity int) int
 		Reviews            func(childComplexity int, productID string) int
 		Shipping           func(childComplexity int, id string) int
@@ -308,7 +308,7 @@ type QueryResolver interface {
 	Category(ctx context.Context, id string) (*model.Category, error)
 	Categories(ctx context.Context, limit *int) ([]*model.Category, error)
 	Product(ctx context.Context, id string) (*model.Product, error)
-	Products(ctx context.Context, shopID *string, limit *int, offset *int, input *model.SearchProduct) ([]*model.Product, error)
+	Products(ctx context.Context, shopID *string, limit *int, offset *int, input *model.SearchProduct, topSold *bool) ([]*model.Product, error)
 	Reviews(ctx context.Context, productID string) ([]*model.Review, error)
 	Shop(ctx context.Context, id *string, keyword *string) (*model.Shop, error)
 	Shops(ctx context.Context) ([]*model.Shop, error)
@@ -982,7 +982,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Products(childComplexity, args["shopID"].(*string), args["limit"].(*int), args["offset"].(*int), args["input"].(*model.SearchProduct)), true
+		return e.complexity.Query.Products(childComplexity, args["shopID"].(*string), args["limit"].(*int), args["offset"].(*int), args["input"].(*model.SearchProduct), args["topSold"].(*bool)), true
 
 	case "Query.protected":
 		if e.complexity.Query.Protected == nil {
@@ -1636,7 +1636,7 @@ extend type Query {
   category(id: ID!): Category!
   categories(limit: Int): [Category!]!
   product(id: ID!): Product!
-  products(shopID: ID, limit: Int, offset: Int, input: SearchProduct): [Product!]!
+  products(shopID: ID, limit: Int, offset: Int, input: SearchProduct, topSold: Boolean): [Product!]!
 }
 
 extend type Mutation {
@@ -2483,6 +2483,15 @@ func (ec *executionContext) field_Query_products_args(ctx context.Context, rawAr
 		}
 	}
 	args["input"] = arg3
+	var arg4 *bool
+	if tmp, ok := rawArgs["topSold"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("topSold"))
+		arg4, err = ec.unmarshalOBoolean2ᚖbool(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["topSold"] = arg4
 	return args, nil
 }
 
@@ -5602,7 +5611,7 @@ func (ec *executionContext) _Query_products(ctx context.Context, field graphql.C
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Products(rctx, args["shopID"].(*string), args["limit"].(*int), args["offset"].(*int), args["input"].(*model.SearchProduct))
+		return ec.resolvers.Query().Products(rctx, args["shopID"].(*string), args["limit"].(*int), args["offset"].(*int), args["input"].(*model.SearchProduct), args["topSold"].(*bool))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

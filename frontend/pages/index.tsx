@@ -176,6 +176,29 @@ const Home: NextPage = () => {
 
   const { loading, error, data } = useQuery(discountedProductsQuery)
 
+  const recommendationProductsQuery = gql`
+    query recommendation {
+      products(topSold: true) {
+        name
+        price
+        discount
+        shop {
+          name
+          nameSlug
+        }
+        originalProduct {
+          id
+          images {
+            id
+            image
+          }
+        }
+      }
+    }
+  `
+
+  const { loading: l2, error: e2, data: d2 } = useQuery(recommendationProductsQuery)
+
   const categoryQuery = gql`
     query categories {
       categories(limit: 8) {
@@ -187,7 +210,7 @@ const Home: NextPage = () => {
 
   const { loading: l, error: e, data: d } = useQuery(categoryQuery)
 
-  if (loading || l) {
+  if (loading || l || l2) {
     return (
       <Layout>
         <main>Loading...</main>
@@ -230,6 +253,36 @@ const Home: NextPage = () => {
             <h2 className="section-title">Top Discounted Items</h2>
             <div className="card-container discount">
               {data.products.map((p: any) => (
+                <Card
+                  key={p.originalProduct.id}
+                  image={p.originalProduct.images.length > 0 ? p.originalProduct.images[0].image : '/asset/no-image.png'}
+                  productID={p.originalProduct.id}
+                  priceTag={
+                    <div className="product-price">
+                      <p className="product-discount">
+                        {/* {Math.round(p.updatedProducts.length > 0 ? p.updatedProducts[0].discount : p.discount * 100)}% */}
+                        {Math.round(p.discount * 100)}%
+                      </p>
+                      {/* <s className="original-price">Rp.{p.updatedProducts.length > 0 ? p.updatedProducts[0].price : p.price}</s> */}
+                      <s className="original-price">Rp.{p.price}</s>
+
+                      {/* {p.updatedProducts.length > 0 ? (
+                        <b>Rp.{Math.round(p.updatedProducts[0].price * (1 - p.updatedProducts[0].discount))}</b>
+                      ) : ( */}
+                      <b>Rp.{Math.round(p.price * (1 - p.discount))}</b>
+                      {/* )} */}
+                    </div>
+                  }
+                  // name={p.updatedProducts.length > 0 ? p.updatedProducts[0].name : p.name}
+                  name={p.name}
+                  shop={p.shop.name}
+                  shopNameSlug={p.shop.nameSlug}
+                ></Card>
+              ))}
+            </div>
+            <h2 className="section-title">Top Product Recommendations</h2>
+            <div className="card-container discount">
+              {d2.products.map((p: any) => (
                 <Card
                   key={p.originalProduct.id}
                   image={p.originalProduct.images.length > 0 ? p.originalProduct.images[0].image : '/asset/no-image.png'}

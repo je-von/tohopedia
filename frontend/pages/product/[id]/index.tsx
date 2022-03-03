@@ -297,7 +297,7 @@ const ProductDetail: NextPage = () => {
                     <div className="profile-button">
                       <div className="profile-pic">
                         <Image
-                          src={r.user.profilePic && !r.isAnonymous ? r.user.profilePic : '/asset/default_toped.jpg'}
+                          src={r.user.profilePic && !r.isAnonymous ? r.user.profilePic : '/asset/anonymous.png'}
                           alt=""
                           layout="fill"
                           objectFit="cover"

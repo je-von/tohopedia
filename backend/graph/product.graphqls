@@ -38,7 +38,7 @@ extend type Query {
   category(id: ID!): Category!
   categories(limit: Int): [Category!]!
   product(id: ID!): Product!
-  products(shopID: ID, limit: Int, offset: Int, input: SearchProduct): [Product!]!
+  products(shopID: ID, limit: Int, offset: Int, input: SearchProduct, topSold: Boolean): [Product!]!
 }
 
 extend type Mutation {
