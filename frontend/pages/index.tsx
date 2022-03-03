@@ -6,7 +6,7 @@ import Layout from '../components/layout/Layout'
 import UserSession from '../util/user-session'
 import Card from '../components/Card'
 import { gql, useMutation, useQuery } from '@apollo/client'
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { convertToBase64 } from '../util/convert-base64'
 import { removeCookies } from 'cookies-next'
 import { useRouter } from 'next/router'
@@ -14,6 +14,7 @@ import Link from 'next/link'
 import { links } from '../util/route-links'
 import ProductList from '../components/ProductList'
 import { LimitContext } from '../util/context'
+import PromoCarousel, { ImageType } from '../components/PromoCarousel'
 
 let str = ''
 let flag = false
@@ -216,6 +217,17 @@ const Home: NextPage = () => {
 
   const { loading: l, error: e, data: d } = useQuery(categoryQuery)
 
+  const [images, setImages] = useState<ImageType[]>()
+
+  useEffect(() => {
+    setImages([
+      { id: 1, url: '/asset/promo/1.webp' },
+      { id: 2, url: '/asset/promo/2.webp' },
+      { id: 3, url: '/asset/promo/3.jpg' },
+      { id: 4, url: '/asset/promo/4.jpg' },
+    ])
+  }, [])
+
   if (loading || l || l2) {
     return (
       <Layout>
@@ -256,6 +268,7 @@ const Home: NextPage = () => {
       <Layout>
         <main>
           <div className="home">
+            <PromoCarousel images={images}></PromoCarousel>
             <h2 className="section-title">Top Discounted Items</h2>
             <div className="card-container discount">
               {data.products.map((p: any) => (

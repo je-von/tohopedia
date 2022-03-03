@@ -102,7 +102,7 @@ const ManageUsers: NextPage = () => {
     <Layout>
       <main>
         <div className="cart-container">
-          <div className="list-card-container">
+          <div className="list-card-container cart-inner">
             <h2>Manage Users</h2>
             {d.users.map((u: any) => (
               <div className="card" key={u.id}>

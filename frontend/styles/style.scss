@@ -768,6 +768,29 @@ a {
     }
   }
 }
+.promo-carousel-container {
+  margin: 20px 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  .selected-image {
+    width: 85%;
+    height: 15vw;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+
+  .carousel {
+    position: relative;
+  }
+  button {
+    width: fit-content;
+    padding: 0 8px;
+    border-radius: 50%;
+  }
+}
 .product-image {
   display: flex;
   position: relative;
