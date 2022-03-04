@@ -4,3 +4,315 @@
 
 2022/03/04 18:14:09 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:55
 [0m[33m[1.005ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE email = 'jevon.levin@gmail.com' LIMIT 1
+
+2022/03/04 18:21:53 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[1.072ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = 'e9487732-3aeb-4c0b-b975-4afc496c9ff8' LIMIT 1
+
+2022/03/04 18:22:34 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[1.069ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = 'e9487732-3aeb-4c0b-b975-4afc496c9ff8' LIMIT 1
+
+2022/03/04 18:22:34 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[0.999ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = 'e9487732-3aeb-4c0b-b975-4afc496c9ff8' LIMIT 1
+
+2022/03/04 19:14:49 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:55
+[0m[33m[1.200ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE email = 'jevon@mail.com' LIMIT 1
+
+2022/03/04 19:14:52 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[2.005ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '08ab008d-ca45-42b1-b7eb-897a345f568d' LIMIT 1
+
+2022/03/04 19:15:13 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[1.000ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '08ab008d-ca45-42b1-b7eb-897a345f568d' LIMIT 1
+
+2022/03/04 19:15:13 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[2.711ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '08ab008d-ca45-42b1-b7eb-897a345f568d' LIMIT 1
+
+2022/03/04 19:15:31 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[2.001ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '08ab008d-ca45-42b1-b7eb-897a345f568d' LIMIT 1
+
+2022/03/04 19:15:31 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[0.997ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '08ab008d-ca45-42b1-b7eb-897a345f568d' LIMIT 1
+
+2022/03/04 19:15:44 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[1.138ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '08ab008d-ca45-42b1-b7eb-897a345f568d' LIMIT 1
+
+2022/03/04 19:15:44 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[1.251ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '08ab008d-ca45-42b1-b7eb-897a345f568d' LIMIT 1
+
+2022/03/04 19:15:55 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[1.001ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '08ab008d-ca45-42b1-b7eb-897a345f568d' LIMIT 1
+
+2022/03/04 19:16:04 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[0.569ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '08ab008d-ca45-42b1-b7eb-897a345f568d' LIMIT 1
+
+2022/03/04 19:16:05 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[0.514ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '08ab008d-ca45-42b1-b7eb-897a345f568d' LIMIT 1
+
+2022/03/04 19:16:05 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[1.056ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '08ab008d-ca45-42b1-b7eb-897a345f568d' LIMIT 1
+
+2022/03/04 19:18:51 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:55
+[0m[33m[1.015ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE email = 'jevon.levin@gmail.com' LIMIT 1
+
+2022/03/04 19:18:53 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[0.999ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:19:10 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[2.824ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:19:10 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[1.304ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:20:10 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:55
+[0m[33m[12.546ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE email = 'admin@mail.com' LIMIT 1
+
+2022/03/04 19:20:12 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = 'e9487732-3aeb-4c0b-b975-4afc496c9ff8' LIMIT 1
+
+2022/03/04 19:20:28 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[0.988ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:20:38 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:55
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE email = 'jevon.levin@gmail.com' LIMIT 1
+
+2022/03/04 19:20:40 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[1.143ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:22:09 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:55
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE email = 'jevon.levin@gmail.com' LIMIT 1
+
+2022/03/04 19:22:11 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[0.994ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:22:29 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:55
+[0m[33m[1.000ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE email = 'admin@mail.com' LIMIT 1
+
+2022/03/04 19:22:30 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[1.085ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = 'e9487732-3aeb-4c0b-b975-4afc496c9ff8' LIMIT 1
+
+2022/03/04 19:22:35 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:23:05 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:55
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE email = 'tes@mail.com' LIMIT 1
+
+2022/03/04 19:23:06 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[0.997ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:23:24 [31;1mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/cart.go:31 [35;1mrecord not found
+[0m[33m[0.996ms] [34;1m[rows:0][0m SELECT * FROM `carts` WHERE user_id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' AND product_id = '8c9489fd-d13c-42b3-8a90-81324e803ad7' LIMIT 1
+
+2022/03/04 19:23:24 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/cart.go:20
+[0m[33m[7.156ms] [34;1m[rows:1][0m INSERT INTO `carts` (`user_id`,`product_id`,`quantity`,`notes`) VALUES ('126f21d0-e7d7-4e12-b0bc-6065779fa969','8c9489fd-d13c-42b3-8a90-81324e803ad7',3,'asd')
+
+2022/03/04 19:23:26 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[1.626ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:23:33 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[1.003ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:23:41 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[0.575ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:23:51 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[1.117ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:23:58 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[1.002ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:24:01 [31;1mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/cart.go:31 [35;1mrecord not found
+[0m[33m[1.000ms] [34;1m[rows:0][0m SELECT * FROM `carts` WHERE user_id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' AND product_id = '2baf4f4c-82ed-4da7-a9d9-3c0b38d9ea5d' LIMIT 1
+
+2022/03/04 19:24:01 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/cart.go:20
+[0m[33m[2.997ms] [34;1m[rows:1][0m INSERT INTO `carts` (`user_id`,`product_id`,`quantity`,`notes`) VALUES ('126f21d0-e7d7-4e12-b0bc-6065779fa969','2baf4f4c-82ed-4da7-a9d9-3c0b38d9ea5d',1,'')
+
+2022/03/04 19:24:03 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[2.997ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:24:25 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[0.549ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:24:29 [31;1mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/cart.go:31 [35;1mrecord not found
+[0m[33m[1.004ms] [34;1m[rows:0][0m SELECT * FROM `carts` WHERE user_id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' AND product_id = '8e1e8eb4-6704-4345-acab-b7e07ce9f243' LIMIT 1
+
+2022/03/04 19:24:29 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/cart.go:20
+[0m[33m[5.996ms] [34;1m[rows:1][0m INSERT INTO `carts` (`user_id`,`product_id`,`quantity`,`notes`) VALUES ('126f21d0-e7d7-4e12-b0bc-6065779fa969','8e1e8eb4-6704-4345-acab-b7e07ce9f243',1,'')
+
+2022/03/04 19:24:29 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[0.998ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:24:40 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[1.004ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:24:55 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[1.001ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:24:56 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[1.001ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:24:56 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[1.002ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:25:04 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[0.998ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:25:23 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[1.002ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:25:23 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[0.999ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:25:29 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[1.091ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:25:32 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[0.684ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:25:32 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[0.560ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:25:36 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:27:42 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[3.344ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:27:42 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[6.356ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:27:42 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[0.994ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:28:08 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[0.630ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:28:51 [31;1mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/shop.go:14 [35;1mrecord not found
+[0m[33m[0.555ms] [34;1m[rows:0][0m SELECT * FROM `shops` WHERE user_id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:28:53 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[1.264ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:28:54 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[2.748ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:31:33 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[3.998ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:31:33 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[2.006ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:32:27 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[0.806ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:32:40 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[1.004ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:34:25 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[2.003ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:34:25 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[1.003ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:35:20 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:55
+[0m[33m[5.521ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE email = 'jevon@mail.com' LIMIT 1
+
+2022/03/04 19:35:22 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[0.998ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '08ab008d-ca45-42b1-b7eb-897a345f568d' LIMIT 1
+
+2022/03/04 19:35:40 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[1.003ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '08ab008d-ca45-42b1-b7eb-897a345f568d' LIMIT 1
+
+2022/03/04 19:35:40 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[1.998ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '08ab008d-ca45-42b1-b7eb-897a345f568d' LIMIT 1
+
+2022/03/04 19:35:49 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[1.998ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '08ab008d-ca45-42b1-b7eb-897a345f568d' LIMIT 1
+
+2022/03/04 19:35:57 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[2.008ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '08ab008d-ca45-42b1-b7eb-897a345f568d' LIMIT 1
+
+2022/03/04 19:36:24 [31;1mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/cart.go:31 [35;1mrecord not found
+[0m[33m[0.520ms] [34;1m[rows:0][0m SELECT * FROM `carts` WHERE user_id = '08ab008d-ca45-42b1-b7eb-897a345f568d' AND product_id = '40e5f8f8-901a-406f-8a52-00e9077daf5d' LIMIT 1
+
+2022/03/04 19:36:24 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/cart.go:20
+[0m[33m[3.020ms] [34;1m[rows:1][0m INSERT INTO `carts` (`user_id`,`product_id`,`quantity`,`notes`) VALUES ('08ab008d-ca45-42b1-b7eb-897a345f568d','40e5f8f8-901a-406f-8a52-00e9077daf5d',18,'bukunya yg ori ya')
+
+2022/03/04 19:36:26 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[2.002ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '08ab008d-ca45-42b1-b7eb-897a345f568d' LIMIT 1
+
+2022/03/04 19:36:44 [31;1mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/cart.go:31 [35;1mrecord not found
+[0m[33m[0.999ms] [34;1m[rows:0][0m SELECT * FROM `carts` WHERE user_id = '08ab008d-ca45-42b1-b7eb-897a345f568d' AND product_id = '8c9489fd-d13c-42b3-8a90-81324e803ad7' LIMIT 1
+
+2022/03/04 19:36:44 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/cart.go:20
+[0m[33m[5.985ms] [34;1m[rows:1][0m INSERT INTO `carts` (`user_id`,`product_id`,`quantity`,`notes`) VALUES ('08ab008d-ca45-42b1-b7eb-897a345f568d','8c9489fd-d13c-42b3-8a90-81324e803ad7',1,'lagi')
+
+2022/03/04 19:36:44 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[2.018ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '08ab008d-ca45-42b1-b7eb-897a345f568d' LIMIT 1
+
+2022/03/04 19:36:47 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[1.003ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '08ab008d-ca45-42b1-b7eb-897a345f568d' LIMIT 1
+
+2022/03/04 19:37:05 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[1.006ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '08ab008d-ca45-42b1-b7eb-897a345f568d' LIMIT 1
+
+2022/03/04 19:37:05 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[1.005ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '08ab008d-ca45-42b1-b7eb-897a345f568d' LIMIT 1
+
+2022/03/04 19:37:10 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[1.996ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '08ab008d-ca45-42b1-b7eb-897a345f568d' LIMIT 1
+
+2022/03/04 19:37:13 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[1.001ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '08ab008d-ca45-42b1-b7eb-897a345f568d' LIMIT 1
+
+2022/03/04 19:37:13 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[0.997ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '08ab008d-ca45-42b1-b7eb-897a345f568d' LIMIT 1
+
+2022/03/04 19:37:22 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[2.997ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '08ab008d-ca45-42b1-b7eb-897a345f568d' LIMIT 1
+
+2022/03/04 19:38:11 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[0.998ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '08ab008d-ca45-42b1-b7eb-897a345f568d' LIMIT 1
+
+2022/03/04 19:38:11 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[0.996ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '08ab008d-ca45-42b1-b7eb-897a345f568d' LIMIT 1
+
+2022/03/04 19:38:11 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[0.999ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '08ab008d-ca45-42b1-b7eb-897a345f568d' LIMIT 1
+
+2022/03/04 19:38:49 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:55
+[0m[33m[5.535ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE email = 'tes@mail.com' LIMIT 1
+
+2022/03/04 19:38:50 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[0.000ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:38:56 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[0.994ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:38:56 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[0.953ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:38:58 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[1.804ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:39:34 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[0.998ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:39:43 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/shop.go:14
+[0m[33m[1.006ms] [34;1m[rows:1][0m SELECT * FROM `shops` WHERE user_id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:39:44 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[5.528ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:39:44 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[1.002ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = '126f21d0-e7d7-4e12-b0bc-6065779fa969' LIMIT 1
+
+2022/03/04 19:41:21 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:55
+[0m[33m[22.854ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE email = 'admin@mail.com' LIMIT 1
+
+2022/03/04 19:41:23 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[1.750ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = 'e9487732-3aeb-4c0b-b975-4afc496c9ff8' LIMIT 1
+
+2022/03/04 19:41:57 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[1.006ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = 'e9487732-3aeb-4c0b-b975-4afc496c9ff8' LIMIT 1
+
+2022/03/04 19:41:57 [32mE:/0.BINUS/ASLAB/TPA/WEB/TPA_Web_JV/tohopedia-jv/backend/service/user.go:44
+[0m[33m[1.006ms] [34;1m[rows:1][0m SELECT * FROM `users` WHERE id = 'e9487732-3aeb-4c0b-b975-4afc496c9ff8' LIMIT 1
