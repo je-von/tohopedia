@@ -343,6 +343,9 @@ export default function Header() {
                         <Link href={links.editProfile} passHref>
                           <div className="text-button">Edit Profile</div>
                         </Link>
+                        <Link href={links.reksadana} passHref>
+                          <div className="text-button">Reksadana</div>
+                        </Link>
                         <div
                           className="text-button"
                           onClick={() => {

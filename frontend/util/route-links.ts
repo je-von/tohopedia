@@ -30,4 +30,5 @@ export const links = {
   about: '/about',
   terms: '/terms',
   chat: '/chat',
+  reksadana: '/reksadana',
 }
