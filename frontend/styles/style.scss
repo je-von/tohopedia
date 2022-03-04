@@ -335,7 +335,23 @@ a {
   justify-content: center;
   align-items: center;
 }
-
+.form-input {
+  display: flex;
+  flex-direction: column;
+  margin-top: 25px;
+  textarea {
+    resize: vertical;
+  }
+  .multi-title {
+    display: flex;
+    align-items: center;
+    .text-button {
+      margin-left: 10px;
+      width: 25px;
+      padding: 0;
+    }
+  }
+}
 .form-container {
   display: flex;
   flex-direction: column;
@@ -364,23 +380,6 @@ a {
     align-items: center;
     h3 {
       font-size: 24px;
-    }
-  }
-  .form-input {
-    display: flex;
-    flex-direction: column;
-    margin-top: 25px;
-    textarea {
-      resize: vertical;
-    }
-    .multi-title {
-      display: flex;
-      align-items: center;
-      .text-button {
-        margin-left: 10px;
-        width: 25px;
-        padding: 0;
-      }
     }
   }
 
@@ -1099,4 +1098,12 @@ a {
 }
 .fa-star {
   color: rgb(250, 194, 0);
+}
+
+hr {
+  margin: 10px 0;
+  border: none;
+  border-top: 1px solid black;
+  height: 0;
+  // outline: none;
 }

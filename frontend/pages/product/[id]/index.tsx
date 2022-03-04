@@ -81,6 +81,16 @@ const ProductDetail: NextPage = () => {
               profilePic
             }
           }
+          discussions {
+            id
+            createdAt
+            content
+            user {
+              id
+              name
+              profilePic
+            }
+          }
         }
       }
     }
@@ -118,6 +128,15 @@ const ProductDetail: NextPage = () => {
   `
   const [createWishlist, { data: d3, loading: l3, error: e3 }] = useMutation(wishlistMutation)
 
+  const discussionMutation = gql`
+    mutation createDiscussion($productID: ID!, $content: String!) {
+      createDiscussion(productID: $productID, content: $content) {
+        id
+      }
+    }
+  `
+  const [createDiscussion, { data: d4, loading: l4, error: e4 }] = useMutation(discussionMutation)
+
   if (loading || l || l2) {
     return <>Loading...</>
   }
@@ -146,34 +165,13 @@ const ProductDetail: NextPage = () => {
     })
   }
 
+  if (d4 && d4.createDiscussion) {
+    router.reload()
+  }
+
   let product: any = null
   if (data && data.product) {
     product = data.product
-
-    // if (metadataList.length < 1) {
-    //   let metadata = product.metadata
-    //   try {
-    //     let parsed = JSON.parse(metadata)
-    //     // console.log(parsed)
-    //     // console.log(metadataList.length)
-    //     if (parsed.length > 0) {
-    //       let temp = []
-    //       for (let x of parsed) {
-    //         for (let key in x) {
-    //           let value = x[key]
-    //           // console.log(key + ' ---> ' + value)
-    //           temp.push(
-    //             <div key={key}>
-    //               <label className="metadata-key">{key}</label> : {value}
-    //             </div>
-    //           )
-    //         }
-    //       }
-    //       setMetadataList(temp)
-    //     }
-    //     // console.log(metadataList)
-    //   } catch (e) {}
-    // }
   }
 
   let isSeller = false
@@ -240,6 +238,24 @@ const ProductDetail: NextPage = () => {
       })
     } catch (e) {
       setErrorMsg('Error!')
+    }
+  }
+
+  const handleDiscussion = async () => {
+    let content = (document.getElementById('discussion-content') as HTMLInputElement).value
+    if (!content) {
+      alert('Field must be filled!')
+    } else {
+      try {
+        await createDiscussion({
+          variables: {
+            productID: product.originalProduct.id,
+            content: content,
+          },
+        })
+      } catch (e) {
+        router.push(links.login)
+      }
     }
   }
 
@@ -327,6 +343,35 @@ const ProductDetail: NextPage = () => {
                   </div>
                 </div>
               ))}
+            </div>
+            <hr />
+            <h3>DISCUSSIONS ({product.originalProduct.discussions.length})</h3>
+            <div>
+              {product.originalProduct.discussions.map((d: any) => (
+                <div className="review-card" key={d.id}>
+                  <div className="user">
+                    <div className="profile-button">
+                      <div className="profile-pic">
+                        <Image src={d.user.profilePic ? d.user.profilePic : '/asset/anonymous.png'} alt="" layout="fill" objectFit="cover"></Image>
+                      </div>
+                      <p>{d.user.name}</p>
+                      <p className="date">{d.createdAt.split('T')[0]}</p>
+                    </div>
+                  </div>
+                  <div className="content">
+                    <div className="card-header">
+                      <div className="description">{d.content}</div>
+                      <button className="text-button">Reply</button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              <div className="form-input">
+                <textarea id="discussion-content" name="discussion-content" placeholder="What do you want to ask about this product"></textarea>
+                <button className="text-button" onClick={handleDiscussion}>
+                  Submit
+                </button>
+              </div>
             </div>
           </div>
           <div>

@@ -175,7 +175,9 @@ const OpenShop: NextPage = () => {
     flag = true
   }
   if (d3) {
-    router.push(links.shopDetail(user.shop.nameSlug))
+    router.push(links.shopDetail(user.shop.nameSlug)).then(() => {
+      router.reload()
+    })
   }
 
   const handleAddMetadata = () => {

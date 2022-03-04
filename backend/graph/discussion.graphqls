@@ -1,0 +1,11 @@
+type Discussion {
+  id: ID!
+  user: User! @goField(forceResolver: true)
+  product: Product! @goField(forceResolver: true)
+  createdAt: Time!
+  content: String!
+}
+
+extend type Mutation {
+  createDiscussion(productID: ID!, content: String!): Discussion! @auth
+}

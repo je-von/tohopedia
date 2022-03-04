@@ -128,7 +128,7 @@ export default function Header() {
     //   console.log('asd')
     // }
 
-    if (user.isSuspended) {
+    if (user.isSuspended && getCookie('token')) {
       if (confirm('Your account is suspended! Do you want to request admin to unblock your account?')) {
         console.log('yes')
       } else {

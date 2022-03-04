@@ -41,6 +41,7 @@ type ResolverRoot interface {
 	AuthOps() AuthOpsResolver
 	Cart() CartResolver
 	Category() CategoryResolver
+	Discussion() DiscussionResolver
 	Mutation() MutationResolver
 	Product() ProductResolver
 	ProductImage() ProductImageResolver
@@ -91,11 +92,20 @@ type ComplexityRoot struct {
 		Name       func(childComplexity int) int
 	}
 
+	Discussion struct {
+		Content   func(childComplexity int) int
+		CreatedAt func(childComplexity int) int
+		ID        func(childComplexity int) int
+		Product   func(childComplexity int) int
+		User      func(childComplexity int) int
+	}
+
 	Mutation struct {
 		Auth                func(childComplexity int) int
 		Checkout            func(childComplexity int, shippingID string, paymentTypeID string, addressID string) int
 		CreateAddress       func(childComplexity int, name string, detail string, isPrimary bool) int
 		CreateCart          func(childComplexity int, productID string, quantity int, notes string) int
+		CreateDiscussion    func(childComplexity int, productID string, content string) int
 		CreateProduct       func(childComplexity int, input model.NewProduct, shopID string) int
 		CreateProductImage  func(childComplexity int, image string, productID string) int
 		CreateProductImages func(childComplexity int, images []string, productID string) int
@@ -125,6 +135,7 @@ type ComplexityRoot struct {
 		CreatedAt          func(childComplexity int) int
 		Description        func(childComplexity int) int
 		Discount           func(childComplexity int) int
+		Discussions        func(childComplexity int) int
 		ID                 func(childComplexity int) int
 		Images             func(childComplexity int) int
 		Metadata           func(childComplexity int) int
@@ -267,6 +278,10 @@ type CartResolver interface {
 type CategoryResolver interface {
 	Products(ctx context.Context, obj *model.Category) ([]*model.Product, error)
 }
+type DiscussionResolver interface {
+	User(ctx context.Context, obj *model.Discussion) (*model.User, error)
+	Product(ctx context.Context, obj *model.Discussion) (*model.Product, error)
+}
 type MutationResolver interface {
 	CreateUser(ctx context.Context, input model.NewUser) (*model.User, error)
 	UpdateUser(ctx context.Context, input model.NewUser) (*model.User, error)
@@ -280,6 +295,7 @@ type MutationResolver interface {
 	DeleteCart(ctx context.Context, productID string) (bool, error)
 	CreateWishlist(ctx context.Context, productID string) (*model.Wishlist, error)
 	DeleteWishlist(ctx context.Context, productID string) (bool, error)
+	CreateDiscussion(ctx context.Context, productID string, content string) (*model.Discussion, error)
 	CreateProduct(ctx context.Context, input model.NewProduct, shopID string) (*model.Product, error)
 	CreateProductImage(ctx context.Context, image string, productID string) (*model.ProductImage, error)
 	CreateProductImages(ctx context.Context, images []string, productID string) (bool, error)
@@ -300,6 +316,7 @@ type ProductResolver interface {
 	Shop(ctx context.Context, obj *model.Product) (*model.Shop, error)
 	TransactionDetails(ctx context.Context, obj *model.Product) ([]*model.TransactionDetail, error)
 	Reviews(ctx context.Context, obj *model.Product) ([]*model.Review, error)
+	Discussions(ctx context.Context, obj *model.Product) ([]*model.Discussion, error)
 }
 type ProductImageResolver interface {
 	Product(ctx context.Context, obj *model.ProductImage) (*model.Product, error)
@@ -511,6 +528,41 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.DataMap.Name(childComplexity), true
 
+	case "Discussion.content":
+		if e.complexity.Discussion.Content == nil {
+			break
+		}
+
+		return e.complexity.Discussion.Content(childComplexity), true
+
+	case "Discussion.createdAt":
+		if e.complexity.Discussion.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Discussion.CreatedAt(childComplexity), true
+
+	case "Discussion.id":
+		if e.complexity.Discussion.ID == nil {
+			break
+		}
+
+		return e.complexity.Discussion.ID(childComplexity), true
+
+	case "Discussion.product":
+		if e.complexity.Discussion.Product == nil {
+			break
+		}
+
+		return e.complexity.Discussion.Product(childComplexity), true
+
+	case "Discussion.user":
+		if e.complexity.Discussion.User == nil {
+			break
+		}
+
+		return e.complexity.Discussion.User(childComplexity), true
+
 	case "Mutation.auth":
 		if e.complexity.Mutation.Auth == nil {
 			break
@@ -553,6 +605,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreateCart(childComplexity, args["productID"].(string), args["quantity"].(int), args["notes"].(string)), true
+
+	case "Mutation.createDiscussion":
+		if e.complexity.Mutation.CreateDiscussion == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createDiscussion_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateDiscussion(childComplexity, args["productID"].(string), args["content"].(string)), true
 
 	case "Mutation.createProduct":
 		if e.complexity.Mutation.CreateProduct == nil {
@@ -799,6 +863,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Product.Discount(childComplexity), true
+
+	case "Product.discussions":
+		if e.complexity.Product.Discussions == nil {
+			break
+		}
+
+		return e.complexity.Product.Discussions(childComplexity), true
 
 	case "Product.id":
 		if e.complexity.Product.ID == nil {
@@ -1650,6 +1721,18 @@ extend type Mutation {
   deleteWishlist(productID: ID!): Boolean! @auth
 }
 `, BuiltIn: false},
+	{Name: "graph/discussion.graphqls", Input: `type Discussion {
+  id: ID!
+  user: User! @goField(forceResolver: true)
+  product: Product! @goField(forceResolver: true)
+  createdAt: Time!
+  content: String!
+}
+
+extend type Mutation {
+  createDiscussion(productID: ID!, content: String!): Discussion! @auth
+}
+`, BuiltIn: false},
 	{Name: "graph/product.graphqls", Input: `# scalar Map
 # scalar Time
 type Product {
@@ -1672,6 +1755,7 @@ type Product {
   transactionDetails: [TransactionDetail!]! @goField(forceResolver: true)
 
   reviews: [Review!]! @goField(forceResolver: true)
+  discussions: [Discussion!]! @goField(forceResolver: true)
 }
 
 type ProductImage {
@@ -2048,6 +2132,30 @@ func (ec *executionContext) field_Mutation_createCart_args(ctx context.Context, 
 		}
 	}
 	args["notes"] = arg2
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_createDiscussion_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["productID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("productID"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["productID"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["content"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("content"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["content"] = arg1
 	return args, nil
 }
 
@@ -3370,6 +3478,181 @@ func (ec *executionContext) _DataMap_name(ctx context.Context, field graphql.Col
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Discussion_id(ctx context.Context, field graphql.CollectedField, obj *model.Discussion) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Discussion",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Discussion_user(ctx context.Context, field graphql.CollectedField, obj *model.Discussion) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Discussion",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Discussion().User(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.User)
+	fc.Result = res
+	return ec.marshalNUser2ᚖgithubᚗcomᚋjeᚑvonᚋTPAᚑWebᚑJVᚋbackendᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Discussion_product(ctx context.Context, field graphql.CollectedField, obj *model.Discussion) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Discussion",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Discussion().Product(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Product)
+	fc.Result = res
+	return ec.marshalNProduct2ᚖgithubᚗcomᚋjeᚑvonᚋTPAᚑWebᚑJVᚋbackendᚋgraphᚋmodelᚐProduct(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Discussion_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.Discussion) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Discussion",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Discussion_content(ctx context.Context, field graphql.CollectedField, obj *model.Discussion) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Discussion",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Content, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Mutation_createUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -4025,6 +4308,68 @@ func (ec *executionContext) _Mutation_deleteWishlist(ctx context.Context, field 
 	res := resTmp.(bool)
 	fc.Result = res
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_createDiscussion(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_createDiscussion_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().CreateDiscussion(rctx, args["productID"].(string), args["content"].(string))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.Auth == nil {
+				return nil, errors.New("directive auth is not implemented")
+			}
+			return ec.directives.Auth(ctx, nil, directive0)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*model.Discussion); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/je-von/TPA-Web-JV/backend/graph/model.Discussion`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Discussion)
+	fc.Result = res
+	return ec.marshalNDiscussion2ᚖgithubᚗcomᚋjeᚑvonᚋTPAᚑWebᚑJVᚋbackendᚋgraphᚋmodelᚐDiscussion(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_createProduct(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -5107,6 +5452,41 @@ func (ec *executionContext) _Product_reviews(ctx context.Context, field graphql.
 	res := resTmp.([]*model.Review)
 	fc.Result = res
 	return ec.marshalNReview2ᚕᚖgithubᚗcomᚋjeᚑvonᚋTPAᚑWebᚑJVᚋbackendᚋgraphᚋmodelᚐReviewᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Product_discussions(ctx context.Context, field graphql.CollectedField, obj *model.Product) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Product",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Product().Discussions(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Discussion)
+	fc.Result = res
+	return ec.marshalNDiscussion2ᚕᚖgithubᚗcomᚋjeᚑvonᚋTPAᚑWebᚑJVᚋbackendᚋgraphᚋmodelᚐDiscussionᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _ProductImage_id(ctx context.Context, field graphql.CollectedField, obj *model.ProductImage) (ret graphql.Marshaler) {
@@ -9962,6 +10342,71 @@ func (ec *executionContext) _DataMap(ctx context.Context, sel ast.SelectionSet, 
 	return out
 }
 
+var discussionImplementors = []string{"Discussion"}
+
+func (ec *executionContext) _Discussion(ctx context.Context, sel ast.SelectionSet, obj *model.Discussion) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, discussionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Discussion")
+		case "id":
+			out.Values[i] = ec._Discussion_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "user":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Discussion_user(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "product":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Discussion_product(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "createdAt":
+			out.Values[i] = ec._Discussion_createdAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "content":
+			out.Values[i] = ec._Discussion_content(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var mutationImplementors = []string{"Mutation"}
 
 func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
@@ -10034,6 +10479,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "deleteWishlist":
 			out.Values[i] = ec._Mutation_deleteWishlist(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "createDiscussion":
+			out.Values[i] = ec._Mutation_createDiscussion(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -10268,6 +10718,20 @@ func (ec *executionContext) _Product(ctx context.Context, sel ast.SelectionSet, 
 					}
 				}()
 				res = ec._Product_reviews(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "discussions":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Product_discussions(ctx, field, obj)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -11873,6 +12337,64 @@ func (ec *executionContext) marshalNDate2string(ctx context.Context, sel ast.Sel
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) marshalNDiscussion2githubᚗcomᚋjeᚑvonᚋTPAᚑWebᚑJVᚋbackendᚋgraphᚋmodelᚐDiscussion(ctx context.Context, sel ast.SelectionSet, v model.Discussion) graphql.Marshaler {
+	return ec._Discussion(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNDiscussion2ᚕᚖgithubᚗcomᚋjeᚑvonᚋTPAᚑWebᚑJVᚋbackendᚋgraphᚋmodelᚐDiscussionᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Discussion) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNDiscussion2ᚖgithubᚗcomᚋjeᚑvonᚋTPAᚑWebᚑJVᚋbackendᚋgraphᚋmodelᚐDiscussion(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNDiscussion2ᚖgithubᚗcomᚋjeᚑvonᚋTPAᚑWebᚑJVᚋbackendᚋgraphᚋmodelᚐDiscussion(ctx context.Context, sel ast.SelectionSet, v *model.Discussion) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Discussion(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNFloat2float64(ctx context.Context, v interface{}) (float64, error) {

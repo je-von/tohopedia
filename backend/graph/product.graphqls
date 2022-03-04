@@ -20,6 +20,7 @@ type Product {
   transactionDetails: [TransactionDetail!]! @goField(forceResolver: true)
 
   reviews: [Review!]! @goField(forceResolver: true)
+  discussions: [Discussion!]! @goField(forceResolver: true)
 }
 
 type ProductImage {
