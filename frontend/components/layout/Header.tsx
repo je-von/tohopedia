@@ -323,9 +323,14 @@ export default function Header() {
                       <p>{user.name}</p>
                       <div className="dropdown">
                         {user.role == 'Admin' ? (
-                          <Link href={links.manageUsers} passHref>
-                            <div className="text-button danger-button">Manage Users</div>
-                          </Link>
+                          <>
+                            <Link href={links.dashboard} passHref>
+                              <div className="text-button danger-button">Dashboard</div>
+                            </Link>
+                            <Link href={links.manageUsers} passHref>
+                              <div className="text-button danger-button">Manage Users</div>
+                            </Link>
+                          </>
                         ) : (
                           ''
                         )}

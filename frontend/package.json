@@ -24,6 +24,7 @@
     "react-geocode": "^0.2.3",
     "react-google-recaptcha": "^2.1.0",
     "react-image-gallery": "^1.2.7",
+    "recharts": "^2.1.9",
     "sass": "^1.49.0",
     "swr": "^1.2.0",
     "two-step-auth": "^1.1.2",

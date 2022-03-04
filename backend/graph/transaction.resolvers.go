@@ -108,6 +108,41 @@ func (r *queryResolver) TransactionHeaders(ctx context.Context) ([]*model.Transa
 	return models, r.DB.Find(&models).Error
 }
 
+func (r *queryResolver) TransactionsPerDay(ctx context.Context) ([]*model.DataMap, error) {
+	var models []*model.DataMap
+	return models, r.DB.Raw("SELECT DATE(transaction_date) as `name`, COUNT(*) as `count` FROM `transaction_headers` GROUP BY DATE(transaction_date) ORDER BY transaction_date").Find(&models).Error
+}
+
+func (r *queryResolver) SoldPerCategory(ctx context.Context) ([]*model.DataMap, error) {
+	var models []*model.DataMap
+	return models, r.DB.Raw(`SELECT
+								c.name,
+								COUNT(DISTINCT p.original_product_id) as "count",
+								x.TotalProducts - COUNT(DISTINCT p.original_product_id) as "additional"
+							FROM 
+								products p 
+								JOIN categories c ON p.category_id = c.id
+								JOIN transaction_details td ON td.product_id = p.id JOIN
+								(
+									SELECT c.id, COUNT(*) as TotalProducts FROM products p 
+									JOIN categories c ON p.category_id = c.id 
+									WHERE p.id = p.original_product_id
+									GROUP BY c.id
+								) x ON x.id = c.id
+							GROUP BY c.id, c.name`).Find(&models).Error
+}
+
+func (r *queryResolver) TransactionPerShipping(ctx context.Context) ([]*model.DataMap, error) {
+	var models []*model.DataMap
+	return models, r.DB.Raw(`SELECT
+								s.name,
+								COUNT(*) as "count"
+							FROM 
+								shippings s
+								JOIN transaction_headers th ON s.id = th.shipping_id
+							GROUP BY s.id, s.name`).Find(&models).Error
+}
+
 func (r *transactionDetailResolver) TransactionHeader(ctx context.Context, obj *model.TransactionDetail) (*model.TransactionHeader, error) {
 	transactionHeader := new(model.TransactionHeader)
 

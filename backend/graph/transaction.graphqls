@@ -9,6 +9,12 @@ type PaymentType {
   name: String!
 }
 
+type DataMap {
+  count: Int!
+  additional: Int
+  name: String!
+}
+
 type TransactionHeader {
   id: ID!
   transactionDate: Time!
@@ -36,6 +42,10 @@ extend type Query {
   paymentTypes: [PaymentType!]!
 
   transactionHeaders: [TransactionHeader!]!
+
+  transactionsPerDay: [DataMap!]!
+  soldPerCategory: [DataMap!]!
+  transactionPerShipping: [DataMap!]!
 }
 
 extend type Mutation {
