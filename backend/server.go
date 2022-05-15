@@ -36,7 +36,7 @@ func main() {
 
 	router.Use(cors.New(cors.Options{
 		AllowedHeaders:   []string{"*"},
-		AllowedOrigins:   []string{"http://localhost:3000", "http://localhost:8080"},
+		AllowedOrigins:   []string{"https://toped.vercel.app", "http://localhost:3000", "http://localhost:8080"},
 		AllowOriginFunc:  func(origin string) bool { return true },
 		AllowCredentials: true,
 		Debug:            true,

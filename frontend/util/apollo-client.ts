@@ -8,7 +8,7 @@ const token = getCookie('token')
 const url = process.env.BACKEND_URL ? process.env.BACKEND_URL : 'https://tohopedia-backend.herokuapp.com'
 
 const httpLink = new HttpLink({
-  uri: 'http://tohopedia-backend.herokuapp.com/query',
+  uri: 'https://tohopedia-backend.herokuapp.com/query',
   headers: token
     ? {
         Authorization: 'bearer ' + token,
