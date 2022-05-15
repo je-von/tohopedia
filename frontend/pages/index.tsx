@@ -235,6 +235,9 @@ const Home: NextPage = () => {
       </Layout>
     )
   }
+  if (error) {
+    console.log(error)
+  }
 
   // if(data){
 
@@ -271,52 +274,56 @@ const Home: NextPage = () => {
             <PromoCarousel images={images}></PromoCarousel>
             <h2 className="section-title">Top Discounted Items</h2>
             <div className="card-container discount">
-              {data.products.map((p: any) => (
-                <Card
-                  key={p.originalProduct.id}
-                  image={p.originalProduct.images.length > 0 ? p.originalProduct.images[0].image : '/asset/no-image.png'}
-                  productID={p.originalProduct.id}
-                  priceTag={
-                    <div className="product-price">
-                      <p className="product-discount">
-                        {/* {Math.round(p.updatedProducts.length > 0 ? p.updatedProducts[0].discount : p.discount * 100)}% */}
-                        {Math.round(p.discount * 100)}%
-                      </p>
-                      {/* <s className="original-price">Rp.{p.updatedProducts.length > 0 ? p.updatedProducts[0].price : p.price}</s> */}
-                      <s className="original-price">Rp.{p.price}</s>
+              {data
+                ? data.products.map((p: any) => (
+                    <Card
+                      key={p.originalProduct.id}
+                      image={p.originalProduct.images.length > 0 ? p.originalProduct.images[0].image : '/asset/no-image.png'}
+                      productID={p.originalProduct.id}
+                      priceTag={
+                        <div className="product-price">
+                          <p className="product-discount">
+                            {/* {Math.round(p.updatedProducts.length > 0 ? p.updatedProducts[0].discount : p.discount * 100)}% */}
+                            {Math.round(p.discount * 100)}%
+                          </p>
+                          {/* <s className="original-price">Rp.{p.updatedProducts.length > 0 ? p.updatedProducts[0].price : p.price}</s> */}
+                          <s className="original-price">Rp.{p.price}</s>
 
-                      {/* {p.updatedProducts.length > 0 ? (
+                          {/* {p.updatedProducts.length > 0 ? (
                         <b>Rp.{Math.round(p.updatedProducts[0].price * (1 - p.updatedProducts[0].discount))}</b>
                       ) : ( */}
-                      <b>Rp.{Math.round(p.price * (1 - p.discount))}</b>
-                      {/* )} */}
-                    </div>
-                  }
-                  // name={p.updatedProducts.length > 0 ? p.updatedProducts[0].name : p.name}
-                  name={p.name}
-                  shop={p.shop.name}
-                  shopNameSlug={p.shop.nameSlug}
-                ></Card>
-              ))}
+                          <b>Rp.{Math.round(p.price * (1 - p.discount))}</b>
+                          {/* )} */}
+                        </div>
+                      }
+                      // name={p.updatedProducts.length > 0 ? p.updatedProducts[0].name : p.name}
+                      name={p.name}
+                      shop={p.shop.name}
+                      shopNameSlug={p.shop.nameSlug}
+                    ></Card>
+                  ))
+                : ''}
             </div>
             <h2 className="section-title">Top Product Recommendations</h2>
             <div className="card-container discount">
-              {d2.products.map((p: any) => (
-                <Card
-                  key={p.originalProduct.id}
-                  image={p.originalProduct.images.length > 0 ? p.originalProduct.images[0].image : '/asset/no-image.png'}
-                  productID={p.originalProduct.id}
-                  priceTag={
-                    <div className="product-price">
-                      <b>Rp.{p.updatedProducts.length > 0 ? p.updatedProducts[0].price : p.price}</b>
-                    </div>
-                  }
-                  // name={p.updatedProducts.length > 0 ? p.updatedProducts[0].name : p.name}
-                  name={p.updatedProducts.length > 0 ? p.updatedProducts[0].name : p.name}
-                  shop={p.shop.name}
-                  shopNameSlug={p.shop.nameSlug}
-                ></Card>
-              ))}
+              {d2
+                ? d2.products.map((p: any) => (
+                    <Card
+                      key={p.originalProduct.id}
+                      image={p.originalProduct.images.length > 0 ? p.originalProduct.images[0].image : '/asset/no-image.png'}
+                      productID={p.originalProduct.id}
+                      priceTag={
+                        <div className="product-price">
+                          <b>Rp.{p.updatedProducts.length > 0 ? p.updatedProducts[0].price : p.price}</b>
+                        </div>
+                      }
+                      // name={p.updatedProducts.length > 0 ? p.updatedProducts[0].name : p.name}
+                      name={p.updatedProducts.length > 0 ? p.updatedProducts[0].name : p.name}
+                      shop={p.shop.name}
+                      shopNameSlug={p.shop.nameSlug}
+                    ></Card>
+                  ))
+                : ''}
             </div>
             <h2 className="section-title">Categories</h2>
             <div className="card-container category">
