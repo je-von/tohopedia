@@ -20,6 +20,7 @@ import (
 	"github.com/je-von/TPA-Web-JV/backend/graph/model"
 	"github.com/je-von/TPA-Web-JV/backend/middlewares"
 	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
@@ -43,14 +44,22 @@ func main() {
 
 	// router.Use(middlewares.AuthMiddleware)
 
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		os.Getenv("DB_USER"),
-		os.Getenv("DB_PASSWORD"),
-		os.Getenv("DB_HOST"),
-		os.Getenv("DB_PORT"),
-		os.Getenv("DB_DATABASE"),
-	)
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	var temp gorm.Dialector
+
+	if os.Getenv("DB_CONNECTION") == "mysql" {
+		databaseConfig := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+			os.Getenv("DB_USER"),
+			os.Getenv("DB_PASSWORD"),
+			os.Getenv("DB_HOST"),
+			os.Getenv("DB_PORT"),
+			os.Getenv("DB_DATABASE"),
+		)
+		temp = mysql.Open(databaseConfig)
+	} else {
+		databaseConfig := fmt.Sprintf("host=%s user=%s password=%s port=%s dbname=%s sslmode=require TimeZone=Asia/Shanghai", os.Getenv("DB_HOST"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_PORT"), os.Getenv("DB_NAME"))
+		temp = postgres.Open(databaseConfig)
+	}
+	db, err := gorm.Open(temp, &gorm.Config{})
 
 	if err != nil {
 		panic(err)

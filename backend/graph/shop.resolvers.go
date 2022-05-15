@@ -5,6 +5,7 @@ package graph
 
 import (
 	"context"
+	"os"
 
 	"github.com/google/uuid"
 	"github.com/je-von/TPA-Web-JV/backend/graph/generated"
@@ -108,10 +109,10 @@ func (r *shopResolver) User(ctx context.Context, obj *model.Shop) (*model.User, 
 func (r *shopResolver) Products(ctx context.Context, obj *model.Shop, keyword *string, topSold *bool) ([]*model.Product, error) {
 	var models []*model.Product
 	if topSold != nil && *topSold {
-		return models, r.DB.Raw("SELECT p.id, name, description, price, discount, metadata, category_id, shop_id, created_at, stock, original_product_id, valid_to FROM transaction_details td JOIN products p ON p.id = td.product_id WHERE shop_id = ? GROUP BY product_id ORDER BY SUM(quantity) DESC LIMIT 10", obj.ID).Scan(&models).Error
+		return models, r.DB.Raw("SELECT p.id, name, description, price, discount, metadata, category_id, shop_id, created_at, stock, original_product_id, valid_to FROM transaction_details td JOIN products p ON p.id = td.product_id WHERE shop_id = ? GROUP BY product_id, p.id ORDER BY SUM(quantity) DESC LIMIT 10", obj.ID).Scan(&models).Error
 	}
 
-	temp := r.DB.Where("shop_id = ?", obj.ID).Where("(valid_to IS NULL OR valid_to = '0')")
+	temp := r.DB.Where("shop_id = ?", obj.ID).Where("(valid_to IS NULL OR valid_to = '" + os.Getenv("MIN_DATE") + "')")
 	if keyword != nil {
 		temp = temp.Where("(name LIKE ? OR description LIKE ?)", "%"+*keyword+"%", "%"+*keyword+"%").Limit(3)
 	}

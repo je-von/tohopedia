@@ -6,6 +6,7 @@ package graph
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/je-von/TPA-Web-JV/backend/graph/generated"
 	"github.com/je-von/TPA-Web-JV/backend/graph/model"
@@ -22,7 +23,8 @@ func (r *cartResolver) User(ctx context.Context, obj *model.Cart) (*model.User, 
 func (r *cartResolver) Product(ctx context.Context, obj *model.Cart) (*model.Product, error) {
 	product := new(model.Product)
 
-	return product, r.DB.First(product, "original_product_id = ? AND (valid_to = 0 OR valid_to IS NULL)", obj.ProductID).Error
+	// return product, r.DB.First(product, "original_product_id = ? AND (valid_to = '"+os.Getenv("MIN_DATE")+"' OR valid_to IS NULL)", obj.ProductID).Error
+	return product, r.DB.Where("original_product_id = ?", obj.ProductID).Order("valid_to ASC").Limit(1).Find(&product).Error
 }
 
 func (r *mutationResolver) CreateCart(ctx context.Context, productID string, quantity int, notes string) (*model.Cart, error) {
@@ -168,7 +170,7 @@ func (r *wishlistResolver) User(ctx context.Context, obj *model.Wishlist) (*mode
 func (r *wishlistResolver) Product(ctx context.Context, obj *model.Wishlist) (*model.Product, error) {
 	product := new(model.Product)
 
-	return product, r.DB.First(product, "original_product_id = ? AND (valid_to = 0 OR valid_to IS NULL)", obj.ProductID).Error
+	return product, r.DB.First(product, "original_product_id = ? AND (valid_to = '"+os.Getenv("MIN_DATE")+"' OR valid_to IS NULL)", obj.ProductID).Error
 }
 
 // Cart returns generated.CartResolver implementation.

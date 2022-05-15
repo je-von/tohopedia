@@ -6,6 +6,7 @@ package graph
 import (
 	"context"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/google/uuid"
@@ -180,22 +181,23 @@ func (r *queryResolver) Categories(ctx context.Context, limit *int) ([]*model.Ca
 func (r *queryResolver) Product(ctx context.Context, id string) (*model.Product, error) {
 	product := new(model.Product)
 
-	return product, r.DB.First(product, "original_product_id = ? AND (valid_to = 0 OR valid_to IS NULL)", id).Error
+	// return product, r.DB.First(product, "original_product_id = ? AND (valid_to = '"+os.Getenv("MIN_DATE")+"' OR valid_to IS NULL)", id).Error
+	return product, r.DB.Where("original_product_id = ?", id).Order("valid_to ASC").Limit(1).Find(&product).Error
 }
 
 func (r *queryResolver) Products(ctx context.Context, shopID *string, limit *int, offset *int, input *model.SearchProduct, topSold *bool) ([]*model.Product, error) {
 	var models []*model.Product
 	if topSold != nil && *topSold {
-		return models, r.DB.Raw("SELECT p.id, name, description, price, discount, metadata, category_id, shop_id, created_at, stock, original_product_id, valid_to FROM transaction_details td JOIN products p ON p.id = td.product_id  GROUP BY product_id ORDER BY SUM(quantity) DESC LIMIT 15").Scan(&models).Error
+		return models, r.DB.Raw("SELECT p.id, name, description, price, discount, metadata, category_id, shop_id, created_at, stock, original_product_id, valid_to FROM transaction_details td JOIN products p ON p.id = td.product_id  GROUP BY product_id, p.id ORDER BY SUM(quantity) DESC LIMIT 15").Scan(&models).Error
 	}
 
 	if shopID != nil && limit != nil && offset != nil {
 		fmt.Printf("limit: %d\n", *limit)
-		return models, r.DB.Where("shop_id = ?", shopID).Where("(valid_to IS NULL OR valid_to = '0')").Limit(*limit).Offset(*offset).Find(&models).Error
+		return models, r.DB.Where("shop_id = ?", shopID).Where("(valid_to IS NULL OR valid_to = '" + os.Getenv("MIN_DATE") + "')").Limit(*limit).Offset(*offset).Find(&models).Error
 	}
 
 	// temp := r.DB.Where("valid_to IS NULL")
-	temp := r.DB.Where("(valid_to IS NULL OR valid_to = '0')")
+	temp := r.DB.Where("(valid_to IS NULL OR valid_to = '" + os.Getenv("MIN_DATE") + "')")
 
 	if input != nil {
 		if input.IsDiscount != nil && *input.IsDiscount {

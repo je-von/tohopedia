@@ -9,6 +9,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
@@ -25,13 +26,6 @@ func GetDB() *gorm.DB {
 func init() {
 	godotenv.Load()
 	// databaseConfig := "root:@tcp(127.0.0.1:3306)/tohopedia-jv?charset=utf8mb4&parseTime=True&loc=Local"
-	databaseConfig := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		os.Getenv("DB_USER"),
-		os.Getenv("DB_PASSWORD"),
-		os.Getenv("DB_HOST"),
-		os.Getenv("DB_PORT"),
-		os.Getenv("DB_DATABASE"),
-	)
 
 	var err error
 
@@ -41,13 +35,32 @@ func init() {
 		LogLevel:      logger.Info,
 		SlowThreshold: time.Second,
 	})
-	db, err = gorm.Open(mysql.Open(databaseConfig), &gorm.Config{
-		Logger: newLogger,
-		NamingStrategy: &schema.NamingStrategy{
-			SingularTable: false,
-			TablePrefix:   "",
-		},
-	})
+
+	if os.Getenv("DB_CONNECTION") == "mysql" {
+		databaseConfig := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+			os.Getenv("DB_USER"),
+			os.Getenv("DB_PASSWORD"),
+			os.Getenv("DB_HOST"),
+			os.Getenv("DB_PORT"),
+			os.Getenv("DB_DATABASE"),
+		)
+		db, err = gorm.Open(mysql.Open(databaseConfig), &gorm.Config{
+			Logger: newLogger,
+			NamingStrategy: &schema.NamingStrategy{
+				SingularTable: false,
+				TablePrefix:   "",
+			},
+		})
+	} else {
+		databaseConfig := fmt.Sprintf("host=%s user=%s password=%s port=%s dbname=%s sslmode=require TimeZone=Asia/Shanghai", os.Getenv("DB_HOST"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_PORT"), os.Getenv("DB_NAME"))
+		db, err = gorm.Open(postgres.Open(databaseConfig), &gorm.Config{
+			Logger: newLogger,
+			NamingStrategy: &schema.NamingStrategy{
+				SingularTable: false,
+				TablePrefix:   "",
+			},
+		})
+	}
 
 	if err != nil {
 		panic("Error Connect Database:" + err.Error())

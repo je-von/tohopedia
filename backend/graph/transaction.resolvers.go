@@ -6,6 +6,7 @@ package graph
 import (
 	"context"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/google/uuid"
@@ -59,7 +60,7 @@ func (r *mutationResolver) Checkout(ctx context.Context, shippingID string, paym
 		}
 
 		product := new(model.Product)
-		if err := r.DB.First(product, "original_product_id = ? AND (valid_to IS NULL OR valid_to = '0')", c.ProductID).Error; err != nil {
+		if err := r.DB.First(product, "original_product_id = ? AND (valid_to IS NULL OR valid_to = '"+os.Getenv("MIN_DATE")+"')", c.ProductID).Error; err != nil {
 			return nil, err
 		}
 		product.Stock -= c.Quantity
@@ -161,7 +162,7 @@ func (r *transactionDetailResolver) Product(ctx context.Context, obj *model.Tran
 
 	product := new(model.Product)
 
-	return product, r.DB.FirstOrInit(product, "original_product_id = ? AND (created_at <= ? AND (valid_to >= ? OR valid_to IS NULL OR valid_to = '0'))", obj.ProductID, transactionHeader.TransactionDate, transactionHeader.TransactionDate).Error
+	return product, r.DB.FirstOrInit(product, "original_product_id = ? AND (created_at <= ? AND (valid_to >= ? OR valid_to IS NULL OR valid_to = '"+os.Getenv("MIN_DATE")+"'))", obj.ProductID, transactionHeader.TransactionDate, transactionHeader.TransactionDate).Error
 }
 
 func (r *transactionHeaderResolver) User(ctx context.Context, obj *model.TransactionHeader) (*model.User, error) {
