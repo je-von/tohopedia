@@ -11,7 +11,7 @@ For testing, you may use the following credentials:
 - Email: `jevon@mail.com`
 - Password: `jevon123`
 
-To run this app, you can follow the following steps:
+To develop and run this app locally, you can follow the following steps:
 1. Clone this repository:
 
 ```
@@ -48,4 +48,4 @@ npm run dev
 :eye_speech_bubble: Web app preview:
 ![tohoped](https://user-images.githubusercontent.com/86874779/168518895-234dab37-dfac-4845-9b43-73d8df2710e7.png)
 
-_Disclaimer: This project was initially created for learning purposes_
+_Disclaimer: This project was created for learning purposes_
