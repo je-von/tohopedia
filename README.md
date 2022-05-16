@@ -6,6 +6,10 @@
 :globe_with_meridians: The frontend side was deployed using **Vercel**, while the backend was deployed using **Heroku**
 
 <h3 align="center">To view this app online you can visit: https://toped.vercel.app/</h2>
+For testing, you may use the following credentials:
+
+- Email: `jevon@mail.com`
+- Password: `jevon123`
 
 To run this app, you can follow the following steps:
 1. Clone this repository:
