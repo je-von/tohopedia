@@ -1,0 +1,83 @@
+
+2022/05/16 10:58:19 [32mC:/Users/jevon/go/pkg/mod/gorm.io/driver/postgres@v1.3.5/migrator.go:145
+[0m[33m[524.247ms] [34;1m[rows:1][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND table_type = 'BASE TABLE'
+
+2022/05/16 10:58:20 [32mC:/Users/jevon/go/pkg/mod/gorm.io/driver/postgres@v1.3.5/migrator.go:20
+[0m[33m[510.228ms] [34;1m[rows:1][0m SELECT CURRENT_DATABASE()
+
+2022/05/16 10:58:20 [32mC:/Users/jevon/go/pkg/mod/gorm.io/driver/postgres@v1.3.5/migrator.go:349
+[0m[33m[526.318ms] [34;1m[rows:-][0m SELECT c.column_name, c.is_nullable = 'YES', c.udt_name, c.character_maximum_length, c.numeric_precision, c.numeric_precision_radix, c.numeric_scale, c.datetime_precision, 8 * typlen, c.column_default, pd.description FROM information_schema.columns AS c JOIN pg_type AS pgt ON c.udt_name = pgt.typname LEFT JOIN pg_catalog.pg_description as pd ON pd.objsubid = c.ordinal_position AND pd.objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = c.table_name AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = c.table_schema)) where table_catalog = 'dftdd9v0f4ip9n' AND table_schema = CURRENT_SCHEMA() AND table_name = 'users'
+
+2022/05/16 10:58:21 [32mC:/Users/jevon/go/pkg/mod/gorm.io/driver/postgres@v1.3.5/migrator.go:478
+[0m[33m[512.047ms] [34;1m[rows:-][0m SELECT * FROM "users" LIMIT 1
+
+2022/05/16 10:58:22 [32mC:/Users/jevon/go/pkg/mod/gorm.io/driver/postgres@v1.3.5/migrator.go:419
+[0m[33m[534.939ms] [34;1m[rows:-][0m SELECT c.column_name, constraint_type FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'dftdd9v0f4ip9n' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'users'
+
+2022/05/16 10:58:22 [32mC:/Users/jevon/go/pkg/mod/gorm.io/driver/postgres@v1.3.5/migrator.go:449
+[0m[33m[512.132ms] [34;1m[rows:-][0m SELECT a.attname as column_name, format_type(a.atttypid, a.atttypmod) AS data_type
+		FROM pg_attribute a JOIN pg_class b ON a.attrelid = b.relfilenode AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA())
+		WHERE a.attnum > 0 -- hide internal columns
+		AND NOT a.attisdropped -- hide deleted columns
+		AND b.relname = 'users'
+
+2022/05/16 10:58:23 [32mC:/Users/jevon/go/pkg/mod/gorm.io/driver/postgres@v1.3.5/migrator.go:218
+[0m[33m[518.214ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2022/05/16 10:58:23 [32mC:/Users/jevon/go/pkg/mod/gorm.io/driver/postgres@v1.3.5/migrator.go:218
+[0m[33m[260.032ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'name') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2022/05/16 10:58:23 [32mC:/Users/jevon/go/pkg/mod/gorm.io/driver/postgres@v1.3.5/migrator.go:218
+[0m[33m[257.138ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'email') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2022/05/16 10:58:23 [32mC:/Users/jevon/go/pkg/mod/gorm.io/driver/postgres@v1.3.5/migrator.go:218
+[0m[33m[258.439ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'password') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2022/05/16 10:58:24 [32mC:/Users/jevon/go/pkg/mod/gorm.io/driver/postgres@v1.3.5/migrator.go:218
+[0m[33m[257.498ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'phone') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2022/05/16 10:58:24 [32mC:/Users/jevon/go/pkg/mod/gorm.io/driver/postgres@v1.3.5/migrator.go:218
+[0m[33m[258.999ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'gender') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2022/05/16 10:58:24 [32mC:/Users/jevon/go/pkg/mod/gorm.io/driver/postgres@v1.3.5/migrator.go:218
+[0m[33m[255.753ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'dob') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2022/05/16 10:58:24 [32mC:/Users/jevon/go/pkg/mod/gorm.io/driver/postgres@v1.3.5/migrator.go:218
+[0m[33m[256.119ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'profile_pic') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2022/05/16 10:58:25 [32mC:/Users/jevon/go/pkg/mod/gorm.io/driver/postgres@v1.3.5/migrator.go:218
+[0m[33m[255.355ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'role') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2022/05/16 10:58:25 [32mC:/Users/jevon/go/pkg/mod/gorm.io/driver/postgres@v1.3.5/migrator.go:218
+[0m[33m[255.354ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'is_suspended') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2022/05/16 10:58:25 [32mC:/Users/jevon/go/pkg/mod/gorm.io/driver/postgres@v1.3.5/migrator.go:145
+[0m[33m[255.315ms] [34;1m[rows:1][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND table_type = 'BASE TABLE'
+
+2022/05/16 10:58:25 [32mC:/Users/jevon/go/pkg/mod/gorm.io/driver/postgres@v1.3.5/migrator.go:20
+[0m[33m[255.491ms] [34;1m[rows:1][0m SELECT CURRENT_DATABASE()
+
+2022/05/16 10:58:26 [32mC:/Users/jevon/go/pkg/mod/gorm.io/driver/postgres@v1.3.5/migrator.go:349
+[0m[33m[262.997ms] [34;1m[rows:-][0m SELECT c.column_name, c.is_nullable = 'YES', c.udt_name, c.character_maximum_length, c.numeric_precision, c.numeric_precision_radix, c.numeric_scale, c.datetime_precision, 8 * typlen, c.column_default, pd.description FROM information_schema.columns AS c JOIN pg_type AS pgt ON c.udt_name = pgt.typname LEFT JOIN pg_catalog.pg_description as pd ON pd.objsubid = c.ordinal_position AND pd.objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = c.table_name AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = c.table_schema)) where table_catalog = 'dftdd9v0f4ip9n' AND table_schema = CURRENT_SCHEMA() AND table_name = 'users'
+
+2022/05/16 10:58:26 [32mC:/Users/jevon/go/pkg/mod/gorm.io/driver/postgres@v1.3.5/migrator.go:478
+[0m[33m[256.283ms] [34;1m[rows:-][0m SELECT * FROM "users" LIMIT 1
+
+2022/05/16 10:58:26 [32mC:/Users/jevon/go/pkg/mod/gorm.io/driver/postgres@v1.3.5/migrator.go:419
+[0m[33m[276.757ms] [34;1m[rows:-][0m SELECT c.column_name, constraint_type FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'dftdd9v0f4ip9n' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'users'
+
+2022/05/16 10:58:26 [32mC:/Users/jevon/go/pkg/mod/gorm.io/driver/postgres@v1.3.5/migrator.go:449
+[0m[33m[256.690ms] [34;1m[rows:-][0m SELECT a.attname as column_name, format_type(a.atttypid, a.atttypmod) AS data_type
+		FROM pg_attribute a JOIN pg_class b ON a.attrelid = b.relfilenode AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA())
+		WHERE a.attnum > 0 -- hide internal columns
+		AND NOT a.attisdropped -- hide deleted columns
+		AND b.relname = 'users'
+
+2022/05/16 10:58:27 [32mC:/Users/jevon/go/pkg/mod/gorm.io/driver/postgres@v1.3.5/migrator.go:218
+[0m[33m[255.710ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2022/05/16 10:58:27 [32mC:/Users/jevon/go/pkg/mod/gorm.io/driver/postgres@v1.3.5/migrator.go:218
+[0m[33m[256.944ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'name') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2022/05/16 10:58:27 [32mC:/Users/jevon/go/pkg/mod/gorm.io/driver/postgres@v1.3.5/migrator.go:218
+[0m[33m[255.291ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'users' AND column_name = 'email') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'users' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))

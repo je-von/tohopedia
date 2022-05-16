@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net/url"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -36,6 +38,8 @@ func init() {
 		SlowThreshold: time.Second,
 	})
 
+	var temp gorm.Dialector
+
 	if os.Getenv("DB_CONNECTION") == "mysql" {
 		databaseConfig := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 			os.Getenv("DB_USER"),
@@ -44,23 +48,28 @@ func init() {
 			os.Getenv("DB_PORT"),
 			os.Getenv("DB_DATABASE"),
 		)
-		db, err = gorm.Open(mysql.Open(databaseConfig), &gorm.Config{
-			Logger: newLogger,
-			NamingStrategy: &schema.NamingStrategy{
-				SingularTable: false,
-				TablePrefix:   "",
-			},
-		})
+		temp = mysql.Open(databaseConfig)
 	} else {
-		databaseConfig := fmt.Sprintf("host=%s user=%s password=%s port=%s dbname=%s sslmode=require TimeZone=Asia/Shanghai", os.Getenv("DB_HOST"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_PORT"), os.Getenv("DB_NAME"))
-		db, err = gorm.Open(postgres.Open(databaseConfig), &gorm.Config{
-			Logger: newLogger,
-			NamingStrategy: &schema.NamingStrategy{
-				SingularTable: false,
-				TablePrefix:   "",
-			},
-		})
+
+		databaseUrl, _ := url.Parse(os.Getenv("DATABASE_URL"))
+		host := strings.Split(databaseUrl.Host, ":")[0]
+		port := databaseUrl.Port()
+		username := databaseUrl.User.Username()
+		pass, _ := databaseUrl.User.Password()
+		databaseName := strings.TrimLeft(databaseUrl.Path, "/")
+
+		// databaseConfig := fmt.Sprintf("host=%s user=%s password=%s port=%s dbname=%s sslmode=require TimeZone=Asia/Shanghai", os.Getenv("DB_HOST"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_PORT"), os.Getenv("DB_NAME"))
+		databaseConfig := fmt.Sprintf("host=%s user=%s password=%s port=%s dbname=%s sslmode=require TimeZone=Asia/Shanghai", host, username, pass, port, databaseName)
+		temp = postgres.Open(databaseConfig)
 	}
+
+	db, err = gorm.Open(temp, &gorm.Config{
+		Logger: newLogger,
+		NamingStrategy: &schema.NamingStrategy{
+			SingularTable: false,
+			TablePrefix:   "",
+		},
+	})
 
 	if err != nil {
 		panic("Error Connect Database:" + err.Error())

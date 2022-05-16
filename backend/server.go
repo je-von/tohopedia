@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -14,14 +13,12 @@ import (
 	"github.com/go-chi/chi/v5"
 	// "github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
+	"github.com/je-von/TPA-Web-JV/backend/config"
 	"github.com/je-von/TPA-Web-JV/backend/directives"
 	"github.com/je-von/TPA-Web-JV/backend/graph"
 	"github.com/je-von/TPA-Web-JV/backend/graph/generated"
 	"github.com/je-von/TPA-Web-JV/backend/graph/model"
 	"github.com/je-von/TPA-Web-JV/backend/middlewares"
-	"gorm.io/driver/mysql"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 )
 
 const defaultPort = "8080"
@@ -44,26 +41,8 @@ func main() {
 
 	// router.Use(middlewares.AuthMiddleware)
 
-	var temp gorm.Dialector
-
-	if os.Getenv("DB_CONNECTION") == "mysql" {
-		databaseConfig := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-			os.Getenv("DB_USER"),
-			os.Getenv("DB_PASSWORD"),
-			os.Getenv("DB_HOST"),
-			os.Getenv("DB_PORT"),
-			os.Getenv("DB_DATABASE"),
-		)
-		temp = mysql.Open(databaseConfig)
-	} else {
-		databaseConfig := fmt.Sprintf("host=%s user=%s password=%s port=%s dbname=%s sslmode=require TimeZone=Asia/Shanghai", os.Getenv("DB_HOST"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_PORT"), os.Getenv("DB_NAME"))
-		temp = postgres.Open(databaseConfig)
-	}
-	db, err := gorm.Open(temp, &gorm.Config{})
-
-	if err != nil {
-		panic(err)
-	}
+	// var temp gorm.Dialector
+	db := config.GetDB()
 
 	db.AutoMigrate(&model.User{})
 	db.AutoMigrate(&model.Shop{})
@@ -107,7 +86,7 @@ func main() {
 	router.Handle("/query", srv)
 
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
-	err = http.ListenAndServe(":"+port, router)
+	err := http.ListenAndServe(":"+port, router)
 	if err != nil {
 		panic(err)
 	}
