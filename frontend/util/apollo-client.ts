@@ -5,10 +5,10 @@ import Router from 'next/router'
 
 const token = getCookie('token')
 
-const url = process.env.BACKEND_URL ? process.env.BACKEND_URL : 'https://tohopedia-backend.herokuapp.com'
+const url = process.env.BACKEND_URL ? process.env.BACKEND_URL : 'http://localhost:8080'
 
 const httpLink = new HttpLink({
-  uri: 'https://tohopedia-backend.herokuapp.com/query',
+  uri: url + '/query',
   headers: token
     ? {
         Authorization: 'bearer ' + token,
