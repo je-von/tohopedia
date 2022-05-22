@@ -1,9 +1,9 @@
 # tohopedia
-:information_source: A fully responsive "tokopedia" app clone created with **NextJS** (TypeScript) and **GraphQL** (Go)
+ℹ️ A fully responsive "tokopedia" app clone created with **NextJS** (TypeScript) and **GraphQL** (Go)
 
-:open_file_folder: The databases used in this app are **MySQL** (for development and testing) and **PostgreSQL** (for deployment)
+📂 The databases used in this app are **MySQL** (for development and testing) and **PostgreSQL** (for deployment)
 
-:globe_with_meridians: The frontend side was deployed using **Vercel**, while the backend was deployed using **Heroku**
+🌐 The frontend side was deployed using **Vercel**, while the backend was deployed using **Heroku**
 
 <h3 align="center">To view this app online you can visit: https://toped.vercel.app/</h2>
 For testing, you may use the following credentials:
@@ -45,7 +45,13 @@ go run server.go
 cd ../frontend
 npm run dev
 ```
-:eye_speech_bubble: Web app preview:
+👁️ Web app preview:
 ![tohoped](https://user-images.githubusercontent.com/86874779/168518895-234dab37-dfac-4845-9b43-73d8df2710e7.png)
+
+| | | |
+|:-------------------------:|:-------------------------:|:-------------------------:|
+|![Picture4](https://user-images.githubusercontent.com/86874779/169686647-0bdbcb7c-15be-4a99-bedf-8dc927c1e48f.png)|![Picture2](https://user-images.githubusercontent.com/86874779/169686636-d3e80197-950e-4a58-af1a-4e2ea67d7667.png)|![Picture3](https://user-images.githubusercontent.com/86874779/169686641-0cca663b-82d0-4e41-9a64-b34caff25cf6.png)|
+|![Picture1](https://user-images.githubusercontent.com/86874779/169686625-1ede0c7e-1503-4e0f-84a3-d24191ac395d.png)|![Picture5](https://user-images.githubusercontent.com/86874779/169686654-f0b16fc8-4ab1-4474-9add-76a4493279a6.png)
+||
 
 _Disclaimer: This project was created for learning purposes_
