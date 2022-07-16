@@ -1,5 +1,5 @@
 # tohopedia
-ℹ️ A fully responsive "tokopedia" app clone created with **NextJS** (TypeScript) and **GraphQL** (Go)
+ℹ️ A <a href="http://tokopedia.com" target="_blank" rel="noopener noreferrer">_tokopedia_</a> clone web app created with **NextJS** (TypeScript) and **GraphQL** (Go)
 
 📂 The databases used in this app are **MySQL** (for development and testing) and **PostgreSQL** (for deployment)
 
