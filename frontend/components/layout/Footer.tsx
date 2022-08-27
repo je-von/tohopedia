@@ -9,22 +9,22 @@ export default function Footer() {
         <h4>Tohopedia</h4>
         <div className="footer-links">
           <Link href={links.about}>About Tohopedia</Link>
-          <a href="https://www.facebook.com/tokopedia" target="_blank" rel="noreferrer">
+          <a href="https://www.facebook.com/" target="_blank" rel="noreferrer">
             Facebook
           </a>
-          <a href="https://www.twitter.com/tokopedia" target="_blank" rel="noreferrer">
+          <a href="https://www.twitter.com/" target="_blank" rel="noreferrer">
             Twitter
           </a>
-          <a href="https://www.pinterest.com/tokopedia" target="_blank" rel="noreferrer">
+          <a href="https://www.pinterest.com/" target="_blank" rel="noreferrer">
             Pinterest
           </a>
-          <a href="https://www.instagram.com/tokopedia" target="_blank" rel="noreferrer">
+          <a href="https://www.instagram.com/jevonlevin" target="_blank" rel="noreferrer">
             Instagram
           </a>
-          <a href="https://play.google.com/store/apps/details?id=com.tokopedia.tkpd&hl=en" target="_blank" rel="noreferrer">
+          <a href="https://play.google.com/" target="_blank" rel="noreferrer">
             Download on Play Store
           </a>
-          <a href="https://apps.apple.com/id/app/tokopedia/id1001394201" target="_blank" rel="noreferrer">
+          <a href="https://apps.apple.com/" target="_blank" rel="noreferrer">
             Download on App Store
           </a>
           <Link href={links.openShop}>Open Shop</Link>
@@ -33,6 +33,10 @@ export default function Footer() {
         </div>
       </div>
       <div className="right-content">
+        <p>
+          <b>Disclaimer</b>: This project was created for learning purposes. Anything that happens in this web application including the transaction process are not real and will
+          not affect anything. Any sensitive information such as email and password credential are saved securely and will not be misused.
+        </p>
         <div className="footer-img">
           <Image src="/asset/footer.jpg" alt="" layout="fill" objectFit="contain"></Image>
         </div>

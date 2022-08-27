@@ -54,3 +54,4 @@ npm run dev
 |![Picture1](https://user-images.githubusercontent.com/86874779/169686625-1ede0c7e-1503-4e0f-84a3-d24191ac395d.png)|![Picture5](https://user-images.githubusercontent.com/86874779/169686654-f0b16fc8-4ab1-4474-9add-76a4493279a6.png)
 ||
 
+_Disclaimer: This project was created for learning purposes._
